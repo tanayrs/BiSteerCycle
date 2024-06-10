@@ -123,10 +123,13 @@ EncoderDataProcessor frontSteerData(steerMotorPPR, 0, false, true, vel_cutoff_fr
 
 double prev_steer_error_F = 0;
 double prev_steer_error_R = 0;
-
 double integral_steer_F = 0;
 double integral_steer_R = 0;
 
+double prev_wheel_error_F = 0;
+double prev_wheel_error_R = 0;
+double integral_wheel_F = 0;
+double integral_wheel_R = 0;
 
 /* Segway Controller */
 #define Kp_lean 1700
@@ -199,33 +202,29 @@ void loop(){
        
         digitalWrite(13,HIGH);
 
-        
-        
+        // holdwheel(0, 90*sin(millis()*1e-3));
+        holdwheel(0, 90);
+
         /* Updates Encoder Angle and IMU Angle */
         calculate_state();
         
-        /* Calculates Drive Input */
-        controller_segway();
+        // /* Calculates Drive Input */
+        // controller_segway();
         
-        /* Calculates Steer Input */
-       
-        
+        // // /* Calculates Steer Input */
+        // holdsteering(0,0);
+
         /* Writes Inputs to Motor */
         writeToMotor();
-        
-        /* Prints/Plots State Variables */
-        
-         //Serial.print("\n");
-        
-        logFeedback();
+
+        // Sets wheel to an angle 
+
+        /* Prints/Plots State Variables */        
+        //logFeedback();
+
          while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
-        Serial.println(loopTimeMicros);
         loopTimeMicros = 0;
 
-        
         digitalWrite(13,LOW);
-
-
-
 }
