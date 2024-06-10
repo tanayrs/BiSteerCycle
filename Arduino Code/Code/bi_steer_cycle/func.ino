@@ -288,13 +288,15 @@ void holdwheel(double degrees_F, double degrees_R) {
         double wheel_error_F = -(EncTarget_F - frontWheelEnc.read());
         double wheel_error_R = -(EncTarget_R - rearWheelEnc.read());
 
-        Serial.print(millis());
-        Serial.print(" ");
-        Serial.print(wheel_error_R * 360 / wheelMotorPPR);
-        Serial.println("");
+        // Serial.print(millis());
+        // Serial.print(" ");
+        // Serial.print(wheel_error_F * 360 / wheelMotorPPR);
+        // Serial.print(" ");
+        // Serial.print(wheel_error_R * 360 / wheelMotorPPR);
+        // Serial.println("");
         
-        frontWheelInput = 0.3 * (0.8 * (wheel_error_F) + 0.1 * ((wheel_error_F - prev_wheel_error_F)/dt) + 5*(integral_wheel_F)*dt);
-        rearWheelInput = 0.3 * (0.8 * (wheel_error_R) + 0.1 * ((wheel_error_R - prev_wheel_error_R)/dt) + 5*(integral_wheel_R)*dt);
+        frontWheelInput = 0.5 * (0.8 * (wheel_error_F) + 0.1 * ((wheel_error_F - prev_wheel_error_F)/dt) + 10*(integral_wheel_F)*dt);
+        rearWheelInput = 0.5 * (0.8 * (wheel_error_R) + 0.1 * ((wheel_error_R - prev_wheel_error_R)/dt) + 10*(integral_wheel_R)*dt);
 
         prev_wheel_error_F = wheel_error_F;
         prev_wheel_error_R = wheel_error_R;
@@ -323,10 +325,20 @@ void holdwheel(double degrees_F, double degrees_R) {
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
-        frontWheelMotor.setSpeed(frontWheelInput);
+        // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
+        frontWheelMotor.setSpeed(frontWheelInput>0?frontWheelInput:(390.0/376)*frontWheelInput);
         frontSteerMotor.setSpeed(frontSteerInput);
-        rearWheelMotor.setSpeed(rearWheelInput);
+        rearWheelMotor.setSpeed(rearWheelInput>0?rearWheelInput:(399.0/381)*rearWheelInput);
         rearSteerMotor.setSpeed(rearSteerInput);
+}
+
+/* Print / Plot Wheel Speed */
+void plot_wheel_speed(){
+        Serial.print(millis());
+        Serial.print(" ");
+        Serial.print(frontWheelData.speed());
+        Serial.print(" ");
+        Serial.println(rearWheelData.speed());
 }
 
 /* Print / Plot State Vars */

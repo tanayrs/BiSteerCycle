@@ -1,8 +1,8 @@
 /******************************************************************************************************************
 
 Bi-Steer Cycle Code
-By: Vishwas Gajera, Tanay Srinivasa
-Last Modified: 29 May 2024 3:58 AM
+By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
+Last Modified: 10 Jun 2024 4:02 PM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
@@ -183,8 +183,8 @@ elapsedMillis runTimeMillis;
 /****************** Start of Code ******************/
 
 void setup() {
-        Serial.begin(38400);
-        Serial.println("Starting Serial Print");
+        Serial.begin(9600);
+        // Serial.println("Starting Serial Print");
         
         //init_IMU();
         //delay(500);
@@ -199,11 +199,10 @@ void setup() {
 }
 
 void loop(){
-       
         digitalWrite(13,HIGH);
 
-        // holdwheel(0, 90*sin(millis()*1e-3));
-        holdwheel(0, 90);
+        holdwheel(180*sin(millis()*1e-3), 180*sin(millis()*1e-3));
+        // holdwheel(-90, -90);
 
         /* Updates Encoder Angle and IMU Angle */
         calculate_state();
@@ -219,8 +218,9 @@ void loop(){
 
         // Sets wheel to an angle 
 
-        /* Prints/Plots State Variables */        
-        //logFeedback();
+        /* Prints/Plots State Variables */    
+        // plot_wheel_speed();    
+        logFeedback();
 
          while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
