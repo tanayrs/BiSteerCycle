@@ -75,6 +75,8 @@ void calculate_bno_angle_compfilter() {
 void calculate_bno_angle_kalman() {
         bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
         bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
+        sensors_event_t event;
+        bno.getEvent(&event);
 
         float ax = a.acceleration.x;
         float ay = a.acceleration.y;
@@ -89,16 +91,13 @@ void calculate_bno_angle_kalman() {
         phi = kalX;
         phi_dot = g.gyro.x;
 
-        Serial.print(acc_angle_x); Serial.print(" ");
-        Serial.print(acc_angle_y); Serial.print(" ");
-        Serial.print(kalX); Serial.print(" ");
-        Serial.print(kalY); Serial.print(" ");
+        Serial.print(-acc_angle_x); 
+        Serial.print(" ");
+        Serial.print(event.orientation.z);
+        Serial.print(" ");
+        Serial.print(-kalX); 
         Serial.println("");
 
-        // Serial.print(g.gyro.x); Serial.print(" ");
-        // Serial.print(g.gyro.y); Serial.print(" ");
-        // Serial.print(g.gyro.z); Serial.print(" ");
-        // Serial.println("");
 }
 
 void setup(void) 
@@ -155,5 +154,4 @@ void loop(void) {
         calculate_bno_angle_kalman();
         // print_state_vars();
         // Serial.println("");
-        delay(10);
 }
