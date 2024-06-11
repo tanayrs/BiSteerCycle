@@ -1,6 +1,8 @@
 /**
 * BNO-055 IMU Test Code from: https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/arduino-code
 * Modified to Plot Values on Serial Plotter as Compared to Printing on Serial Monitor.
+* By: Jia Bhargava, Tanay Srinivasa
+* Date Modified: 11 Jun 2024
 */
 
 #include <Wire.h>
@@ -43,32 +45,6 @@ void calculate_bno_angle() {
         Serial.println("");
         //bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
         //phi_dot = event.gyro.z;
-}
-
-/* Calculate Angles from BNO-055 Sensor using a Complimentary Filter */
-void calculate_bno_angle_compfilter() {
-        bno.getEvent( &a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
-        bno.getEvent( &g, Adafruit_BNO055::VECTOR_GYROSCOPE);
-
-        elapsedTimeIMU = IMUTimeMicros / 1000.0;
-        IMUTimeMicros = 0;
-        IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
-
-        ax1 = a.acceleration.x;
-        ay1 = a.acceleration.y;
-        az1 = a.acceleration.z;
-        gx1 = (g.gyro.x) * 180.0 / PI; // Angle in degrees //
-
-        accelAngle = accelero_angle();
-
-        if (elapsedTimeIMU < 50)
-                gyroAngleX = previous_roll + -gx1 * elapsedTimeIMU / 1000;
-        else
-                gyroAngleX = previous_roll;
-        roll = ((IMUFilterConstant * gyroAngleX) + ((1 - IMUFilterConstant) * accelAngle));
-        previous_roll = roll;
-        phi = roll;
-        phi_dot = -gx1;
 }
 
 /* Calculate Angles from BNO-055 Sensor using a Kalman Filter */
@@ -149,7 +125,6 @@ void gyro_bias(){
 void loop(void) {
         // calculate_bno_angle();
         // print_state_vars();
-        // calculate_bno_angle_compfilter();
         // print_state_vars();
         calculate_bno_angle_kalman();
         // print_state_vars();
