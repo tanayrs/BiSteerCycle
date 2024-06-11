@@ -65,7 +65,7 @@ R_V = diag([1e3, 1e3, 1e2, 1e2]);
 
 
 
-ref_1 = [0,deg2rad(89),deg2rad(88.999)];
+ref_1 = [0,deg2rad(89),deg2rad(88)];
 Q_F = diag([1e4, 1e4, 1e4, 1e0, 1e0]);
 R_F = diag([5e2, 5e2, 1e1, 1e1]);    %[1e1, 1e1, 1e0, 1e0]
 
