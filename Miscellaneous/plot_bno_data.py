@@ -4,10 +4,12 @@ import csv
 from matplotlib import pyplot as plt
 import pandas as pd
 
+# Defining Path to CSV File, Com Port and Baud Rate #
 PATH = 'BNO_Test_Vibrations.csv'
 COM = '/dev/cu.usbmodem160229201'
 BAUD = 9600
 
+# Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
 def read_from_serial():
     # Adding Header Row with Columns of CSV #
     with open(PATH, mode='w') as sensor_file:
@@ -47,16 +49,14 @@ def plot_from_csv():
     print(df.describe())
 
     # Plotting Angle vs Time #
-    # plt.plot(df['Time'],df['Acceleration'])
+    plt.plot(df['Time'],df['Acceleration'])
     plt.plot(df['Time'],df['Complimentary'])
     plt.plot(df['Time'],df['Kalman'])
 
     plt.xlabel('Time (ms)')
     plt.ylabel('Angle (degrees)')
-    # plt.legend(['Accelerometer','Complimentary Filter', 'Kalman Filter'])
+    plt.legend(['Accelerometer','Complimentary Filter', 'Kalman Filter'])
     plt.title('Vibration Test for Complimentary and Kalman Filter')
-    plt.legend(['Complimentary Filter', 'Kalman Filter'])
-
     plt.show()
 
 if __name__ == '__main__':
