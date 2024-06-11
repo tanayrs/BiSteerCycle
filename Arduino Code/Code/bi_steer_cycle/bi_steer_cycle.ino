@@ -200,9 +200,10 @@ void setup() {
 
 void loop(){
         digitalWrite(13,HIGH);
-
-        holdwheel(180*sin(millis()*1e-3), 180*sin(millis()*1e-3));
-        // holdwheel(-90, -90);
+        
+        // Sets wheel to an angle
+        // holdwheel(90*sin(millis()*1e-3), 90*sin(millis()*1e-3));
+        // holdwheel(0, 90);
 
         /* Updates Encoder Angle and IMU Angle */
         calculate_state();
@@ -216,11 +217,11 @@ void loop(){
         /* Writes Inputs to Motor */
         writeToMotor();
 
-        // Sets wheel to an angle 
 
         /* Prints/Plots State Variables */    
-        // plot_wheel_speed();    
-        logFeedback();
+        plot_wheel_speed();    
+
+        // logFeedback();
 
          while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);

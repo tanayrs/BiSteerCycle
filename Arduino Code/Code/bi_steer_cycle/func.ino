@@ -193,7 +193,6 @@ void calculate_bno_angle_kalman() {
         kalRoll = (kalmanX.update(acc_angle_x, g.gyro.x));
         phi = -(kalRoll);        ///////////////////////////////////////////////////////////////////// correct this ////////////////////////////////////////////
         phi_dot = -(g.gyro.x);
-        
 }
 
 /* PD Controller For Calculate Front Wheel Acceleration */
@@ -326,19 +325,21 @@ void holdwheel(double degrees_F, double degrees_R) {
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        frontWheelMotor.setSpeed(frontWheelInput>0?frontWheelInput:(390.0/376)*frontWheelInput);
-        frontSteerMotor.setSpeed(frontSteerInput);
-        rearWheelMotor.setSpeed(rearWheelInput>0?rearWheelInput:(399.0/381)*rearWheelInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // frontWheelMotor.setSpeed(frontWheelInput>0?frontWheelInput:(390.0/376)*frontWheelInput);
+        // frontSteerMotor.setSpeed(frontSteerInput);
+        // rearWheelMotor.setSpeed(rearWheelInput>0?rearWheelInput:(399.0/381)*rearWheelInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
+
+        rearWheelInput = 100 * sin(millis()*1e-3);
+        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
 }
 
 /* Print / Plot Wheel Speed */
 void plot_wheel_speed(){
         Serial.print(millis());
         Serial.print(" ");
-        Serial.print(frontWheelData.speed());
-        Serial.print(" ");
-        Serial.println(rearWheelData.speed());
+        Serial.print(rearWheelData.speed());
+        Serial.println("");
 }
 
 /* Print / Plot State Vars */

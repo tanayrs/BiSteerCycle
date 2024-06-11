@@ -4,7 +4,7 @@ import csv
 from matplotlib import pyplot as plt
 import pandas as pd
 
-PATH = 'SensorData.csv'
+PATH = 'RearSpeedData.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 9600
 
@@ -17,7 +17,7 @@ def read_from_serial():
                 quotechar='"', 
                 quoting=csv.QUOTE_MINIMAL
                 )
-        sensor_writer.writerow(["Time", "Front Angle", "Rear Angle"])
+        sensor_writer.writerow(["Time", "Rear Speed"])
     
     # Creating Serial Object for COM Port and Selected Baud Rate #
     x = serial.Serial(COM, BAUD, timeout=0.1)
@@ -36,7 +36,7 @@ def read_from_serial():
                         quotechar='"', 
                         quoting=csv.QUOTE_MINIMAL
                         )
-                sensor_writer.writerow([line[0],line[1],line[2]])
+                sensor_writer.writerow([line[0],line[1]])
 
 # Plotting Sensor Value Readings #
 def plot_from_csv():
@@ -47,16 +47,15 @@ def plot_from_csv():
     print(df.describe())
 
     # Plotting Angle vs Time #
-    plt.plot(df['Time'],df['Front Angle'])
-    plt.plot(df['Time'],df['Front Angle'])
+    plt.plot(df['Time'],df['Rear Speed'])
 
     plt.xlabel('Time')
-    plt.ylabel('Angle')
-    plt.legend(['Front Angle','Rear Angle'])
+    plt.ylabel('Speed')
+    plt.legend(['Rear Speed'])
 
     # Plotting Graph #
     plt.show()
 
 if __name__ == '__main__':
-    #read_from_serial()
+    # read_from_serial()
     plot_from_csv()
