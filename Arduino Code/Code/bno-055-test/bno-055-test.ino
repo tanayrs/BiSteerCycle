@@ -13,60 +13,60 @@
 #include <KalmanFilter.h> // Repo: https://github.com/jarzebski/Arduino-KalmanFilter/tree/master //
 #include <Adafruit_Sensor.h>
   
+// Defining Sensor Object //
 Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28, &Wire);
 
-sensors_event_t a, g, temp;
-float ax1, ay1, az1;
-float gx1, gy1, gz1;
+// Defining Variables for Derivatives, Angle, and Constants //
 double previous_roll, elapsedTimeIMU, IMUFilterConstant,gyroAngleX, accelAngle,roll;
 double IMUTimeConstant = 6.0;
-elapsedMicros IMUTimeMicros;
 float kalRoll = 0;
-double phi, phi_dot;
-KalmanFilter kalmanX(0.005, 0, 0.1);  //(Q_angle, Q_bais, R) //
-KalmanFilter kalmanY(0.005, 0, 0.1);  //(Q_angle, Q_bais, R) //
-//KalmanFilter kalmanZ(0.0005, 0.005, 0.1);  //(Q_angle, Q_bais, R) //
+elapsedMicros IMUTimeMicros;
 
-/* Finds Pitch From Accelerometer -> Returns in Degrees */
-float accelero_angle() {
-        return atan2(ay1, -az1) * 180.0 / PI;
-}
+// Defining State Variables //
+double phi, phi_dot;
+
+// Defining Kalman Filter Object //
+KalmanFilter kalmanX(0.005, 0, 0.1);  //(Q_angle, Q_bais, R) //
 
 /* Calculate Angles from BNO-055 Sensor */
 void calculate_bno_angle() {
+        // Finding Sensor Readings //
         sensors_event_t event;
         bno.getEvent(&event);
+        
+        // Updating Roll and Phi //
         previous_roll = roll;
         roll = event.orientation.z;
         phi = roll;
+
+        // Printing Angle Values to Serial Monitor //
         Serial.print(event.orientation.x); Serial.print(" ");
         Serial.print(event.orientation.y); Serial.print(" ");
         Serial.print(event.orientation.z); Serial.print(" ");
         Serial.println("");
-        //bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        //phi_dot = event.gyro.z;
 }
 
 /* Calculate Angles from BNO-055 Sensor using a Kalman Filter */
 void calculate_bno_angle_kalman() {
+        // Finding Sensor Readings //
+        sensors_event_t a, g, event;
         bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
         bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        sensors_event_t event;
         bno.getEvent(&event);
 
+        // Calculating Angle from Accelerometer //
         float ax = a.acceleration.x;
         float ay = a.acceleration.y;
         float az = a.acceleration.z;
-        float acc_angle_y = 180 * atan2(ax, sqrt(ay*ay + az*az))/PI;
         float acc_angle_x = 180 * atan2(ay, sqrt(ax*ax + az*az))/PI;     
 
-        // passing angle and angular rate to kalman filter for x, y and z
+        // Passing Angle and Angle Rate to Kalman Filter Object //
         float kalX = (kalmanX.update(acc_angle_x, g.gyro.x * 180/PI));
-        float kalY = (kalmanY.update(acc_angle_y, g.gyro.y * 180/PI));
         
         phi = kalX;
         phi_dot = g.gyro.x;
 
+        // Printing Accelerometer, Complimentary Filter, and Kalman Filter Angles //
         Serial.print(-acc_angle_x); 
         Serial.print(" ");
         Serial.print(event.orientation.z);
@@ -76,37 +76,13 @@ void calculate_bno_angle_kalman() {
 
 }
 
-void setup(void) 
-{
-        Serial.begin(9600);
-        Serial.println("Orientation Sensor Test"); Serial.println("");
-
-        /* Initialise the sensor */
-        if(!bno.begin())
-        {
-                /* There was a problem detecting the BNO055 ... check your connections */
-                Serial.println("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-                while(1);
-        }
-
-        delay(1000);
-        bno.setExtCrystalUse(true);
-
-        // Calculating bias from gyroscope readings
-        // gyro_bias();
-}
-
-void print_state_vars(){
-        Serial.print(phi); Serial.print(" ");
-        Serial.print(phi_dot); Serial.print(" ");
-}
-
+/* Calibration of BNO-055 */
 void gyro_bias(){
+        sensors_event_t a, g, event;
         float x_error = 0;
         float y_error = 0; 
         float z_error = 0;
-        for (int i = 0; i <10000; i++)
-        {
+        for (int i = 0; i <10000; i++) {
             bno.getEvent( &g, Adafruit_BNO055::VECTOR_GYROSCOPE);
             x_error += g.gyro.x;
             y_error += g.gyro.y;
@@ -121,12 +97,25 @@ void gyro_bias(){
         Serial.print("Z bias: "); Serial.print(z_error); Serial.println("");
 }
 
+void setup(void) {
+        Serial.begin(9600);
+        Serial.println("Orientation Sensor Test"); Serial.println("");
+
+        /* Initialise the sensor */
+        if(!bno.begin()){
+                /* There was a problem detecting the BNO055 ... check your connections */
+                Serial.println("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+                while(1);
+        }
+
+        delay(1000);
+        bno.setExtCrystalUse(true);
+
+        // Calculating bias from gyroscope readings
+        // gyro_bias();
+}
 
 void loop(void) {
         // calculate_bno_angle();
-        // print_state_vars();
-        // print_state_vars();
         calculate_bno_angle_kalman();
-        // print_state_vars();
-        // Serial.println("");
 }
