@@ -8,6 +8,8 @@
 clc
 clear
 
+restoredefaultpath;
+
 syms m I11 I22 I33 positive
 syms dr df h positive
 
@@ -24,6 +26,8 @@ syms phiddot psiddot         real
 
 
 assumeAlso((phi > -pi/2 ) & (phi < pi/2))
+
+%{
 assumeAlso((theta_F ~= theta_R) & (theta_R ~= theta_F))
 assumeAlso(tan(theta_F) ~= tan(theta_R))
 assumeAlso(cos(theta_F)*sin(theta_R) ~= cos(theta_R)*sin(theta_F))
@@ -31,7 +35,7 @@ assumeAlso((theta_F <= pi) & (theta_F>=-pi))
 assumeAlso(theta_R <=pi & theta_R>=-pi)
 assumeAlso(theta_F ~= pi/2 & theta_F ~= -pi/2)
 assumeAlso(theta_R ~= pi/2 & theta_R ~= -pi/2)
-
+%}
 %assumeAlso(theta_R ~= -theta_F)
 %assume(~in(psi/pi, 'integer') & ~in(phi/pi - 1/2, 'integer'))
 
@@ -329,20 +333,6 @@ sol = solve(EQN4,phiddot,'ReturnConditions',true);
 phiddot = simplify(sol.phiddot,'IgnoreAnalyticConstraints',true);
 phiddot = simplify(phiddot);
 
-%%
-
-
-
-%EQNS = subs(EQNS,psi,1);
-
-%sol1 = solve(EQNS,VARS,'IgnoreAnalyticConstraints',true);
-%%
-%}
-
-%}
-%zdot = [xdot,ydot,Vdot,psidot,phiddot]';
-
-
 
 %% front rear acc vdot stuff
 %
@@ -354,86 +344,31 @@ acc_f = solve(EQN6,acc_f);
 
 %}
 
-%%
-%{
-M = [1 ,      0,      0, 0, 0;
-     0 , A(1,1), A(1,2), 0, 0;
-     0 , A(2,1), A(2,2), 0, 0;
-     0 ,      0,      0, 1, 0;
-     0 ,      0,      0, 0, 1;];
-
-F = [phidot, Vdot, phiddot, theta_Fdot, theta_Rdot]';
 
 
-%%
-%matlabFunction(A,'File','A.m','Comments','Mass matrix A','Optimize',true);
-%matlabFunction(b,"File",'b.m','Comments','vector_b','Optimize',true);
 
-%%
-
-%matlabFunction([xdot; ydot; psidot],'File','x_y_psi_dots.m','Optimize',true);
-%}
-
-%%
-%{
-xdot   = subs(xdot);
-xdot   = simplify(xdot);
-
-ydot   = subs(ydot);
-ydot   = simplify(ydot);
-
-Vdot    = subs(Vdot);
-%Vdot    = simplify(Vdot);
-Vdot    = combine(Vdot,'IgnoreAnalyticConstraints',true);
-
-simplify(Vdot,'Seconds',60,)
-%
 phiddot = subs(phiddot);
-%phiddot = simplify(phiddot);
+phiddot = simplify(phiddot);
 
-psidot  = subs(psidot);
-psidot  = simplify(psidot);
-
-%psiddot = subs(psiddot);
-%psiddot = simplify(psiddot);
-
-%}
+zdot = [phiddot,psidot]';
 
 
 
-%
-
-
-%zdot = subs(zdot)';
-%statedot = simplify(statedot);
-
-
-
-
-
-
-%matlabFunction(zdot,"File","bi_steer_3D_Dynamics_full_1.m",Optimize=true);
-%%
 
 %
 dynamics_lin = [phidot, Vdot, phiddot, theta_Fdot, theta_Rdot]';
 state_lin    = [   phi,    V,  phidot,    theta_F,    theta_R];
 U            = [ Vdot, theta_Fdot, theta_Rdot];
 
+%%
 
-%JF_X = jacobian(F,state_lin);
-%JF_U = jacobian(F, U);
 
-%{
-matlabFunction(JF_X,'File','JF_X.m','Optimize',true,'Comments','jacobian of F vector with states X');
-matlabFunction(JF_U,'File','JF_U.m','Optimize',true, 'Comments','jacobian of F vecor with control input U');
-matlabFunction(M,'File','Mass_matrix_M.m','Optimize',true);
-matlabFunction(A,b,'File','A_b.m','Optimize',true);
+A_lin = jacobian(dynamics_lin,state_lin);
+B_lin = jacobian(dynamics_lin,U);
 
-%}
-
-%}
-
+matlabFunction(zdot,'File','lean_heading.m','Optimize',true);
+matlabFunction(A_lin,'File','A_matrix.m','Optimize',true);
+matlabFunction(B_lin,'File','B_matrix.m','Optimize',true);
 
 
 
