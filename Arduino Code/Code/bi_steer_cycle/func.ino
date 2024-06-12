@@ -45,9 +45,9 @@ void updateEncoderData() {
         if (millis() - prev_time_millis > 100){
                 Serial.print(millis());
                 Serial.print(",");
-                Serial.print(rearWheelInput);
+                Serial.print(frontWheelInput);
                 Serial.print(",");        
-                Serial.print(rearWheelTicks);
+                Serial.print(frontWheelTicks);
                 Serial.println("");
                 prev_time_millis = millis();
         }
@@ -333,9 +333,9 @@ void holdwheel(double degrees_F, double degrees_R) {
 
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
+        frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
-        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
 }
 
@@ -354,7 +354,7 @@ void deadband_test(){
         updateEncoderData();
         if (millis() - prev_time > 200)
         {
-          rearWheelInput = rearWheelInput>50?-50:rearWheelInput+1;
+          frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
           prev_time = millis();
         }  
 }
