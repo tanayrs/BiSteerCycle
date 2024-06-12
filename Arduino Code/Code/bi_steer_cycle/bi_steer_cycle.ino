@@ -2,7 +2,7 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 10 Jun 2024 4:02 PM
+Last Modified: 12 Jun 2024 9:40 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
@@ -181,13 +181,14 @@ elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
 // For deadband
-int prev_time;
+int prev_time, prev_time_millis;
 
 /****************** Start of Code ******************/
 
 void setup() {
-        Serial.begin(9600);
-        // Serial.println("Starting Serial Print");
+        Serial.begin(115200);
+        Serial.println("Starting Serial Print");
+        delay(5000);
         
         //init_IMU();
         //delay(500);
@@ -202,7 +203,8 @@ void setup() {
 
         // For the deadband testing
         prev_time = millis();
-        rearWheelInput = -20;
+        prev_time_millis = millis();
+        rearWheelInput = -50;
 }
 
 void loop(){

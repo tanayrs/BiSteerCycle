@@ -28,9 +28,9 @@ void calculate_state() {
         // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
         //calculate_mpu_angle_kalman();
         // calculate_mpu_angle_compfilter();
-         //calculate_bno_angle();
+        //calculate_bno_angle();
         // calculate_bno_angle_compfilter();
-        calculate_bno_angle_kalman();
+        // calculate_bno_angle_kalman();
 }
 
 /* Updating Encoder with Current Number of Ticks */
@@ -42,6 +42,15 @@ void updateEncoderData() {
         long rearSteerTicks = rearSteerEnc.read();
 
         // Updating Encoder Data Processor Objects //
+        if (millis() - prev_time_millis > 100){
+                Serial.print(millis());
+                Serial.print(",");
+                Serial.print(rearWheelInput);
+                Serial.print(",");        
+                Serial.print(rearWheelTicks);
+                Serial.println("");
+                prev_time_millis = millis();
+        }
         // Reference: void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double steerTicksOffset) //
         frontWheelData.update(frontWheelTicks, frontSteerTicks, 0);
         frontSteerData.update(frontSteerTicks, 0, 0);
@@ -342,18 +351,12 @@ void motor_calibration(){
 
 // Testing the deadband by varying input with time
 void deadband_test(){  
-        if (millis() - prev_time > 500)
+        updateEncoderData();
+        if (millis() - prev_time > 200)
         {
-          rearWheelInput += 1;
+          rearWheelInput = rearWheelInput>50?-50:rearWheelInput+1;
           prev_time = millis();
-        }
-
-        Serial.print(millis());
-        Serial.print(" ");
-        Serial.print(rearWheelInput);
-        Serial.print(" ");
-        Serial.print(rearWheelData.speed());
-        Serial.println("");
+        }  
 }
 
 
