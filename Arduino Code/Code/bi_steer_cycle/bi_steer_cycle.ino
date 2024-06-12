@@ -202,8 +202,7 @@ void setup() {
 
         // For the deadband testing
         prev_time = millis();
-        rearWheelInput = 0;
-        delay(10000);
+        rearWheelInput = -20;
 }
 
 void loop(){
