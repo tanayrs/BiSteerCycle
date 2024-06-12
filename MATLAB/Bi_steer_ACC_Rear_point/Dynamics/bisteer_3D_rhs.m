@@ -39,7 +39,7 @@ end
 
 phiddot  = zdot(4);
 
-disp(phiddot)
+%disp(phiddot)
 
 
 zdot = [xdot, ydot, Vdot, psidot, phidot, phiddot, theta_Fdot, theta_Rdot]';

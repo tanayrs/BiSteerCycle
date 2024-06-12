@@ -94,7 +94,7 @@ hold on
 
 plot(time,Vdot,'b');
 plot(time,Vfdot,'r');
-title('$ Vdot $')
+title('$ \dot{V} $ vs t')
 ylabel('acc in m/s2')
 legend('acc front','acc rear');
 %}
@@ -102,18 +102,18 @@ subplot(3,1,2)
 hold on
 plot(time,rad2deg(theta_Fdot),'r')
 plot(time,rad2deg(theta_Rdot),'b')
-title('$ \theta  dot $')
+title('$ \dot{\theta} $ vs t')
 ylabel('steer rate in deg/s')
-legend('steer front','steer rear');
+legend('\theta_F','\theta_R');
 
 
 subplot(3,1,3)
 hold on
 plot(tarray,rad2deg(theta_Farray),'r')
 plot(tarray,rad2deg(theta_Rarray),'b')
-title('$ \theta steer angles $')
+title('$ \theta $ steer angles vs t')
 ylabel('steer angle in degrees')
-legend('front', 'rear')
+legend('\theta_F', '\theta_R')
 movegui('south')
 
 
