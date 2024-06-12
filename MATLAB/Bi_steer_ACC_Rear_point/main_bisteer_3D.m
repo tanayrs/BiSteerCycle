@@ -36,8 +36,8 @@ psi0 = deg2rad(0);  %heading
 phi0 = deg2rad(-10);  %lean angle
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(90);  
-theta_R0 = deg2rad(90);
+theta_F0 = deg2rad(89.999);  
+theta_R0 = deg2rad(89.999);
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';
@@ -59,7 +59,7 @@ R_V = diag([1e3, 1e2, 1e2]);
 
 
 
-ref_1 = [0,deg2rad(90),deg2rad(90)];
+ref_1 = [0,deg2rad(89.999),deg2rad(89.999)];
 Q_F = diag([1e4, 1e4, 1e4, 1e0, 1e0]);
 R_F = diag([6e2, 1e1, 1e1]);    %[1e1, 1e1, 1e0, 1e0]
 

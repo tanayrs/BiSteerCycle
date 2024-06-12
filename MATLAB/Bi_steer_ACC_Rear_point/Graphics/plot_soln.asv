@@ -91,9 +91,8 @@ title('lean rate')
 figure(7)
 subplot(3,1,1)
 hold on
-
-plot(time,Vdot,'b');
 plot(time,Vfdot,'r');
+plot(time,Vdot,'b')
 title('$ Vdot $')
 ylabel('acc in m/s2')
 legend('acc front','acc rear');
