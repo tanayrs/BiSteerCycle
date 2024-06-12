@@ -15,6 +15,8 @@ import numpy as np
 
 REAR_PATH = './Python/dead band/RearDeadBandData.csv'
 FRONT_PATH = './Python/dead band/FrontDeadBandData.csv'
+FRONT_SPEED_PATH = './Python/dead band/FrontDeadBandDataSpeed.csv'
+REAR_SPEED_PATH = './Python/dead band/RearDeadBandDataSpeed.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
@@ -28,41 +30,15 @@ FRONT_TIME_DEADBAND_END = 41905
 FRONT_SPEED_DEADBAND_START = -10
 FRONT_SPEED_DEADBAND_END = 15
 
-# Reads Rear Wheel Data from Serial Channel and Stores to CSV #
-def read_from_serial_rear():
-    # Adding Header Row with Columns of CSV #
-    with open(REAR_PATH, mode='w') as sensor_file:
-        sensor_writer = csv.writer(
-                sensor_file, 
-                delimiter=',', 
-                quotechar='"', 
-                quoting=csv.QUOTE_MINIMAL
-                )
-        sensor_writer.writerow(["Time", "Rear Wheel Input", "Rear Wheel Ticks"])
-    
-    # Creating Serial Object for COM Port and Selected Baud Rate #
-    x = serial.Serial()
-    x.port = COM
-    x.baudrate = BAUD
-    x.timeout = 1
-    x.setDTR(False)
-    #x.setRTS(False)
-    x.open()
+FRONT_SPEED_TIME_DEADBAND_START = 59185
+FRONT_SPEED_TIME_DEADBAND_END = 62884
+FRONT_SPEED_DEADBAND_START = -7
+FRONT_SPEED_DEADBAND_END = 11
 
-    # Reading Serial Values and Storing into CSV #
-    while x.isOpen() is True:
-        data = str(x.readline().decode('utf-8')).rstrip()
-        print(data.split(' '))
-        if data != '':
-            with open(REAR_PATH, mode='a') as sensor_file:
-                line = data.split(' ')
-                sensor_writer = csv.writer(
-                        sensor_file, 
-                        delimiter=',', 
-                        quotechar='"', 
-                        quoting=csv.QUOTE_MINIMAL
-                        )
-                sensor_writer.writerow([line[0],line[1],line[2]])
+REAR_SPEED_TIME_DEADBAND_START = 16747
+REAR_SPEED_TIME_DEADBAND_END = 20879
+REAR_SPEED_DEADBAND_START = -9
+REAR_SPEED_DEADBAND_END = 11
 
 # Plotting Sensor Value Readings #
 def plot_from_csv_rear():
@@ -97,42 +73,6 @@ def plot_from_csv_rear():
     # Show the plot
     plt.show()
 
-# Reads Rear Wheel Data from Serial Channel and Stores to CSV #
-def read_from_serial_front():
-    # Adding Header Row with Columns of CSV #
-    with open(FRONT_PATH, mode='w') as sensor_file:
-        sensor_writer = csv.writer(
-                sensor_file, 
-                delimiter=',', 
-                quotechar='"', 
-                quoting=csv.QUOTE_MINIMAL
-                )
-        sensor_writer.writerow(["Time", "Rear Wheel Input", "Rear Wheel Ticks"])
-    
-    # Creating Serial Object for COM Port and Selected Baud Rate #
-    x = serial.Serial()
-    x.port = COM
-    x.baudrate = BAUD
-    x.timeout = 1
-    x.setDTR(False)
-    #x.setRTS(False)
-    x.open()
-
-    # Reading Serial Values and Storing into CSV #
-    while x.isOpen() is True:
-        data = str(x.readline().decode('utf-8')).rstrip()
-        print(data.split(' '))
-        if data != '':
-            with open(FRONT_PATH, mode='a') as sensor_file:
-                line = data.split(' ')
-                sensor_writer = csv.writer(
-                        sensor_file, 
-                        delimiter=',', 
-                        quotechar='"', 
-                        quoting=csv.QUOTE_MINIMAL
-                        )
-                sensor_writer.writerow([line[0],line[1],line[2]])
-
 # Plotting Sensor Value Readings #
 def plot_from_csv_front():
     # Reading CSV into pandas DataFrame #
@@ -166,8 +106,90 @@ def plot_from_csv_front():
     # Show the plot
     plt.show()
 
+def plot_from_csv_front_speed():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(FRONT_SPEED_PATH)
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(3, 1)
+    fig.set_figheight(10)
+    fig.set_figwidth(12)
+
+    # Plot on the first axis
+    axs[0].plot(df['Time'], df['Front Wheel Input'])
+    axs[0].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].set_ylabel('Input Speed')
+    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,0,5,10,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Time'], df['Front Wheel Ticks'])
+    axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[1].set_ylabel('Encoder Ticks')
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[2].plot(df['Time'], df['Front Wheel Speed'])
+    axs[2].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[2].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[2].set_xlabel('Time')
+    axs[2].set_ylabel('Encoder Speed')
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
+def plot_from_csv_rear_speed():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(REAR_SPEED_PATH)
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(3, 1)
+    fig.set_figheight(10)
+    fig.set_figwidth(12)
+
+    # Plot on the first axis
+    axs[0].plot(df['Time'], df['Rear Wheel Input'])
+    axs[0].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].set_ylabel('Input Speed')
+    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Time'], df['Rear Wheel Ticks'])
+    axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[1].set_ylabel('Encoder Ticks')
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[2].plot(df['Time'], df['Rear Wheel Speed'])
+    axs[2].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[2].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[2].set_xlabel('Time')
+    axs[2].set_ylabel('Encoder Speed')
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == '__main__':
     # read_from_serial_rear()
     # plot_from_csv_rear()
     # read_from_serial_front()
-    plot_from_csv_front()
+    # plot_from_csv_front()
+    # plot_from_csv_front_speed()
+    plot_from_csv_rear_speed()

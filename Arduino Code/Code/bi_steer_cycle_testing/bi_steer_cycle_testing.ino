@@ -37,7 +37,7 @@ BNO-055  - NA
 
 
 #define Battery_Voltage 12.0
-#define loopTimeConstant 5000 // In micros // //5000
+#define loopTimeConstant 10000 // In micros // //5000
 #define PWMResolution 4095
 
 
@@ -208,18 +208,18 @@ void setup() {
         // For the deadband testing
         prev_time = millis();
         prev_time_millis = millis();
-        frontWheelInput = -50;
+        rearWheelInput = -50;
 }
 
 void loop(){
         digitalWrite(13,HIGH);
         
         // Sets wheel to an angle
-        // holdwheel(90*sin(millis()*1e-3), 90*sin(millis()*1e-3));
+        //holdwheel(0*sin(millis()*1e-3), 0*sin(millis()*1e-3));
         // holdwheel(0, 90);
 
         /* Updates Encoder Angle and IMU Angle */
-        // calculate_state();
+         calculate_state();
         
         // /* Calculates Drive Input */
         // controller_segway();
@@ -233,11 +233,11 @@ void loop(){
         /* Writes Inputs to Motor */
         writeToMotor();   
 
+        while(loopTimeMicros < loopTimeConstant)
+                delayMicroseconds(50);
+
         // logFeedback();
 
-        //  while(loopTimeMicros < loopTimeConstant)
-        //         delayMicroseconds(50);
-        // loopTimeMicros = 0;
-
+        loopTimeMicros = 0;
         digitalWrite(13,LOW);
 }

@@ -25,25 +25,17 @@ Here are some papers that can be reffered to for the derivation of the motor con
 - Songle Single-channel 5V 30A Relay Module
 
 ## Assembly
-<img title="Front Wheel Assembly" src="Miscellaneous/readme_pictures/front_wheel_assembly.png">
+<img title="Front Wheel Assembly" src="Python/readme_pictures/front_wheel_assembly.png">
 
 Fig: Front Wheel Assembly
 
-<img title="BiSteer Assembly" src="Miscellaneous/readme_pictures/bisteer_assembly.png">
+<img title="BiSteer Assembly" src="Python/readme_pictures/bisteer_assembly.png">
 
 Fig: BiSteer Assembly
 
 **Credits:** Nilay Srivastava, BiSteer Cycle 2023
 
-## Motor Configuration
-**Rear Wheel Motor:**
-Dir = 1, PWM = 0, PPR = , RPM = 450, EncA = 30, EncB = 29
+## Pin Diagram
+<img title="Pin Diagram" src="Python/readme_pictures/pin-diagram.png">
 
-**Rear Steer Motor:**
-Dir = 3, PWM = 2, PPR = , RPM = 102, EncA = 32, EncB = 31
-
-**Front Wheel Motor:**
-Dir = 7, PWM = 6, PPR = , RPM = 450, EncA = 11, EncB = 10
-
-**Front Steer Motor:**
-Dir = 5, PWM = 4, PPR = , RPM = 103, EncA = 9, EncB = 8
+**Credits:** Jia Bhargava, Tanay Srinivasa

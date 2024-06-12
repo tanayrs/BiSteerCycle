@@ -27,7 +27,7 @@ void calculate_state() {
         // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
         //calculate_mpu_angle_kalman();
         // calculate_mpu_angle_compfilter();
-        //calculate_bno_angle();
+        // calculate_bno_angle();
         // calculate_bno_angle_compfilter();
         // calculate_bno_angle_kalman();
 }
@@ -40,23 +40,25 @@ void updateEncoderData() {
         long rearWheelTicks = rearWheelEnc.read();
         long rearSteerTicks = rearSteerEnc.read();
 
-        // For measuring deadband
-        if (millis() - prev_time_millis > 100){
-                Serial.print(millis());
-                Serial.print(",");
-                Serial.print(frontWheelInput);
-                Serial.print(",");        
-                Serial.print(frontWheelTicks);
-                Serial.println("");
-                prev_time_millis = millis();
-        }
-
         // Updating Encoder Data Processor Objects //
         // Reference: void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double steerTicksOffset) //
         frontWheelData.update(frontWheelTicks, frontSteerTicks, 0);
         frontSteerData.update(frontSteerTicks, 0, 0);
         rearWheelData.update(rearWheelTicks, rearSteerTicks, 0);
         rearSteerData.update(rearSteerTicks, 0, 0);
+
+        // For measuring deadband
+        if (millis() - prev_time_millis > 100){
+                Serial.print(millis());
+                Serial.print(",");
+                Serial.print(rearWheelInput);
+                Serial.print(",");        
+                Serial.print(rearWheelTicks);
+                Serial.print(",");
+                Serial.print(rearWheelData.speed());
+                Serial.println("");
+                prev_time_millis = millis();
+        }
 }
 
 /* Finds Pitch From Accelerometer -> Returns in Degrees */
@@ -328,9 +330,9 @@ void holdwheel(double degrees_F, double degrees_R) {
 
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
+        // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
-        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
 }
 
@@ -346,10 +348,9 @@ void motor_calibration(){
 
 // Testing the deadband by varying input with time
 void deadband_test(){  
-        updateEncoderData();
-        if (millis() - prev_time > 200)
-        {
-          frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
+        if (millis() - prev_time > 200) {
+        //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
+        rearWheelInput = rearWheelInput>50?-50:rearWheelInput+1;
           prev_time = millis();
         }  
 }
@@ -507,6 +508,11 @@ void logFeedback() {
         //Serial.println(loopTimeMicros);
         //Serial.print("\n");
 
+        Serial.println(loopTimeMicros);
         if (loopTimeMicros > 5 * loopTimeConstant)
                 Serial.println("ERROR - LOOP TIME EXCEEDED");
+
+
+
+
 }
