@@ -2,7 +2,7 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 12 Jun 2024 11:46 AM
+Last Modified: 12 Jun 2024 11:27 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
@@ -14,11 +14,14 @@ Functions Called in Setup and Loop are Defined in func.ino:
         - void calculate_mpu_angle_compfilter() : Calculate Angles from MPU6050 Sensor using a Complimentary Filter
         - void calculate_mpu_angle_kalman()     : Calculate Angles from MPU6050 Sensor using a Kalman Filter
         - void calculate_bno_angle()            : Calculate Angles from BNO-055 Sensor
+        - void calculate_bno_angle_compfilter() : Calculate Angles from BNO-055 Sensor using a Complimentary Filter
         - void calculate_bno_angle_kalman()     : Calculate Angles from BNO-055 Sensor using a Kalman Filter
         - void controller_segway()              : Controller of Wheel Inputs based on Lean Angle
         - void holdsteering(double degrees_F, double degrees_R): Sets Front and Rear Steering Angle based on Encoder Readings
-        - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings
+        - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings        
         - void writeToMotor()                   : Sets Steer and Drive Speeds to Front and Back Wheels
+        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds
+        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheels by varying input with time
         - void logFeedback()                    : Print / Plot State Vars
 
 **** Motor Configuration ****
@@ -122,7 +125,6 @@ EncoderDataProcessor rearSteerData(steerMotorPPR, 0, false, false, vel_cutoff_fr
 EncoderDataProcessor frontWheelData(wheelMotorPPR, 0, true, true, vel_cutoff_freq, sampling_time);
 EncoderDataProcessor frontSteerData(steerMotorPPR, 0, false, true, vel_cutoff_freq, sampling_time);
 
-// global variables for derivative and integral controllers of wheel and steer motors
 double prev_steer_error_F = 0;
 double prev_steer_error_R = 0;
 double integral_steer_F = 0;
@@ -133,7 +135,7 @@ double prev_wheel_error_R = 0;
 double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
-// Segway Controller gains 
+/* Segway Controller */
 #define Kp_lean 1700
 #define Kd_lean  10
 #define Kd_wheel 0
@@ -182,13 +184,16 @@ double phiRefVel;
 elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
+// For deadband
+int prev_time, prev_time_millis;
 
 /****************** Start of Code ******************/
 
 void setup() {
-        Serial.begin(9600);
+        Serial.begin(115200);
         Serial.println("Starting Serial Print");
-
+        delay(5000);
+        
         //init_IMU();
         //delay(500);
         init_bno();
@@ -199,34 +204,40 @@ void setup() {
         
         /* Setting Encoder Pins to PULLUP and Initialises Ticks */
         startup_routine();
-}
 
+        // For the deadband testing
+        prev_time = millis();
+        prev_time_millis = millis();
+        frontWheelInput = -50;
+}
 
 void loop(){
         digitalWrite(13,HIGH);
         
-        // Sets wheel motor to an angle with encoder readings
+        // Sets wheel to an angle
+        // holdwheel(90*sin(millis()*1e-3), 90*sin(millis()*1e-3));
         // holdwheel(0, 90);
 
-        // Updates Encoder Angle and IMU Angle 
-        calculate_state();
+        /* Updates Encoder Angle and IMU Angle */
+        // calculate_state();
         
-        // Segway mode controller with IMU readings
+        // /* Calculates Drive Input */
         // controller_segway();
         
-        // Sets Steer motor to an angle with encoder readings
-        holdsteering(0,0);
+        // // /* Calculates Steer Input */
+        // holdsteering(0,0);
 
-        // Writes Inputs to Motors
+        // testing deadband
+        deadband_test();
+
+        /* Writes Inputs to Motor */
         writeToMotor();   
 
-        // Prints all relevant variables
-        logFeedback();
+        // logFeedback();
 
-        // Setting loop time to loopTimeConstant
-        while(loopTimeMicros < loopTimeConstant)
-                delayMicroseconds(50);
-        loopTimeMicros = 0;
+        //  while(loopTimeMicros < loopTimeConstant)
+        //         delayMicroseconds(50);
+        // loopTimeMicros = 0;
 
         digitalWrite(13,LOW);
 }

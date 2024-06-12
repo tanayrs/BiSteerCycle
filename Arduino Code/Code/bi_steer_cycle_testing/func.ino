@@ -25,9 +25,10 @@ void startup_routine() {
 void calculate_state() {
         updateEncoderData();
         // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
-        // calculate_mpu_angle_kalman();
+        //calculate_mpu_angle_kalman();
         // calculate_mpu_angle_compfilter();
-        calculate_bno_angle();
+        //calculate_bno_angle();
+        // calculate_bno_angle_compfilter();
         // calculate_bno_angle_kalman();
 }
 
@@ -38,6 +39,17 @@ void updateEncoderData() {
         long frontSteerTicks = frontSteerEnc.read();
         long rearWheelTicks = rearWheelEnc.read();
         long rearSteerTicks = rearSteerEnc.read();
+
+        // For measuring deadband
+        if (millis() - prev_time_millis > 100){
+                Serial.print(millis());
+                Serial.print(",");
+                Serial.print(frontWheelInput);
+                Serial.print(",");        
+                Serial.print(frontWheelTicks);
+                Serial.println("");
+                prev_time_millis = millis();
+        }
 
         // Updating Encoder Data Processor Objects //
         // Reference: void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double steerTicksOffset) //
@@ -120,7 +132,7 @@ void calculate_mpu_angle_compfilter() {
 
 /* Calculate Angles from MPU6050 Sensor using a Kalman Filter */
 void calculate_mpu_angle_kalman() {
-        mpu.getEvent( & a, & g, & temp);
+mpu.getEvent( & a, & g, & temp);
         elapsedTimeIMU = IMUTimeMicros / 1000.0;
         IMUTimeMicros = 0;
         IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
@@ -145,11 +157,37 @@ void calculate_mpu_angle_kalman() {
 void calculate_bno_angle() {
         sensors_event_t event;
         bno.getEvent( & event);
-        bno.getEvent( & event, Adafruit_BNO055::VECTOR_GYROSCOPE);
         previous_roll = roll;
         roll = event.orientation.z;
         phi = roll;
+        bno.getEvent( & event, Adafruit_BNO055::VECTOR_GYROSCOPE);
         phi_dot = event.gyro.x;
+}
+
+/* Calculate Angles from BNO-055 Sensor using a Complimentary Filter */
+void calculate_bno_angle_compfilter() {
+        bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+        bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
+
+        elapsedTimeIMU = IMUTimeMicros / 1000.0;
+        IMUTimeMicros = 0;
+        IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
+
+        ax1 = a.acceleration.x - accelXCorrection;
+        ay1 = a.acceleration.y - accelYCorrection;
+        az1 = a.acceleration.z - accelZCorrection;
+        gx1 = (g.gyro.x - gyroXCorrection) * 180.0 / PI; // Angle in degrees //
+
+        accelAngle = accelero_angle();
+
+        if (elapsedTimeIMU < 50)
+                gyroAngleX = previous_roll + -gx1 * elapsedTimeIMU / 1000;
+        else
+                gyroAngleX = previous_roll;
+        roll = ((IMUFilterConstant * gyroAngleX) + ((1 - IMUFilterConstant) * accelAngle));
+        previous_roll = roll;
+        phi = roll;
+        phi_dot = -gx1;
 }
 
 /* Calculate Angles from BNO-055 Sensor using a Kalman Filter */
@@ -206,23 +244,31 @@ void holdsteering(double degrees_F, double degrees_R) {
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
         
+
         frontSteerInput = 1 * (steer_error_F) + 0.05 * ((steer_error_F - prev_steer_error_F)/dt) + 5*(integral_steer_F)*dt;
         rearSteerInput =  1 * (steer_error_R) + 0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 5*(integral_steer_R)*dt;
 
-        prev_steer_error_F = steer_error_F;
-        prev_steer_error_R = steer_error_R;
 
-        if (steer_error_F < 5*steerMotorPPR/360)  // integral actiates at 5 degrees error
+         prev_steer_error_F = steer_error_F;
+         prev_steer_error_R = steer_error_R;
+
+        if (steer_error_F < 5*steerMotorPPR/360){      // 5 is for degrees can change
           integral_steer_F += steer_error_F;
-        else
-          integral_steer_F = 0; 
-
-        if(steer_error_R < 5*steerMotorPPR/360)
+        }
+        else{
+          integral_steer_F = 0;
+        }
+         
+        if(steer_error_R < 5*steerMotorPPR/360){
           integral_steer_R += steer_error_R;
-        else
+         }
+        else{
           integral_steer_R = 0;
+         }
 
         double acc = 100;
+
+        
         if (frontSteerInput > acc)
                 frontSteerInput = acc;
         if (frontSteerInput < -acc)
@@ -242,6 +288,13 @@ void holdwheel(double degrees_F, double degrees_R) {
 
         double wheel_error_F = -(EncTarget_F - frontWheelEnc.read());
         double wheel_error_R = -(EncTarget_R - rearWheelEnc.read());
+
+        // Serial.print(millis());
+        // Serial.print(" ");
+        // Serial.print(wheel_error_F * 360 / wheelMotorPPR);
+        // Serial.print(" ");
+        // Serial.print(wheel_error_R * 360 / wheelMotorPPR);
+        // Serial.println("");
         
         frontWheelInput = 0.5 * (0.8 * (wheel_error_F) + 0.1 * ((wheel_error_F - prev_wheel_error_F)/dt) + 10*(integral_wheel_F)*dt);
         rearWheelInput = 0.5 * (0.8 * (wheel_error_R) + 0.1 * ((wheel_error_R - prev_wheel_error_R)/dt) + 10*(integral_wheel_R)*dt);
@@ -259,26 +312,46 @@ void holdwheel(double degrees_F, double degrees_R) {
         else
           integral_wheel_R = 0;
 
-        Setting the maximum input to the wheels
-        double acc = 250;
-        if (frontWheelInput > acc)
-                frontWheelInput = acc;
-        if (frontWheelInput < -acc)
-                frontWheelInput = -acc;
-        if (rearWheelInput > acc)
-                rearWheelInput = acc;
-        if (rearWheelInput < -acc)
-                rearWheelInput = -acc;
+        // Setting the maximum input to the wheels
+        // double acc = 100;
+        // if (frontWheelInput > acc)
+        //         frontWheelInput = acc;
+        // if (frontWheelInput < -acc)
+        //         frontWheelInput = -acc;
+        // if (rearWheelInput > acc)
+        //         rearWheelInput = acc;
+        // if (rearWheelInput < -acc)
+        //         rearWheelInput = -acc;
 }
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 
 void writeToMotor() {
-        // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions 
+        // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
         frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
-        frontSteerMotor.setSpeed(frontSteerInput);
-        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // frontSteerMotor.setSpeed(frontSteerInput);
+        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
+}
+
+// motor_calibration in forward and reverse directions
+void motor_calibration(){  
+        // Change to frontWheelInput for front wheel testing
+        rearWheelInput =  100 * sin(millis()*1e-3);
+        Serial.print(millis());
+        Serial.print(" ");
+        Serial.print(rearWheelData.speed());
+        Serial.println("");
+}
+
+// Testing the deadband by varying input with time
+void deadband_test(){  
+        updateEncoderData();
+        if (millis() - prev_time > 200)
+        {
+          frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
+          prev_time = millis();
+        }  
 }
 
 /* Print / Plot State Vars */
