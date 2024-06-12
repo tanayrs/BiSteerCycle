@@ -25,17 +25,17 @@ Here are some papers that can be reffered to for the derivation of the motor con
 - Songle Single-channel 5V 30A Relay Module
 
 ## Assembly
-<img title="Front Wheel Assembly" src="Python/readme_pictures/front_wheel_assembly.png">
+<img title="Front Wheel Assembly" src="readme_pictures/front_wheel_assembly.png">
 
 Fig: Front Wheel Assembly
 
-<img title="BiSteer Assembly" src="Python/readme_pictures/bisteer_assembly.png">
+<img title="BiSteer Assembly" src="readme_pictures/bisteer_assembly.png">
 
 Fig: BiSteer Assembly
 
 **Credits:** Nilay Srivastava, BiSteer Cycle 2023
 
 ## Pin Diagram
-<img title="Pin Diagram" src="Python/readme_pictures/pin-diagram.png">
+<img title="Pin Diagram" src="readme_pictures/pin-diagram.png">
 
 **Credits:** Jia Bhargava, Tanay Srinivasa
