@@ -180,6 +180,9 @@ double phiRefVel;
 elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
+// For deadband
+int prev_time;
+
 /****************** Start of Code ******************/
 
 void setup() {
@@ -196,6 +199,11 @@ void setup() {
         
         /* Setting Encoder Pins to PULLUP and Initialises Ticks */
         startup_routine();
+
+        // For the deadband testing
+        prev_time = millis();
+        rearWheelInput = 0;
+        delay(10000);
 }
 
 void loop(){
@@ -206,7 +214,7 @@ void loop(){
         // holdwheel(0, 90);
 
         /* Updates Encoder Angle and IMU Angle */
-        calculate_state();
+        // calculate_state();
         
         // /* Calculates Drive Input */
         // controller_segway();
@@ -214,18 +222,17 @@ void loop(){
         // // /* Calculates Steer Input */
         // holdsteering(0,0);
 
+        // testing deadband
+        deadband_test();
+
         /* Writes Inputs to Motor */
-        writeToMotor();
-
-
-        /* Prints/Plots State Variables */    
-        plot_wheel_speed();    
+        writeToMotor();   
 
         // logFeedback();
 
-         while(loopTimeMicros < loopTimeConstant)
-                delayMicroseconds(50);
-        loopTimeMicros = 0;
+        //  while(loopTimeMicros < loopTimeConstant)
+        //         delayMicroseconds(50);
+        // loopTimeMicros = 0;
 
         digitalWrite(13,LOW);
 }

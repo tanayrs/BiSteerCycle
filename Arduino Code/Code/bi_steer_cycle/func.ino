@@ -19,7 +19,6 @@ void startup_routine() {
         pinMode(frontSteerEnc1, INPUT_PULLUP);
         pinMode(frontSteerEnc2, INPUT_PULLUP);
 
-
 }
 
 /* Updates Encoder Angle and IMU Angle */
@@ -210,7 +209,6 @@ void controller_segway() {
           int_lean = 0;
         }
 
-
         double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
         double rear_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (rearWheelData.speed())) * (PI / 180);
  
@@ -323,24 +321,41 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
+
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        // frontWheelMotor.setSpeed(frontWheelInput>0?frontWheelInput:(390.0/376)*frontWheelInput);
+        // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
-        // rearWheelMotor.setSpeed(rearWheelInput>0?rearWheelInput:(399.0/381)*rearWheelInput);
-        // rearSteerMotor.setSpeed(rearSteerInput);
-
-        rearWheelInput = 100 * sin(millis()*1e-3);
         rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
 }
 
-/* Print / Plot Wheel Speed */
-void plot_wheel_speed(){
+// motor_calibration in forward and reverse directions
+void motor_calibration(){  
+        // Change to frontWheelInput for front wheel testing
+        rearWheelInput =  100 * sin(millis()*1e-3);
         Serial.print(millis());
         Serial.print(" ");
         Serial.print(rearWheelData.speed());
         Serial.println("");
 }
+
+// Testing the deadband by varying input with time
+void deadband_test(){  
+        if (millis() - prev_time > 500)
+        {
+          rearWheelInput += 1;
+          prev_time = millis();
+        }
+
+        Serial.print(millis());
+        Serial.print(" ");
+        Serial.print(rearWheelInput);
+        Serial.print(" ");
+        Serial.print(rearWheelData.speed());
+        Serial.println("");
+}
+
 
 /* Print / Plot State Vars */
 void logFeedback() {
