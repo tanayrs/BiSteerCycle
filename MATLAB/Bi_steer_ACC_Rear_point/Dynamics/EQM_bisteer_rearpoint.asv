@@ -2,7 +2,7 @@
 %contact point
 
 %creater       : Vishvas Gajera at Ruina LAB IISc
-%Last Modified : 12 Jun 11:18 PM
+%Last Modified : 12 Jun 6:34 PM
 
 
 clc
@@ -19,10 +19,10 @@ syms kf kr positive
 syms    x    y    psi    phi    theta_R    theta_F real
 syms xdot ydot psidot phidot theta_Rdot theta_Fdot real
 
-syms Tr   Tf                         real
-syms V  Vdot vFscalar  Vf Vfdot      real
-syms Nf Nr Nfg Nrg g                 real 
-syms phiddot psiddot                 real
+syms Tr   Tf                 real
+syms V  Vdot vFscalar        real
+syms Nf Nr Nfg Nrg g         real 
+syms phiddot psiddot         real
 
 
 assumeAlso((phi > -pi/2 ) & (phi < pi/2))
@@ -227,7 +227,7 @@ aGrelF     = jacobian(vGrelF,state)*statedot';
 %
 
 aG     = aR + aGrelR;
-%aG1    = aF + aGrelF;
+aG1    = aF + 
 aG     = subs(aG);   %substitute psidot in aG new aG in terms of theta_R F
 aG     = simplify(aG);
 
@@ -253,7 +253,7 @@ alpha   = jacobian(omega,state)*statedot';  % omega cross omega =0
 %}
 
 %linear momentum balance about cg 
-%
+%{
 
 LMB_CG = Tf*f_track + Nf*f_constr + Tr*r_track + Nr*r_constr + Nfg*k + Nrg*k -m*g*k - m*aG;
 
@@ -286,14 +286,12 @@ AMB_R   = simplify(AMB_R);
 %}
 
 %%
-%{
 EQN1 = dot(LMB_CG,a1);
 EQN1 = subs(EQN1);
 %EQN1 = simplifyFraction(EQN1);
 EQN1 = simplify(EQN1);
 
 disp('1 done')
-
 
 %%
 tic
@@ -309,48 +307,41 @@ sol1 = solve([EQN1,EQN2],[Nf,Nr],"ReturnConditions",true);
 Nf = simplify(sol1.Nf);
 Nr = simplify(sol1.Nr);
 
-%}
+
 
 %%
 tic
 EQN4 = dot(AMB_F,a1);
 EQN4 = subs(EQN4);
-%EQN4 = simplifyFraction(EQN4);
-EQN4 = simplify(EQN4,"IgnoreAnalyticConstraints",true,Steps=100);
+EQN4 = simplifyFraction(EQN4);
+EQN4 = simplify(EQN4);
 toc
 disp('4 done')
 %%
 
 
 sol = solve(EQN4,phiddot,'ReturnConditions',true);
-phiddot = subs(sol.phiddot);
-phiddot = simplify(phiddot,'IgnoreAnalyticConstraints',true,Steps=1000);
+phiddot = simplify(sol.phiddot,'IgnoreAnalyticConstraints',true);
+phiddot = simplify(phiddot);
 
 
 %% front rear acc vdot stuff
 %
+syms acc_f real
 
-
-EQN6 = dot(V*r_track,a1) - dot(Vf*f_track,a1);
+EQN6 = dot(Vdot*r_track,a1) - dot(acc_f*f_track,a1);
 EQN6 = simplify(EQN6);
-
-EQN7 = dot(Vdot*r_track,a1) - dot(Vfdot*f_track,a1);
-EQN7 = simplify(EQN7);
-
-Vf    = solve(EQN6,Vf);
-Vfdot = solve(EQN7,Vfdot);
-
-Vf    = simplify(Vf);
-Vfdot = subs(Vfdot);
-Vfdot = simplify(Vfdot,'IgnoreAnalyticConstraints',true,Steps=1000);
+acc_f = solve(EQN6,acc_f);
 
 %}
 
 
-%
+%{
 
+phiddot = subs(phiddot);
+phiddot = simplify(phiddot);
 
-zdot = [xdot,ydot,psidot,phiddot]';
+zdot = [xdot,ydot,psiddot,phiddot]';
 
 
 
@@ -363,8 +354,8 @@ U            = [ Vdot, theta_Fdot, theta_Rdot];
 %%
 
 
-%A_lin = jacobian(dynamics_lin,state_lin);
-%B_lin = jacobian(dynamics_lin,U);
+A_lin = jacobian(dynamics_lin,state_lin);
+B_lin = jacobian(dynamics_lin,U);
 
 %matlabFunction(zdot,'File','lean_heading.m','Optimize',true);
 %matlabFunction(A_lin,'File','A_matrix.m','Optimize',true);
