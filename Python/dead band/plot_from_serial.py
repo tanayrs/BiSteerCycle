@@ -114,7 +114,7 @@ def plot_from_csv_front_speed():
     print(df.describe())
 
     # Plotting Angle vs Time #
-    fig, axs = plt.subplots(3, 1)
+    fig, axs = plt.subplots(2, 1)
     fig.set_figheight(10)
     fig.set_figwidth(12)
 
@@ -124,23 +124,16 @@ def plot_from_csv_front_speed():
     axs[0].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
     axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
     axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed')
+    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-10,-5,0,5,10,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
-    axs[1].plot(df['Time'], df['Front Wheel Ticks'])
+    axs[1].plot(df['Time'], df['Front Wheel Speed'])
     axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
     axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_ylabel('Encoder Ticks')
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[2].plot(df['Time'], df['Front Wheel Speed'])
-    axs[2].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[2].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[2].set_xlabel('Time')
-    axs[2].set_ylabel('Encoder Speed')
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
 
     # Show the plot
     plt.tight_layout()
@@ -154,7 +147,7 @@ def plot_from_csv_rear_speed():
     print(df.describe())
 
     # Plotting Angle vs Time #
-    fig, axs = plt.subplots(3, 1)
+    fig, axs = plt.subplots(2, 1)
     fig.set_figheight(10)
     fig.set_figwidth(12)
 
@@ -164,23 +157,16 @@ def plot_from_csv_rear_speed():
     axs[0].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
     axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
     axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed')
+    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
-    axs[1].plot(df['Time'], df['Rear Wheel Ticks'])
+    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
     axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
     axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_ylabel('Encoder Ticks')
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[2].plot(df['Time'], df['Rear Wheel Speed'])
-    axs[2].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[2].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[2].set_xlabel('Time')
-    axs[2].set_ylabel('Encoder Speed')
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
 
     # Show the plot
     plt.tight_layout()
@@ -191,5 +177,5 @@ if __name__ == '__main__':
     # plot_from_csv_rear()
     # read_from_serial_front()
     # plot_from_csv_front()
-    # plot_from_csv_front_speed()
-    plot_from_csv_rear_speed()
+    plot_from_csv_front_speed()
+    # plot_from_csv_rear_speed()

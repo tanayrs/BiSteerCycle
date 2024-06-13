@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Defining Path to CSV File, Com Port and Baud Rate #
-PATH = 'BNO_Test_Vibrations.csv'
+PATH = './Python/filter testing/SensorData/BNO_Test_Step_8.csv'
 COM = '/dev/cu.usbmodem160229201'
 BAUD = 9600
 
@@ -28,7 +28,7 @@ def read_from_serial():
     while x.isOpen() is True:
         data = x.readline().decode('utf-8')
         print(data)
-        # data = str(x.readline().decode('utf-8')).rstrip()
+        data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
             with open(PATH, mode='a') as sensor_file:
                 line = data.split(' ')
@@ -49,14 +49,15 @@ def plot_from_csv():
     print(df.describe())
 
     # Plotting Angle vs Time #
-    plt.plot(df['Time'],df['Acceleration'])
+    # plt.plot(df['Time'],df['Acceleration'])
     plt.plot(df['Time'],df['Complimentary'])
     plt.plot(df['Time'],df['Kalman'])
 
     plt.xlabel('Time (ms)')
     plt.ylabel('Angle (degrees)')
-    plt.legend(['Accelerometer','Complimentary Filter', 'Kalman Filter'])
-    plt.title('Vibration Test for Complimentary and Kalman Filter')
+    # plt.legend(['Accelerometer','Complimentary Filter', 'Kalman Filter'])
+    plt.legend(['Complimentary Filter', 'Kalman Filter'])
+    plt.title('Step Input Test for Complimentary and Kalman Filter')
     plt.show()
 
 if __name__ == '__main__':

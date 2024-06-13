@@ -67,12 +67,10 @@ void calculate_bno_angle_kalman() {
         phi_dot = g.gyro.x;
 
         // Printing Accelerometer, Complimentary Filter, and Kalman Filter Angles //
-        Serial.print(-acc_angle_x); 
-        Serial.print(" ");
-        Serial.print(event.orientation.z);
-        Serial.print(" ");
-        Serial.print(-kalX); 
-        Serial.println("");
+        Serial.print(millis()); Serial.print(" ");
+        Serial.print(-acc_angle_x); Serial.print(" ");
+        Serial.print(event.orientation.z); Serial.print(" ");
+        Serial.print(-kalX); Serial.println("");
 
 }
 
