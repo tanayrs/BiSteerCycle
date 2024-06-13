@@ -217,12 +217,17 @@ void controller_segway() {
 
         if (prv_sgn_phi != sgn){
           int_lean = 0;
+          Uf = 0;
+          Ur = 0;
         }
 
         double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
         double rear_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (rearWheelData.speed())) * (PI / 180);
  
         prv_sgn_phi = sgn;
+
+        Uf += front_acc*dt;
+        Ur += rear_acc*dt;
         
         if (abs(phi) > 20){
           front_acc = 0;
@@ -230,10 +235,11 @@ void controller_segway() {
           rear_acc = 0;
         }
 
+        
 
 
-        frontWheelInput += front_acc*dt;
-        rearWheelInput += rear_acc*dt;
+        frontWheelInput = round(Uf);
+        rearWheelInput  = round(Ur);
         Serial.print(frontWheelInput);
         Serial.print(" ");
         Serial.println(rearWheelInput);
@@ -242,6 +248,10 @@ void controller_segway() {
 
 void controller_bicycle(double velocity_rear){
         double Vr = velocity_rear;
+
+        double speed_degs_target = (Vr*180)/(PI*r);     // target speed
+
+
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
@@ -343,6 +353,9 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+
+        rearWheelMotor.setSpeed(rearWheelInput);
+
         // rearSteerMotor.setSpeed(rearSteerInput);
 
         // Rear deadband: positive = 9, negative = -7

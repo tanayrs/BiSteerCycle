@@ -63,7 +63,7 @@ double sampling_time = loopTimeConstSec;
 const float Ip = 2e-2; // MoI of body //
 const float lF = 0.1;  // Distance of FW from COM //
 const float lR = 0.1;  // Distance of RW from COM //
-const float m  = 2.54; // Mass of power train //
+const float m  = 2.54; // Mass of the vehicle //
 const float r  = 0.03; // Radius of wheels in m //
 
 
@@ -103,8 +103,8 @@ CytronMD rearWheelMotor(PWM_DIR, rearWheelPWM, rearWheelDir);
 CytronMD rearSteerMotor(PWM_DIR, rearSteerPWM, rearSteerDir);
 CytronMD frontWheelMotor(PWM_DIR, frontWheelPWM, frontWheelDir);
 CytronMD frontSteerMotor(PWM_DIR, frontSteerPWM, frontSteerDir);
-double rearWheelInput; double frontWheelInput;
-double rearSteerInput; double frontSteerInput;
+int rearWheelInput; int frontWheelInput;
+int rearSteerInput; int frontSteerInput;
 
 
 /* Encoder and velocity */
@@ -141,6 +141,9 @@ double integral_wheel_R = 0;
 #define Kd_wheel 0
 #define Ki_lean 0
 double int_lean = 0;
+double Uf = 0;
+double Ur = 0;
+
 
 const float error_cutoff_freq = 20;
 const float fw_kp = 10*PI/180; const float fw_kd = 0.1*PI/180;  
