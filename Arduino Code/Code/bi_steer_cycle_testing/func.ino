@@ -333,8 +333,10 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
-        rearWheelMotor.setSpeed(rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
+
+        // Rear deadband: positive = 9, negative = -7
+        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
 }
 
 // motor_calibration in forward and reverse directions
