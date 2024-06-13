@@ -150,7 +150,7 @@ error = [   -phi,    Vr-V,  -phidot,  theta_Fr-theta_F, theta_Rr-theta_R]';
 
 
 U = K*error;
-
+%{
 if norm(U(2)) > deg2rad(20)
     U(2) = sign(U(2))*deg2rad(20);
 end
@@ -158,7 +158,7 @@ end
 if norm(U(3)) > deg2rad(20)
     U(3) = sign(U(3))*deg2rad(20);
 end
-
+%}
 Vdot = U(1);
 Vfdot = (Vdot*(cos(phi)^2 + tan(theta_F)^2)^(1/2))/(cos(phi)^2 + tan(theta_R)^2)^(1/2);
 

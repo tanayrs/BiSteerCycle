@@ -30,14 +30,14 @@ p.m = m; p.g = g; p.h = h;
 % initial condition
 x0 = 0;
 y0 = 0;
-V0 = 0.01;
+V0 = 0;
 
-psi0 = deg2rad(0);  %heading
-phi0 = deg2rad(-8);  %lean angle
+psi0 = deg2rad(200);  %heading
+phi0 = deg2rad(-30);  %lean angle
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(45);  
-theta_R0 = deg2rad(0);
+theta_F0 = deg2rad(30);  
+theta_R0 = deg2rad(-60);
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';
@@ -55,13 +55,13 @@ R_phi = diag([1e1, 1e1, 1e5]);
 
 ref_V   = [ 0.01,deg2rad(0),deg2rad(0)];
 Q_V = diag([1e4, 1e3, 1e4, 1e0, 1e0]);
-R_V = diag([1e3, 1e2, 1e2]);
+R_V = diag([1e1, 1e2, 1e2]);
 
 
 
-ref_1 = [0.0,deg2rad(45),deg2rad(0)];
-Q_F = diag([1e4, 1e3, 1e4, 1e0, 1e0]);
-R_F = diag([1e4, 1e1, 1e10]);    %[1e1, 1e1, 1e0, 1e0]
+ref_1 = [0.0,deg2rad(30),deg2rad(-60)];
+Q_F = diag([1e4, 1e4, 1e4, 1e0, 1e0]);
+R_F = diag([1e2, 1e1, 1e1]);    %[1e1, 1e1, 1e0, 1e0]
 
 ref_2 = [0.0,deg2rad(89.1),deg2rad(89)];
 %Q_R = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
@@ -168,7 +168,7 @@ therhs = @(t,z) bisteer_3D_rhs(t,z,p);
 fall   = @(t,z) bicycle_fall(t,z,p);
 
 %solving parameters
-start = 0; stop = 10; t = linspace(start,stop,1000000);
+start = 0; stop = 1.88; t = linspace(start,stop,1000000);
 
 %solve ode
 small   = 1e-9;
@@ -186,7 +186,7 @@ plot_soln(soln,start,stop,p)
 tstart = 0;
 tend  = stop;
 save = 0;
-speed = 1;
+speed = 0.1;
 animate_bisteer(soln,tstart,tend,p,speed,save)
 
 %}

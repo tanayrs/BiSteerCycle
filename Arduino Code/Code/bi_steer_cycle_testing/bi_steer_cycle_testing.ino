@@ -103,8 +103,8 @@ CytronMD rearWheelMotor(PWM_DIR, rearWheelPWM, rearWheelDir);
 CytronMD rearSteerMotor(PWM_DIR, rearSteerPWM, rearSteerDir);
 CytronMD frontWheelMotor(PWM_DIR, frontWheelPWM, frontWheelDir);
 CytronMD frontSteerMotor(PWM_DIR, frontSteerPWM, frontSteerDir);
-int rearWheelInput; int frontWheelInput;
-int rearSteerInput; int frontSteerInput;
+double rearWheelInput; double frontWheelInput;
+double rearSteerInput; double frontSteerInput;
 
 
 /* Encoder and velocity */
