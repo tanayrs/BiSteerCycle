@@ -1,4 +1,4 @@
-Time,Acceleration,Complimentary,Kalman
+Time,Acceleration,SFA,Kalman
 165493,-87.66,-85.25,-86.64
 165498,-88.40,-85.25,-86.73
 165504,-88.26,-85.19,-86.78
