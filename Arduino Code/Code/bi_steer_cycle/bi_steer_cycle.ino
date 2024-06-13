@@ -2,19 +2,14 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 12 Jun 2024 11:46 AM
+Last Modified: 13 Jun 2024 11:40 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
         - void calculate_state()                : Updates Encoder Angle and IMU Angle
         - void updateEncoderData()              : Updating Encoder with Current Number of Ticks
-        - float accelero_angle()                : Finds Pitch From Accelerometer -> Returns in Degrees
-        - void init_IMU()                       : MPU 6050 Initialisation and Calibration
         - void init_bno()                       : BNO-055 Initialisation and Calibration
-        - void calculate_mpu_angle_compfilter() : Calculate Angles from MPU6050 Sensor using a Complimentary Filter
-        - void calculate_mpu_angle_kalman()     : Calculate Angles from MPU6050 Sensor using a Kalman Filter
         - void calculate_bno_angle()            : Calculate Angles from BNO-055 Sensor
-        - void calculate_bno_angle_kalman()     : Calculate Angles from BNO-055 Sensor using a Kalman Filter
         - void controller_segway()              : Controller of Wheel Inputs based on Lean Angle
         - void holdsteering(double degrees_F, double degrees_R): Sets Front and Rear Steering Angle based on Encoder Readings
         - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings

@@ -24,11 +24,7 @@ void startup_routine() {
 /* Updates Encoder Angle and IMU Angle */
 void calculate_state() {
         updateEncoderData();
-        // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
-        // calculate_mpu_angle_kalman();
-        // calculate_mpu_angle_compfilter();
         calculate_bno_angle();
-        // calculate_bno_angle_kalman();
 }
 
 /* Updating Encoder with Current Number of Ticks */
@@ -47,44 +43,6 @@ void updateEncoderData() {
         rearSteerData.update(rearSteerTicks, 0, 0);
 }
 
-/* Finds Pitch From Accelerometer -> Returns in Degrees */
-float accelero_angle() {
-        return atan2(ay1, -az1) * 180.0 / PI;
-}
-
-/* MPU 6050 Initialisation and Calibration */
-void init_IMU() {
-        while (!mpu.begin()) {
-                Serial.println("Failed to find MPU6050 chip");
-                delay(500);
-        }
-        mpu.setFilterBandwidth(MPU6050_BAND_44_HZ);
-        mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-        mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
-        Serial.println("MPU6050 Found!");
-
-        int j = 0;
-        while (j < 10) {
-                mpu.getEvent( & a, & g, & temp); // Clearing rubbish values //
-                delay(40);
-                j++;
-                ax1 = a.acceleration.x;
-                ay1 = a.acceleration.y;
-                az1 = a.acceleration.z;
-        }
-
-        mpu.getEvent( & a, & g, & temp);
-        IMUTimeMicros = 0;
-        ax1 = a.acceleration.x - accelXCorrection;
-        ay1 = a.acceleration.y - accelYCorrection;
-        az1 = a.acceleration.z - accelZCorrection;
-        gx1 = g.gyro.x - gyroXCorrection;
-        gy1 = g.gyro.y - gyroYCorrection;
-        gz1 = g.gyro.z - gyroZCorrection;
-
-        previous_roll = accelero_angle();
-}
-
 /* BNO-055 Initialisation and Caliberation */
 void init_bno() {
         if (!bno.begin()) {
@@ -93,52 +51,6 @@ void init_bno() {
                 while (1);
         }
         bno.setExtCrystalUse(true);
-}
-
-/* Calculation of MPU6050 Angle using Complimentary Filter */
-void calculate_mpu_angle_compfilter() {
-        mpu.getEvent( & a, & g, & temp);
-        elapsedTimeIMU = IMUTimeMicros / 1000.0;
-        IMUTimeMicros = 0;
-        IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
-
-        ax1 = a.acceleration.x - accelXCorrection;
-        ay1 = a.acceleration.y - accelYCorrection;
-        az1 = a.acceleration.z - accelZCorrection;
-        gx1 = (g.gyro.x - gyroXCorrection) * 180.0 / PI; // Angle in degrees //
-
-        accelAngle = accelero_angle();
-        if (elapsedTimeIMU < 50)
-                gyroAngleX = previous_roll + -gx1 * elapsedTimeIMU / 1000;
-        else
-                gyroAngleX = previous_roll;
-        roll = ((IMUFilterConstant * gyroAngleX) + ((1 - IMUFilterConstant) * accelAngle));
-        previous_roll = roll;
-        phi = roll;
-        phi_dot = -gx1;
-}
-
-/* Calculate Angles from MPU6050 Sensor using a Kalman Filter */
-void calculate_mpu_angle_kalman() {
-        mpu.getEvent( & a, & g, & temp);
-        elapsedTimeIMU = IMUTimeMicros / 1000.0;
-        IMUTimeMicros = 0;
-        IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
-
-        ax1 = a.acceleration.x - accelXCorrection;
-        ay1 = a.acceleration.y - accelYCorrection;
-        az1 = a.acceleration.z - accelZCorrection;
-        gx1 = (g.gyro.x - gyroXCorrection) * 180.0 / PI; // Angle in degrees //
-
-        accelAngle = accelero_angle();
-        if (elapsedTimeIMU < 50)
-                gyroAngleX = previous_roll + -gx1 * elapsedTimeIMU / 1000;
-        else
-                gyroAngleX = previous_roll;
-        
-        kalRoll = (kalmanX.update(accelero_angle(), gx1));
-        phi = kalRoll;
-        phi_dot = g.gyro.x;
 }
 
 /* Calculate Angles from BNO-055 Sensor */
@@ -150,19 +62,6 @@ void calculate_bno_angle() {
         roll = event.orientation.z;
         phi = roll;
         phi_dot = event.gyro.x;
-}
-
-/* Calculate Angles from BNO-055 Sensor using a Kalman Filter */
-void calculate_bno_angle_kalman() {
-        bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
-        bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        float ax = a.acceleration.x;
-        float ay = a.acceleration.y;
-        float az = a.acceleration.z;
-        float acc_angle_x = 180 * atan2(ay, sqrt(ax*ax + az*az))/PI; 
-        kalRoll = (kalmanX.update(acc_angle_x, g.gyro.x));
-        phi = -(kalRoll);        ///////////////////////////////////////////////////////////////////// correct this ////////////////////////////////////////////
-        phi_dot = -(g.gyro.x);
 }
 
 /* PD Controller For Calculate Front Wheel Acceleration */
@@ -272,7 +171,6 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
-
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions 
         frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);

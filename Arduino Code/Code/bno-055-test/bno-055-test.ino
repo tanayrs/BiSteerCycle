@@ -26,7 +26,9 @@ elapsedMicros IMUTimeMicros;
 double phi, phi_dot;
 
 // Defining Kalman Filter Object //
-KalmanFilter kalmanX(0.005, 0, 0.1);  //(Q_angle, Q_bais, R) //
+// Our Values: 0.005, 0, 0,1 //
+// Library Values: 0.001,0.003,0.03 //
+KalmanFilter kalmanX(0.001, 0.003, 0.03);  //(Q_angle, Q_bais, R) //
 
 /* Calculate Angles from BNO-055 Sensor */
 void calculate_bno_angle() {
