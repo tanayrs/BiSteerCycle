@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Defining Path to CSV File, Com Port and Baud Rate #
-PATH = './Python/filter testing/SensorData/BNO_Test_Step_19.csv'
+PATH = './Python/kalman parameter tuning/SensorData/BNO_Test_Step_19.csv'
 COM = '/dev/cu.usbmodem160229201'
 BAUD = 9600
 
@@ -19,7 +19,7 @@ def read_from_serial():
                 quotechar='"', 
                 quoting=csv.QUOTE_MINIMAL
                 )
-        sensor_writer.writerow(["Time", "Acceleration", "Complimentary", "Kalman"])
+        sensor_writer.writerow(["Time", "Acceleration", "Sensor Fusion Algorithm", "Kalman"])
     
     # Creating Serial Object for COM Port and Selected Baud Rate #
     x = serial.Serial(COM, BAUD, timeout=0.1)
