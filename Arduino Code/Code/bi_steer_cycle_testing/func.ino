@@ -332,7 +332,8 @@ void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
-        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+        rearWheelMotor.setSpeed(rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
 }
 
@@ -350,7 +351,8 @@ void motor_calibration(){
 void deadband_test(){  
         if (millis() - prev_time > 200) {
         //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
-        rearWheelInput = rearWheelInput>50?-50:rearWheelInput+1;
+        if ((rearWheelInput > 50)||(rearWheelInput < -50)) deadband_sign *= -1;
+        rearWheelInput = rearWheelInput+deadband_sign;
           prev_time = millis();
         }  
 }

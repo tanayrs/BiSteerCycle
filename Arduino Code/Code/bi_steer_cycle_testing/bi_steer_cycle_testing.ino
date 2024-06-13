@@ -186,6 +186,7 @@ elapsedMillis runTimeMillis;
 
 // For deadband
 int prev_time, prev_time_millis;
+int deadband_sign;
 
 /****************** Start of Code ******************/
 
@@ -209,6 +210,7 @@ void setup() {
         prev_time = millis();
         prev_time_millis = millis();
         rearWheelInput = -50;
+        deadband_sign = 1;
 }
 
 void loop(){
