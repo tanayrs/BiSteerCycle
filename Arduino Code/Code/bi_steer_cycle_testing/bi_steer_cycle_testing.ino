@@ -136,8 +136,8 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /* Segway Controller */
-#define Kp_lean 1700
-#define Kd_lean  10
+#define Kp_lean 5000
+#define Kd_lean  1000
 #define Kd_wheel 0
 #define Ki_lean 0
 double int_lean = 0;
@@ -196,7 +196,6 @@ int deadband_sign;
 void setup() {
         Serial.begin(115200);
         Serial.println("Starting Serial Print");
-        delay(5000);
         
         //init_IMU();
         //delay(500);
@@ -224,16 +223,16 @@ void loop(){
         // holdwheel(0, 90);
 
         /* Updates Encoder Angle and IMU Angle */
-         calculate_state();
+        calculate_state();
         
         // /* Calculates Drive Input */
-        // controller_segway();
+        controller_segway();
         
         // // /* Calculates Steer Input */
         // holdsteering(0,0);
 
         // testing deadband
-        deadband_test();
+        // deadband_test();
 
         /* Writes Inputs to Motor */
         writeToMotor();   
@@ -241,7 +240,7 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
 
-        // logFeedback();
+        logFeedback();
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

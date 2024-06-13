@@ -28,9 +28,9 @@ void startup_routine() {
 void calculate_state() {
         updateEncoderData();
         // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
-        //calculate_mpu_angle_kalman();
+        // calculate_mpu_angle_kalman();
         // calculate_mpu_angle_compfilter();
-        // calculate_bno_angle();
+        calculate_bno_angle();
         // calculate_bno_angle_compfilter();
         // calculate_bno_angle_kalman();
 }
@@ -51,17 +51,17 @@ void updateEncoderData() {
         rearSteerData.update(rearSteerTicks, 0, 0);
 
         // For measuring deadband
-        if (millis() - prev_time_millis > 100){
-                Serial.print(millis());
-                Serial.print(",");
-                Serial.print(frontWheelInput);
-                Serial.print(",");        
-                Serial.print(frontWheelTicks);
-                Serial.print(",");
-                Serial.print(frontWheelData.speed());
-                Serial.println("");
-                prev_time_millis = millis();
-        }
+        // if (millis() - prev_time_millis > 100){
+        //         Serial.print(millis());
+        //         Serial.print(",");
+        //         Serial.print(frontWheelInput);
+        //         Serial.print(",");        
+        //         Serial.print(frontWheelTicks);
+        //         Serial.print(",");
+        //         Serial.print(frontWheelData.speed());
+        //         Serial.println("");
+        //         prev_time_millis = millis();
+        // }
 }
 
 /* Finds Pitch From Accelerometer -> Returns in Degrees */
@@ -163,10 +163,10 @@ void calculate_bno_angle() {
         sensors_event_t event;
         bno.getEvent( & event);
         previous_roll = roll;
-        roll = event.orientation.z;
+        roll = event.orientation.y;
         phi = roll;
         bno.getEvent( & event, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        phi_dot = event.gyro.x;
+        phi_dot = event.gyro.y;
 }
 
 /* Calculate Angles from BNO-055 Sensor using a Complimentary Filter */
@@ -221,8 +221,8 @@ void controller_segway() {
           Ur = 0;
         }
 
-        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
-        double rear_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 1*Kd_wheel * (rearWheelData.speed())) * (PI / 180);
+        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 0*Ki_lean*int_lean*dt + 0*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
+        double rear_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 0*Ki_lean*int_lean*dt + 0*Kd_wheel * (rearWheelData.speed())) * (PI / 180);
  
         prv_sgn_phi = sgn;
 
@@ -240,9 +240,9 @@ void controller_segway() {
 
         frontWheelInput = round(Uf);
         rearWheelInput  = round(Ur);
-        Serial.print(frontWheelInput);
-        Serial.print(" ");
-        Serial.println(rearWheelInput);
+        // Serial.print(frontWheelInput);
+        // Serial.print(" ");
+        // Serial.println(rearWheelInput);
 }
 
 
@@ -353,9 +353,6 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
-
-        rearWheelMotor.setSpeed(rearWheelInput);
-
         // rearSteerMotor.setSpeed(rearSteerInput);
 
         // Rear deadband: positive = 9, negative = -7
