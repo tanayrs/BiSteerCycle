@@ -53,13 +53,11 @@ def plot_from_csv(path=PATH):
     plt.plot(df['Time'],df['Complimentary'])
     plt.plot(df['Time'],df['Kalman'])
 
-    # plt.xlabel('Time (ms)')
-    # plt.ylabel('Angle (degrees)')
     plt.axhline(y=90,linestyle='--',linewidth=0.75)
     plt.axhline(y=0,linestyle='--',linewidth=0.75)
     plt.xticks([])
     # plt.legend(['Accelerometer','Complimentary Filter', 'Kalman Filter'])
-    # plt.legend(['Complimentary Filter', 'Kalman Filter'])
+    
     # plt.title('Step Input Test for Complimentary and Kalman Filter')
     # plt.show()
 
@@ -67,10 +65,19 @@ if __name__ == '__main__':
     # read_from_serial()
     loop_path = './Python/filter testing/SensorData/BNO_Test_Step_'
     # plot_from_csv()
+    plt.figure(figsize=(15,12))
     for i in range(1,21):
         plt.subplot(4,5,i)
         temp_path = loop_path + str(i) + '.csv'
         print(temp_path)
         plot_from_csv(temp_path)
-    plt.suptitle('Step Response of Complimentary and Kalman Filters')
+        if i%5 == 1:
+            plt.ylabel('Angle (degrees)',fontsize=14)
+        if i > 15:
+            plt.xlabel('Time (ms)',fontsize=14)
+        if i == 5:
+            plt.legend(['SFA', 'Kalman'])
+
+    plt.suptitle('Step Response of Bosch Sensor Fusion Algorithm (SFA) and Kalman Filters',fontsize=18)
+    # plt.tight_layout()
     plt.show()
