@@ -75,7 +75,7 @@ TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3 = 418947
 TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3 = 422848
 TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4 = 440304
 TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4 = 443763
-TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_START = -9
+TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_START = -11
 TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_END = 11
 
 # (7,-11),(-7,10),(6,-11),
@@ -368,15 +368,14 @@ def plot_from_csv_front_speed_triangle_unscaled():
     axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
     axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
     axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_END, color='k', linestyle='--', linewidth=0.5)
     axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
     axs[1].plot(df['Time'], df['Rear Wheel Speed'])
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEEDaxs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
     axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
     axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
     axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
