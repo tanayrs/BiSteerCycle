@@ -232,7 +232,6 @@ void controller_segway() {
 
 
 
-
         frontWheelInput += front_acc*dt;
         rearWheelInput += rear_acc*dt;
         Serial.print(frontWheelInput);
@@ -347,7 +346,7 @@ void writeToMotor() {
         // rearSteerMotor.setSpeed(rearSteerInput);
 
         // Rear deadband: positive = 9, negative = -7
-        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
+        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
 
         // Front deadband: positive = 11, negative = -11
         frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-8:frontWheelInput+7); 
