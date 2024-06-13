@@ -17,8 +17,8 @@ REAR_PATH = './Python/dead band/RearDeadBandData.csv'
 FRONT_PATH = './Python/dead band/FrontDeadBandData.csv'
 FRONT_SPEED_PATH = './Python/dead band/SourceData/FrontDeadBandDataSpeed.csv'
 REAR_SPEED_PATH = './Python/dead band/SourceData/RearDeadBandDataSpeed.csv'
-TRIANGLE_FRONT_SPEED_PATH = './Python/dead band/SourceData/TriangleFrontDeadBandDataSpeed.csv'
-TRIANGLE_REAR_SPEED_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeedUnscaled.csv'
+TRIANGLE_FRONT_SPEED_PATH = './Python/dead band/SourceData/TriangleFrontDeadBandDataSpeedCorrected_5.csv'
+TRIANGLE_REAR_SPEED_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeedCorrected_3.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
@@ -51,6 +51,9 @@ TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3 = 4.6444e+05
 TRIANGLE_REAR_SPEED_DEADBAND_START = -9
 TRIANGLE_REAR_SPEED_DEADBAND_END = 11
 
+418609, 422406
+439720,443305
+461065, 464438
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_1 = 250727
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_1 = 253569
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_2 = 271125
@@ -62,6 +65,18 @@ TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_4 = 3.1726e+05
 TRIANGLE_REAR_SPEED_DEADBAND_UNSCALED_START = -9
 TRIANGLE_REAR_SPEED_DEADBAND_UNSCALED_END = 11
 # 250727, 253569
+
+
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1 = 376882
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1 = 380264
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2 = 397929
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_2 = 401393
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3 = 418947
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3 = 422848
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4 = 440304
+TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4 = 443763
+TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_START = -9
+TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_END = 11
 
 # (7,-11),(-7,10),(6,-11),
 
@@ -213,26 +228,26 @@ def plot_from_csv_rear_speed_triangle():
 
     # Plot on the first axis
     axs[0].plot(df['Time'], df['Rear Wheel Input'])
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    # axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
     axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
     axs[1].plot(df['Time'], df['Rear Wheel Speed'])
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    # axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
     axs[1].set_xlabel('Time (ms)',fontsize=14)
     axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
 
@@ -286,10 +301,147 @@ def plot_from_csv_rear_speed_triangle_unscaled():
     plt.tight_layout()
     plt.show()
 
+def plot_from_csv_rear_speed_triangle_unscaled_corrected():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(TRIANGLE_REAR_SPEED_PATH)
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(10)
+    fig.set_figwidth(12)
+
+    # Plot on the first axis
+    axs[0].plot(df['Time'], df['Rear Wheel Input'])
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+    
+def plot_from_csv_front_speed_triangle_unscaled():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(TRIANGLE_FRONT_SPEED_PATH)
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(10)
+    fig.set_figwidth(12)
+
+    # Plot on the first axis
+    axs[0].plot(df['Time'], df['Rear Wheel Input'])
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
+    # axs[1].axvline(x=TRIANGLE_REAR_SPEEDaxs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
+def plot_from_csv_front_speed_triangle_unscaled_corrected():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(TRIANGLE_FRONT_SPEED_PATH)
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(10)
+    fig.set_figwidth(12)
+
+    # Plot on the first axis
+    axs[0].plot(df['Time'], df['Rear Wheel Input'])
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
+    # axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
+    # axs[1].axvline(x=TRIANGLE_REAR_SPEEDaxs[0].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    # axs[1].axvline(x=TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
 # Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
 def read_from_serial():
     # Adding Header Row with Columns of CSV #
-    with open(TRIANGLE_REAR_SPEED_PATH, mode='w') as sensor_file:
+    with open(TRIANGLE_FRONT_SPEED_PATH, mode='w') as sensor_file:
         sensor_writer = csv.writer(
                 sensor_file, 
                 delimiter=',', 
@@ -307,7 +459,7 @@ def read_from_serial():
         print(data)
         data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
-            with open(REAR_SPEED_PATH, mode='a') as sensor_file:
+            with open(TRIANGLE_FRONT_SPEED_PATH, mode='a') as sensor_file:
                 line = data.split(',')
                 sensor_writer = csv.writer(
                         sensor_file, 
@@ -324,5 +476,8 @@ if __name__ == '__main__':
     # plot_from_csv_front()
     # plot_from_csv_front_speed()
     # plot_from_csv_rear_speed()
-    plot_from_csv_rear_speed_triangle_unscaled()
+    # plot_from_csv_rear_speed_triangle_unscaled()
+    # plot_from_csv_rear_speed_triangle_unscaled_corrected()
+    # plot_from_csv_front_speed_triangle_unscaled()
+    plot_from_csv_front_speed_triangle_unscaled_corrected()
     # read_from_serial()

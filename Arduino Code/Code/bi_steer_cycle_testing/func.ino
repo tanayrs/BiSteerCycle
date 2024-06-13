@@ -20,7 +20,7 @@ void startup_routine() {
         pinMode(frontSteerEnc2, INPUT_PULLUP);
 
         frontWheelInput = 0;
-        reartWheelInput = 0;
+        rearWheelInput = 0;
 
 }
 
@@ -54,11 +54,11 @@ void updateEncoderData() {
         if (millis() - prev_time_millis > 100){
                 Serial.print(millis());
                 Serial.print(",");
-                Serial.print(rearWheelInput);
+                Serial.print(frontWheelInput);
                 Serial.print(",");        
-                Serial.print(rearWheelTicks);
+                Serial.print(frontWheelTicks);
                 Serial.print(",");
-                Serial.print(rearWheelData.speed());
+                Serial.print(frontWheelData.speed());
                 Serial.println("");
                 prev_time_millis = millis();
         }
@@ -248,7 +248,9 @@ void controller_segway() {
 
 void controller_bicycle(double velocity_rear){
         double Vr = velocity_rear;
+
         double speed_degs_target = (Vr*180)/(PI*r);     // target speed
+
 
 }
 
@@ -351,8 +353,16 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
+
         rearWheelMotor.setSpeed(rearWheelInput);
+
         // rearSteerMotor.setSpeed(rearSteerInput);
+
+        // Rear deadband: positive = 9, negative = -7
+        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
+
+        // Front deadband: positive = 11, negative = -11
+        frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-8:frontWheelInput+7); 
 }
 
 // motor_calibration in forward and reverse directions
@@ -369,8 +379,8 @@ void motor_calibration(){
 void deadband_test(){  
         if (millis() - prev_time > 200) {
         //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
-        if ((rearWheelInput > 50)||(rearWheelInput < -50)) deadband_sign *= -1;
-        rearWheelInput = rearWheelInput+deadband_sign;
+        if ((frontWheelInput > 50)||(frontWheelInput < -50)) deadband_sign *= -1;
+        frontWheelInput = frontWheelInput+deadband_sign;
           prev_time = millis();
         }  
 }
