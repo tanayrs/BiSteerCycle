@@ -19,6 +19,9 @@ void startup_routine() {
         pinMode(frontSteerEnc1, INPUT_PULLUP);
         pinMode(frontSteerEnc2, INPUT_PULLUP);
 
+        frontWheelInput = 0;
+        reartWheelInput = 0;
+
 }
 
 /* Updates Encoder Angle and IMU Angle */
@@ -227,11 +230,19 @@ void controller_segway() {
           rear_acc = 0;
         }
 
-        frontWheelInput = front_acc;
-        rearWheelInput = rear_acc;
+
+
+
+        frontWheelInput += front_acc*dt;
+        rearWheelInput += rear_acc*dt;
         Serial.print(frontWheelInput);
         Serial.print(" ");
         Serial.println(rearWheelInput);
+}
+
+
+void controller_bicycle(double velocity_rear){
+        double Vr = velocity_rear
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
@@ -333,7 +344,7 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // frontSteerMotor.setSpeed(frontSteerInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
-        rearWheelMotor.setSpeed(rearWheelInput);
+        rearWheelMotor.setSpeed(round(rearWheelInput));
         // rearSteerMotor.setSpeed(rearSteerInput);
 }
 

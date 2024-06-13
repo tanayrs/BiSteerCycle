@@ -96,7 +96,7 @@ plot(time,Vdot,'b');
 plot(time,Vfdot,'r');
 title('$ \dot{V} $ vs t')
 ylabel('acc in m/s2')
-legend('acc front','acc rear');
+legend('acc rear','acc front');
 %}
 subplot(3,1,2)
 hold on
