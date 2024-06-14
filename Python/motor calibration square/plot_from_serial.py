@@ -31,9 +31,6 @@ def plot_from_csv_rear():
     negative_mean = negative_df['Rear Wheel Speed'].mean()
     print(f'Positive Cycle Mean: {positive_mean}')
     print(f'Negative Cycle Mean: {negative_mean}')
-    print(positive_df.describe())
-    print(negative_df.describe())
-    print(df.describe())
 
     # Plotting Angle vs Time #
     fig, axs = plt.subplots(2, 1)
@@ -65,9 +62,6 @@ def plot_from_csv_front():
     negative_mean = negative_df['Front Wheel Speed'].mean()
     print(f'Positive Cycle Mean: {positive_mean}')
     print(f'Negative Cycle Mean: {negative_mean}')
-    print(positive_df.describe())
-    print(negative_df.describe())
-    print(df.describe())
 
     # Plotting Angle vs Time #
     fig, axs = plt.subplots(2, 1)

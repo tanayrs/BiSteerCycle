@@ -2,12 +2,12 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 12 Jun 2024 11:27 AM
+Last Modified: 13 Jun 2024 11:07 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
         - void calculate_state()                : Updates Encoder Angle and IMU Angle
-        - void updateEncoderData()              : Updating Encoder with Current Number of Ticks
+        - void updateEncoderData()              : Updating Encoder with Current Number of Ticks/ Also used by deadband and motor calibration testing
         - float accelero_angle()                : Finds Pitch From Accelerometer -> Returns in Degrees
         - void init_IMU()                       : MPU 6050 Initialisation and Calibration
         - void init_bno()                       : BNO-055 Initialisation and Calibration
@@ -17,11 +17,13 @@ Functions Called in Setup and Loop are Defined in func.ino:
         - void calculate_bno_angle_compfilter() : Calculate Angles from BNO-055 Sensor using a Complimentary Filter
         - void calculate_bno_angle_kalman()     : Calculate Angles from BNO-055 Sensor using a Kalman Filter
         - void controller_segway()              : Controller of Wheel Inputs based on Lean Angle
+        - void controller_bicycle()             : Bicycle Controller (To be Implemented)
         - void holdsteering(double degrees_F, double degrees_R): Sets Front and Rear Steering Angle based on Encoder Readings
         - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings        
         - void writeToMotor()                   : Sets Steer and Drive Speeds to Front and Back Wheels
-        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds
-        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheels by varying input with time
+        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Sin Input
+        - void motor_calibration_square()       : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Square Input
+        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheels using Triangle Input
         - void logFeedback()                    : Print / Plot State Vars
 
 **** Motor Configuration ****
@@ -187,7 +189,7 @@ double phiRefVel;
 elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
-// For deadband
+// For Deadband and Motor Calibration Square //
 int prev_time, prev_time_millis;
 int deadband_sign, motor_calibration_sign;
 
@@ -205,10 +207,10 @@ void setup() {
         loopTimeMicros = 0;
         runTimeMillis = 0;
         
-        /* Setting Encoder Pins to PULLUP and Initialises Ticks */
+        // Setting Encoder Pins to PULLUP and Initialises Ticks //
         startup_routine();
 
-        // For the deadband testing
+        // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
         prev_time_millis = millis();
         frontWheelInput = 0;
@@ -220,24 +222,24 @@ void setup() {
 void loop(){
         digitalWrite(13,HIGH);
         
-        // Sets wheel to an angle
-        //holdwheel(0*sin(millis()*1e-3), 0*sin(millis()*1e-3));
+        // Sets Wheel to an Angle //
+        // holdwheel(0*sin(millis()*1e-3), 0*sin(millis()*1e-3));
         // holdwheel(0, 90);
 
-        /* Updates Encoder Angle and IMU Angle */
+        // Updates Encoder Angle and IMU Angle //
         calculate_state();
         
-        // /* Calculates Drive Input */
+        // Calculates Drive Input //
         // controller_segway();
         
-        // // /* Calculates Steer Input */
+        // Calculates Steer Input //
         // holdsteering(0,0);
 
-        // testing deadband
+        // Testing Deadband and Motor Calibration //
         // deadband_test();
         motor_calibration_square();
 
-        /* Writes Inputs to Motor */
+        // Writes Inputs to Motor //
         writeToMotor();   
 
         while(loopTimeMicros < loopTimeConstant)

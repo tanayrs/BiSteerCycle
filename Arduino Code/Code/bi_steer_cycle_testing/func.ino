@@ -50,7 +50,7 @@ void updateEncoderData() {
         rearWheelData.update(rearWheelTicks, rearSteerTicks, 0);
         rearSteerData.update(rearSteerTicks, 0, 0);
 
-        // For measuring deadband and motor calibration step test
+        // For Measuring Deadband and Motor Calibration Step //
         if (millis() - prev_time_millis > 25){
                 Serial.print(millis()); Serial.print(",");
                 Serial.print(rearWheelInput); Serial.print(",");        
@@ -105,7 +105,7 @@ void init_IMU() {
 /* BNO-055 Initialisation and Caliberation */
 void init_bno() {
         if (!bno.begin()) {
-                /* Testing BNO-055 Connections */
+                // Testing BNO-055 Connections //
                 Serial.println("No BNO055 detected.\t\t Check your wiring or I2C ADDR");
                 while (1);
         }
@@ -204,7 +204,7 @@ void calculate_bno_angle_kalman() {
         float az = a.acceleration.z;
         float acc_angle_x = 180 * atan2(ay, sqrt(ax*ax + az*az))/PI; 
         kalRoll = (kalmanX.update(acc_angle_x, g.gyro.x));
-        phi = -(kalRoll);        ///////////////////////////////////////////////////////////////////// correct this ////////////////////////////////////////////
+        phi = -(kalRoll);        ///////////////////////////////////////////////////////////////////// correct this /////////////////////////////////////////////////////////////////
         phi_dot = -(g.gyro.x);
 }
 
@@ -215,10 +215,10 @@ void controller_segway() {
         double dt = loopTimeConstant*1e-6;
         int_lean += phi;
 
-        if (prv_sgn_phi != sgn){
-          int_lean = 0;
-          Uf = 0;
-          Ur = 0;
+        if (prv_sgn_phi != sgn) {
+                int_lean = 0;
+                Uf = 0;
+                Ur = 0;
         }
 
         double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 0*Ki_lean*int_lean*dt + 0*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
@@ -229,14 +229,11 @@ void controller_segway() {
         Uf += front_acc*dt;
         Ur += rear_acc*dt;
         
-        if (abs(phi) > 20){
-          front_acc = 0;
-          int_lean = 0;
-          rear_acc = 0;
+        if (abs(phi) > 20) {
+                front_acc = 0;
+                int_lean = 0;
+                rear_acc = 0;
         }
-
-        
-
 
         frontWheelInput = round(Uf);
         rearWheelInput  = round(Ur);
@@ -245,11 +242,11 @@ void controller_segway() {
         // Serial.println(rearWheelInput);
 }
 
-
+/* Bicycle Controller (To be Implemented) */
 void controller_bicycle(double velocity_rear){
         double Vr = velocity_rear;
 
-        double speed_degs_target = (Vr*180)/(PI*r);     // target speed
+        double speed_degs_target = (Vr*180)/(PI*r);     // target speed //
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
@@ -269,34 +266,21 @@ void holdsteering(double degrees_F, double degrees_R) {
         rearSteerInput =  1 * (steer_error_R) + 0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 5*(integral_steer_R)*dt;
 
 
-         prev_steer_error_F = steer_error_F;
-         prev_steer_error_R = steer_error_R;
+        prev_steer_error_F = steer_error_F;
+        prev_steer_error_R = steer_error_R;
 
-        if (steer_error_F < 5*steerMotorPPR/360){      // 5 is for degrees can change
-          integral_steer_F += steer_error_F;
-        }
-        else{
-          integral_steer_F = 0;
-        }
+        if (steer_error_F < 5*steerMotorPPR/360) integral_steer_F += steer_error_F; // 5 is for degrees can change // 
+        else integral_steer_F = 0;
          
-        if(steer_error_R < 5*steerMotorPPR/360){
-          integral_steer_R += steer_error_R;
-         }
-        else{
-          integral_steer_R = 0;
-         }
-
-        double acc = 100;
-
+        if(steer_error_R < 5*steerMotorPPR/360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
         
-        if (frontSteerInput > acc)
-                frontSteerInput = acc;
-        if (frontSteerInput < -acc)
-                frontSteerInput = -acc;
-        if (rearSteerInput > acc)
-                rearSteerInput = acc;
-        if (rearSteerInput < -acc)
-                rearSteerInput = -acc;
+        double acc = 100;
+        
+        if (frontSteerInput > acc)  frontSteerInput = acc;
+        if (frontSteerInput < -acc) frontSteerInput = -acc;
+        if (rearSteerInput > acc)   rearSteerInput = acc;
+        if (rearSteerInput < -acc)  rearSteerInput = -acc;
 }
 
 /* Sets Wheel Angle for Front and Rear Wheels */
@@ -322,17 +306,13 @@ void holdwheel(double degrees_F, double degrees_R) {
         prev_wheel_error_F = wheel_error_F;
         prev_wheel_error_R = wheel_error_R;
 
-        // Integral control is activated at an error within 5 degrees
-        if (wheel_error_F < 5 * wheelMotorPPR/360)     // 5 is for degrees can change
-          integral_wheel_F += wheel_error_F;
-        else
-          integral_wheel_F = 0;
-        if (wheel_error_R < 5 * wheelMotorPPR/360)
-          integral_wheel_R += wheel_error_R;
-        else
-          integral_wheel_R = 0;
+        // Integral Control is Activated at an Error within 5 degrees //
+        if (wheel_error_F < 5 * wheelMotorPPR/360) integral_wheel_F += wheel_error_F; // 5 is for degrees can change //
+        else integral_wheel_F = 0;
+        if (wheel_error_R < 5 * wheelMotorPPR/360) integral_wheel_R += wheel_error_R;
+        else integral_wheel_R = 0;
 
-        // Setting the maximum input to the wheels
+        // Setting the Maximum Input to The Wheels //
         // double acc = 100;
         // if (frontWheelInput > acc)
         //         frontWheelInput = acc;
@@ -345,7 +325,6 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
-
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
@@ -362,9 +341,9 @@ void writeToMotor() {
         else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-7:frontWheelInput+9); 
 }
 
-// motor_calibration in forward and reverse directions
+/* Motor Calibration in Forward and Reverse Directions for Sin Input */
 void motor_calibration(){  
-        // Change to frontWheelInput for front wheel testing
+        // Change to frontWheelInput for Front Wheel Testing //
         rearWheelInput =  100 * sin(millis()*1e-3);
         Serial.print(millis());
         Serial.print(" ");
@@ -372,25 +351,27 @@ void motor_calibration(){
         Serial.println("");
 }
 
-// motor_calibration in forward and reverse directions with step input
+/* Motor Calibration in Forward and Reverse Directions for Square Input */
 void motor_calibration_square(){
-        // Serial.print(prev_time); Serial.print(",");
         if (millis() - prev_time > 5000){
                 motor_calibration_sign *= -1;
                 prev_time = millis();
         }
         
-        // Change to frontWheelInput for front wheel testing
+        // Change to frontWheelInput for Front Wheel Testing //
         rearWheelInput = (motor_calibration_sign > 0)? 150 : -150;
 }
 
-// Testing the deadband by varying input with time
+/* Testing Deadband using Triangle Input */
 void deadband_test(){  
         if (millis() - prev_time > 200) {
-        //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
-        if ((frontWheelInput > 50)||(frontWheelInput < -50)) deadband_sign *= -1;
-        frontWheelInput = frontWheelInput+deadband_sign;
-          prev_time = millis();
+                // Ramp Input //
+                //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
+        
+                // Triangle Input //
+                if ((frontWheelInput > 50)||(frontWheelInput < -50)) deadband_sign *= -1;
+                frontWheelInput = frontWheelInput+deadband_sign;
+                prev_time = millis();
         }  
 }
 
