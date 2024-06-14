@@ -1,4 +1,4 @@
-Time,Front Wheel Input,Front Wheel Ticks,Front Wheel Speed
+Time,Rear Wheel Input,Rear Wheel Ticks,Rear Wheel Speed
 20713,50,6170,-84.93
 20823,50,5758,-84.93
 20933,50,5344,-87.23
@@ -90,7 +90,7 @@ Time,Front Wheel Input,Front Wheel Ticks,Front Wheel Speed
 38625,-50,10953,84.93
 38735,-50,11361,82.64
 38845,-50,11765,82.64
-38955,50,12154,48.20
+38955,50,12154,48.2
 39597,50,9841,-87.23
 39707,50,9428,-87.23
 39817,50,9014,-87.23
