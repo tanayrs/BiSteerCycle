@@ -2,7 +2,7 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 13 Jun 2024 11:07 AM
+Last Modified: 14 Jun 2024 10:29 PM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks

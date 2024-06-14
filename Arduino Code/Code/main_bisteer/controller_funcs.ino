@@ -32,6 +32,9 @@ void controller_segway() {
         // Serial.println(rearWheelInput);
 }
 
+/****************************************************************************************************************************************************************************************************/
+
+
 /* Bicycle Controller (To be Implemented) */
 void controller_rear_speed(double velocity_rear){
         double Vr = velocity_rear;
@@ -52,6 +55,10 @@ void controller_rear_speed(double velocity_rear){
         //Serial.println(speed_deg_target);
 
 }
+
+
+/****************************************************************************************************************************************************************************************************/
+
 
 void controller_front_speed(double velocity_front){
         
@@ -75,6 +82,7 @@ void controller_front_speed(double velocity_front){
 
 }
 
+/****************************************************************************************************************************************************************************************************/
 
 void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
       double Vr = rear_speed;
@@ -105,7 +113,7 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
 
 
 
-
+/****************************************************************************************************************************************************************************************************/
 
 
 
@@ -150,6 +158,11 @@ void holdwheel(double degrees_F, double degrees_R) {
         //         rearWheelInput = -acc;
 }
 
+
+/****************************************************************************************************************************************************************************************************/
+
+
+
 void holdsteering(double degrees_F, double degrees_R) {
         int sgnF = constrain(degrees_F, -1, 1);
 
@@ -183,6 +196,8 @@ void holdsteering(double degrees_F, double degrees_R) {
         if (rearSteerInput < -acc)  rearSteerInput = -acc;
 }
 
+/****************************************************************************************************************************************************************************************************/
+
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
@@ -203,4 +218,4 @@ void writeToMotor() {
 }
 
 
-
+/****************************************************************************************************************************************************************************************************/
