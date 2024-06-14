@@ -211,7 +211,8 @@ void setup() {
         // For the deadband testing
         prev_time = millis();
         prev_time_millis = millis();
-        frontWheelInput = -50;
+        frontWheelInput = 0;
+        rearWheelInput = 0;
         deadband_sign = 1;
         motor_calibration_sign = -1;
 }
@@ -227,13 +228,14 @@ void loop(){
         calculate_state();
         
         // /* Calculates Drive Input */
-        controller_segway();
+        // controller_segway();
         
         // // /* Calculates Steer Input */
         // holdsteering(0,0);
 
         // testing deadband
         // deadband_test();
+        motor_calibration_square();
 
         /* Writes Inputs to Motor */
         writeToMotor();   
@@ -241,7 +243,7 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
 
-        logFeedback();
+        // logFeedback();
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

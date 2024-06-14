@@ -30,7 +30,7 @@ void calculate_state() {
         // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
         // calculate_mpu_angle_kalman();
         // calculate_mpu_angle_compfilter();
-        calculate_bno_angle();
+        // calculate_bno_angle();
         // calculate_bno_angle_compfilter();
         // calculate_bno_angle_kalman();
 }
@@ -50,18 +50,18 @@ void updateEncoderData() {
         rearWheelData.update(rearWheelTicks, rearSteerTicks, 0);
         rearSteerData.update(rearSteerTicks, 0, 0);
 
-        // For measuring deadband
-        // if (millis() - prev_time_millis > 100){
-        //         Serial.print(millis());
-        //         Serial.print(",");
-        //         Serial.print(frontWheelInput);
-        //         Serial.print(",");        
-        //         Serial.print(frontWheelTicks);
-        //         Serial.print(",");
-        //         Serial.print(frontWheelData.speed());
-        //         Serial.println("");
-        //         prev_time_millis = millis();
-        // }
+        // For measuring deadband and motor calibration step test
+        if (millis() - prev_time_millis > 25){
+                Serial.print(millis()); Serial.print(",");
+                Serial.print(rearWheelInput); Serial.print(",");        
+                Serial.print(rearWheelTicks); Serial.print(",");
+                Serial.print(rearWheelData.speed());
+                // Serial.print(frontWheelInput); Serial.print(",");        
+                // Serial.print(frontWheelTicks); Serial.print(",");
+                // Serial.print(frontWheelData.speed());
+                Serial.println("");
+                prev_time_millis = millis();
+        }
 }
 
 /* Finds Pitch From Accelerometer -> Returns in Degrees */
@@ -250,8 +250,6 @@ void controller_bicycle(double velocity_rear){
         double Vr = velocity_rear;
 
         double speed_degs_target = (Vr*180)/(PI*r);     // target speed
-
-
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
@@ -355,11 +353,13 @@ void writeToMotor() {
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
 
-        // Rear deadband: positive = 9, negative = -7
-        rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
+        // Rear deadband: positive = 9, negative = -7 //
+        if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
+        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
 
-        // Front deadband: positive = 11, negative = -11
-        frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-8:frontWheelInput+7); 
+        // Front deadband: positive = 11, negative = -11 //
+        if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
+        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-7:frontWheelInput+9); 
 }
 
 // motor_calibration in forward and reverse directions
@@ -373,12 +373,15 @@ void motor_calibration(){
 }
 
 // motor_calibration in forward and reverse directions with step input
-void motor_calibration_step(){
-        if (millis() - prev_time > 2000)
+void motor_calibration_square(){
+        // Serial.print(prev_time); Serial.print(",");
+        if (millis() - prev_time > 5000){
                 motor_calibration_sign *= -1;
+                prev_time = millis();
+        }
         
         // Change to frontWheelInput for front wheel testing
-        rearWheelInput = (motor_calibration_sign > 0) ? 50 : 0;
+        rearWheelInput = (motor_calibration_sign > 0)? 50 : -50;
 }
 
 // Testing the deadband by varying input with time
