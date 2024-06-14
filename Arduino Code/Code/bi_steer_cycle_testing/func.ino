@@ -387,6 +387,12 @@ void deadband_test(){
         }  
 }
 
+/* Finding Maximum Input Value Corresponding to Max Motor Speed */
+void max_input_speed(){
+        frontWheelInput += 10;
+        Serial.print(frontWheelInput); Serial.print(" "); Serial.println(frontWheelData.speed());
+}
+
 /* Print / Plot State Vars */
 void logFeedback() {
         // Serial.println("FWPos, RWPos, FSPos, RSPos");
