@@ -13,8 +13,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-# REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
-REAR_PATH = './Python/motor calibration square/SourceData/temp.csv'
+REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
 FRONT_PATH = './Python/motor calibration square/SourceData/FrontMotorCalibrationSquare150.csv'
 
 COM = '/dev/cu.usbmodem160464801'
