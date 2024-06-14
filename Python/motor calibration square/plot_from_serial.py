@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare50.csv'
+REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
 FRONT_PATH = './Python/motor calibration square/SourceData/FrontMotorCalibrationSquare150.csv'
 
 COM = '/dev/cu.usbmodem160464801'
@@ -98,7 +98,7 @@ def read_from_serial_rear():
                 quoting=csv.QUOTE_MINIMAL
                 )
         # sensor_writer.writerow(['Time','Rear Wheel Input','Rear Wheel Ticks','Rear Wheel Speed'])
-        sensor_writer.writerow(['Time','Front Wheel Input','Front Wheel Ticks','Front Wheel Speed'])
+        sensor_writer.writerow(['Time','Rear Wheel Input','Rear Wheel Ticks','Rear Wheel Speed'])
     
     # Creating Serial Object for COM Port and Selected Baud Rate #
     x = serial.Serial(COM, BAUD, timeout=0.1)
