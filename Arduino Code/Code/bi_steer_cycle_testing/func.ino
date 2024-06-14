@@ -381,7 +381,7 @@ void motor_calibration_square(){
         }
         
         // Change to frontWheelInput for front wheel testing
-        rearWheelInput = (motor_calibration_sign > 0)? 50 : -50;
+        rearWheelInput = (motor_calibration_sign > 0)? 150 : -150;
 }
 
 // Testing the deadband by varying input with time
