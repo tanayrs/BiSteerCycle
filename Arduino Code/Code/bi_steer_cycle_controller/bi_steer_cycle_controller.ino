@@ -116,7 +116,7 @@ const int rearWheelEnc1 = 30; const int rearWheelEnc2 = 29;
 const int rearSteerEnc1 = 32; const int rearSteerEnc2 = 31;
 const int frontWheelEnc1 = 11; const int frontWheelEnc2 = 10;
 const int frontSteerEnc1 = 9; const int frontSteerEnc2 = 8;
-Encoder rearWheelEnc(rearWheelEnc1, rearWheelEnc2);
+Encoder rearWheelEnc(rearWheelEnc1, rearWheelEnc2);      //. Reversed on 14 june on both wheel
 Encoder rearSteerEnc(rearSteerEnc2, rearSteerEnc1);     // Reversed to correct the orientation of the wheel angle //
 Encoder frontWheelEnc(frontWheelEnc1, frontWheelEnc2);
 Encoder frontSteerEnc(frontSteerEnc2, frontSteerEnc1);  // Reversed to correct the orientation of the wheel angle //
@@ -147,7 +147,10 @@ double Uf = 0;
 double Ur = 0;
 
 /* cycle controller */
-double prev_speed_error = 0;
+double prev_speed_error_rear = 0;
+double prev_speed_error_front = 0;
+double int_speed_error_front = 0;
+double int_speed_error_rear  = 0;
 
 
 const float error_cutoff_freq = 20;
@@ -230,26 +233,30 @@ void loop(){
         // holdwheel(0, 90);
 
         // Updates Encoder Angle and IMU Angle //
-        calculate_state();
+        calculate_state();   
         
         // Calculates Drive Input //
-        // controller_segway();
+        // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
-        // holdsteering(0,0);
+         //holdsteering(60*sin(millis()*1e-3),0);     // takes front rear steer in degrees
 
         // Testing Deadband and Motor Calibration //
         // deadband_test();
         //motor_calibration_square();
-        controller_bicycle(0.1);
+        //controller_bicycle(0.48);
+         controller_bicycle(0.48);
+        //  controller_rear_speed(0.48);
+        // controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
         writeToMotor();   
 
         while(loopTimeMicros < loopTimeConstant)
-                delayMicroseconds(50);
+                delayMicroseconds(10);
 
-        logFeedback();
+        //logFeedback();
+        Serial.print(rearWheelData.speed()); Serial.print(" "); Serial.println(frontWheelData.speed());
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

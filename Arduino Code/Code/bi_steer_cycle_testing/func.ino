@@ -51,17 +51,17 @@ void updateEncoderData() {
         rearSteerData.update(rearSteerTicks, 0, 0);
 
         // For Measuring Deadband and Motor Calibration Step //
-        if (millis() - prev_time_millis > 25){
-                Serial.print(millis()); Serial.print(",");
-                Serial.print(rearWheelInput); Serial.print(",");        
-                Serial.print(rearWheelTicks); Serial.print(",");
-                Serial.print(rearWheelData.speed());
-                // Serial.print(frontWheelInput); Serial.print(",");        
-                // Serial.print(frontWheelTicks); Serial.print(",");
-                // Serial.print(frontWheelData.speed());
-                Serial.println("");
-                prev_time_millis = millis();
-        }
+        // if (millis() - prev_time_millis > 25){
+        //         Serial.print(millis()); Serial.print(",");
+        //         Serial.print(rearWheelInput); Serial.print(",");        
+        //         Serial.print(rearWheelTicks); Serial.print(",");
+        //         Serial.print(rearWheelData.speed());
+        //         // Serial.print(frontWheelInput); Serial.print(",");        
+        //         // Serial.print(frontWheelTicks); Serial.print(",");
+        //         // Serial.print(frontWheelData.speed());
+        //         Serial.println("");
+        //         prev_time_millis = millis();
+        // }
 }
 
 /* Finds Pitch From Accelerometer -> Returns in Degrees */
@@ -245,8 +245,20 @@ void controller_segway() {
 /* Bicycle Controller (To be Implemented) */
 void controller_bicycle(double velocity_rear){
         double Vr = velocity_rear;
+        double Vf = velocity_rear*1;
 
-        double speed_degs_target = (Vr*180)/(PI*r);     // target speed //
+        long double dt = loopTimeConstant * 1e-6;
+
+        double speed_deg_target = (Vr*180)/(PI*r);     // target speed //
+
+        double speed_error = (speed_deg_target - rearWheelData.speed());
+
+        double rear_wheel_inp = 0.1*(speed_error) + 0.01*(speed_error - prev_speed_error)/dt;    //PD loop for controling speed
+
+        prev_speed_error = speed_error;
+
+        rearWheelInput = rear_wheel_inp;
+
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
