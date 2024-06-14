@@ -13,7 +13,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
+# REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
+REAR_PATH = './Python/motor calibration square/SourceData/temp.csv'
 FRONT_PATH = './Python/motor calibration square/SourceData/FrontMotorCalibrationSquare150.csv'
 
 COM = '/dev/cu.usbmodem160464801'
@@ -146,5 +147,5 @@ def read_from_serial_front():
 if __name__ == '__main__':
     # read_from_serial_rear()
     # read_from_serial_front()
-    # plot_from_csv_rear()
-    plot_from_csv_front()
+    plot_from_csv_rear()
+    # plot_from_csv_front()
