@@ -372,6 +372,15 @@ void motor_calibration(){
         Serial.println("");
 }
 
+// motor_calibration in forward and reverse directions with step input
+void motor_calibration_step(){
+        if (millis() - prev_time > 2000)
+                motor_calibration_sign *= -1;
+        
+        // Change to frontWheelInput for front wheel testing
+        rearWheelInput = (motor_calibration_sign > 0) ? 50 : 0;
+}
+
 // Testing the deadband by varying input with time
 void deadband_test(){  
         if (millis() - prev_time > 200) {

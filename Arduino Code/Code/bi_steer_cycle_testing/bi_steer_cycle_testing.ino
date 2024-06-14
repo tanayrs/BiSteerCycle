@@ -189,7 +189,7 @@ elapsedMillis runTimeMillis;
 
 // For deadband
 int prev_time, prev_time_millis;
-int deadband_sign;
+int deadband_sign, motor_calibration_sign;
 
 /****************** Start of Code ******************/
 
@@ -213,6 +213,7 @@ void setup() {
         prev_time_millis = millis();
         frontWheelInput = -50;
         deadband_sign = 1;
+        motor_calibration_sign = -1;
 }
 
 void loop(){
