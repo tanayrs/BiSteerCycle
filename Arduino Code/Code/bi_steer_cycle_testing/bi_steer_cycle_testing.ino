@@ -212,6 +212,7 @@ void setup() {
         
         // Setting Encoder Pins to PULLUP and Initialises Ticks //
         startup_routine();
+        analogWriteResolution(12);
 
         // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
@@ -241,7 +242,9 @@ void loop(){
         // Testing Deadband and Motor Calibration //
         // deadband_test();
         //motor_calibration_square();
-        controller_bicycle(0.1);
+        // controller_bicycle(0.1);
+
+        max_input_speed();
 
         // Writes Inputs to Motor //
         writeToMotor();   
@@ -249,7 +252,7 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
 
-        logFeedback();
+        // logFeedback();
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

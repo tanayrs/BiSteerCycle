@@ -389,7 +389,10 @@ void deadband_test(){
 
 /* Finding Maximum Input Value Corresponding to Max Motor Speed */
 void max_input_speed(){
-        frontWheelInput += 10;
+        if (millis() - prev_time > 100){
+                frontWheelInput += 10;
+                prev_time = millis();
+        }
         Serial.print(frontWheelInput); Serial.print(" "); Serial.println(frontWheelData.speed());
 }
 

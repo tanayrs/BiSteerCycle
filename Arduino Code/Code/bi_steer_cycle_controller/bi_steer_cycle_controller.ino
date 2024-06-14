@@ -215,6 +215,7 @@ void setup() {
         
         // Setting Encoder Pins to PULLUP and Initialises Ticks //
         startup_routine();
+        analogWriteResolution(12);
 
         // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
@@ -239,15 +240,15 @@ void loop(){
         // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
-         //holdsteering(60*sin(millis()*1e-3),0);     // takes front rear steer in degrees
+         //holdsteering(0,0);     // takes front rear steer in degrees
 
         // Testing Deadband and Motor Calibration //
         // deadband_test();
         //motor_calibration_square();
         //controller_bicycle(0.48);
          controller_bicycle(0.48);
-        //  controller_rear_speed(0.48);
-        // controller_front_speed(0.48);
+         //controller_rear_speed(0.48);
+         //controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
         writeToMotor();   
@@ -256,7 +257,9 @@ void loop(){
                 delayMicroseconds(10);
 
         //logFeedback();
-        Serial.print(rearWheelData.speed()); Serial.print(" "); Serial.println(frontWheelData.speed());
+        Serial.print(rearWheelData.speed()); 
+        Serial.print(" "); 
+        Serial.println(frontWheelData.speed());
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

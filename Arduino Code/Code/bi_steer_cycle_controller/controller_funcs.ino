@@ -43,7 +43,7 @@ void controller_rear_speed(double velocity_rear){
 
         int_speed_error_rear += speed_error;
 
-        double rear_wheel_inp = 0.5*(speed_error) - 0.0015*(speed_error - prev_speed_error_rear)/dt + 1*(int_speed_error_rear)*dt ;    //PD loop for controling speed. //Kp 0.07
+        double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_rear = speed_error;
 
@@ -65,7 +65,7 @@ void controller_front_speed(double velocity_front){
 
         int_speed_error_front += speed_error;
 
-        double front_wheel_inp = 0.5*(speed_error) - 0.0015*(speed_error - prev_speed_error_front)/dt + 1*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+        double front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_front = speed_error;
 
@@ -88,6 +88,12 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
       double Vf = Vr*(sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
 
       double theta_F_target = 8*phi;
+      double sgn = constrain(theta_F,-1,1);
+
+      if (abs(theta_F_target) > 60){
+        theta_F_target = sgn*60;
+      }
+
       controller_rear_speed(Vr);
       controller_front_speed(Vf);
       holdsteering(theta_F_target,0);
@@ -156,8 +162,8 @@ void holdsteering(double degrees_F, double degrees_R) {
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
         
 
-        frontSteerInput = 1 * (steer_error_F) + 0.05 * ((steer_error_F - prev_steer_error_F)/dt) + 5*(integral_steer_F)*dt;
-        rearSteerInput =  1 * (steer_error_R) + 0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 5*(integral_steer_R)*dt;
+        frontSteerInput = 10 * (steer_error_F) + 10*0.05 * ((steer_error_F - prev_steer_error_F)/dt) + 50*(integral_steer_F)*dt;
+        rearSteerInput =  10 * (steer_error_R) + 10*0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 50*(integral_steer_R)*dt;
 
 
         prev_steer_error_F = steer_error_F;
@@ -169,7 +175,7 @@ void holdsteering(double degrees_F, double degrees_R) {
         if(steer_error_R < 5*steerMotorPPR/360) integral_steer_R += steer_error_R;
         else integral_steer_R = 0;
         
-        double acc = 100;
+        double acc = 3000;
         
         if (frontSteerInput > acc)  frontSteerInput = acc;
         if (frontSteerInput < -acc) frontSteerInput = -acc;
