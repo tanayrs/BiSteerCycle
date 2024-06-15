@@ -45,14 +45,33 @@ void controller_rear_speed(double velocity_rear){
         double speed_error = (speed_deg_target - rearWheelData.speed());
 
         int_speed_error_rear += speed_error;
+        int_speed_error_rear = constrain(int_speed_error_rear,-5000,5000);    // limiting integral error // integral windup
 
-        double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt ;    //PD loop for controling speed. //Kp 0.07
+       /*
+        double rear_wheel_inp = 0;
+
+        if (speed_error < 30){
+           rear_wheel_inp = 0.5*(speed_error) + 0.0002*(speed_error - prev_speed_error_rear)/dt + 10*(int_speed_error_rear)*dt;
+        }
+        else{
+           rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        }
+        */
+          
+
+        double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        
+        
+    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_rear = speed_error;
 
+        rear_wheel_inp = constrain(rear_wheel_inp,-4095,4095);
+
         rearWheelInput = rear_wheel_inp;
 
-        //Serial.println(speed_deg_target);
+      
+        //Serial.println(speed_error);
 
 }
 
@@ -71,14 +90,17 @@ void controller_front_speed(double velocity_front){
         double speed_error = (speed_deg_target - frontWheelData.speed());
 
         int_speed_error_front += speed_error;
+        int_speed_error_front = constrain(int_speed_error_front,-5000,5000);
 
         double front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_front = speed_error;
 
+        front_wheel_inp = constrain(front_wheel_inp,-4095,4095);
+
         frontWheelInput = front_wheel_inp;
 
-        //Serial.println(speed_deg_target);
+        //Serial.println(int_speed_error_front);
 
 }
 

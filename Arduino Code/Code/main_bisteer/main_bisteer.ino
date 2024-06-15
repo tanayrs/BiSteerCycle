@@ -85,7 +85,8 @@ void loop(){
         // Testing Deadband and Motor Calibration //
         // deadband_test();
         //motor_calibration_square();
-        //controller_bicycle(0.48);
+        
+
          controller_bicycle(0.48);
          //controller_rear_speed(0.48);
          //controller_front_speed(0.48);
@@ -97,9 +98,9 @@ void loop(){
                 delayMicroseconds(10);
 
         //logFeedback();
-        Serial.print(rearWheelData.speed()); 
-        Serial.print(" "); 
-        Serial.println(frontWheelData.speed());
+        //Serial.print(rearWheelData.speed()); 
+        //Serial.print(" "); 
+        //Serial.println(frontWheelData.speed());
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);
