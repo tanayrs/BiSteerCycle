@@ -13,6 +13,7 @@
 #include <KalmanFilter.h> // Repo: https://github.com/jarzebski/Arduino-KalmanFilter/tree/master //
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
+#include <iostream>
 
 /****************** Declaring GLobal Variables ******************/
 
@@ -111,6 +112,15 @@ double prev_speed_error_rear = 0;
 double prev_speed_error_front = 0;
 double int_speed_error_front = 0;
 double int_speed_error_rear  = 0;
+
+float prev_PWPF_front = 0; 
+float prev_PWPF_rear  = 0;
+
+
+// PWPF parameters
+const float Um = 1;    
+
+// Initialize previous output state
 
 
 const float error_cutoff_freq = 20;

@@ -29,6 +29,39 @@ void startup_routine() {
 
 /* Sets Steering Angle for Front and Rear Wheels */
 
+float* PWPF(float controlSignal, float Uon, float Uoff, float prev_output) {
+        static float result[2];
+        float PWPF_output = prev_output;
+          
+        if (controlSignal > Uon) {
+            PWPF_output = 1;
+        } else if (controlSignal < -Uon) {
+            PWPF_output = -1;
+        } else if (prev_output > 0) {
+            if (controlSignal < Uoff) {
+                PWPF_output = 0;
+            } else {
+                PWPF_output = prev_output;
+            }
+        } else if (prev_output < 0) {
+            if (controlSignal > -Uoff) {
+                PWPF_output = 0;
+            } else {
+                PWPF_output = prev_output;
+            }
+        } else {
+            PWPF_output = prev_output;
+        }
+        
+        // Update the previous output state
+        prev_output = PWPF_output;
+
+        result[0] = PWPF_output;
+        result[1] = prev_output; 
+        
+        
+        return result;
+}
 
 
 

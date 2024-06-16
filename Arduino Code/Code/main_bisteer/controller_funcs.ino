@@ -45,21 +45,27 @@ void controller_rear_speed(double velocity_rear){
         double speed_error = (speed_deg_target - rearWheelData.speed());
 
         int_speed_error_rear += speed_error;
-        int_speed_error_rear = constrain(int_speed_error_rear,-5000,5000);    // limiting integral error // integral windup
+        int_speed_error_rear = constrain(int_speed_error_rear,-3000,3000);    // limiting integral error // integral windup
 
-       /*
+        float* PWPF_result = PWPF(speed_error,50,30,prev_PWPF_rear);     // pwpf(error,uon,uoff,prev)
+        float U = PWPF_result[0];
+        prev_PWPF_rear = PWPF_result[1];
+
+      
         double rear_wheel_inp = 0;
 
-        if (speed_error < 30){
-           rear_wheel_inp = 0.5*(speed_error) + 0.0002*(speed_error - prev_speed_error_rear)/dt + 10*(int_speed_error_rear)*dt;
+        if (U == 0){
+          rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+          
         }
         else{
-           rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
-        }
-        */
-          
 
-        double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+          rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        }
+      
+      
+
+        //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
         
         
     //PD loop for controling speed. //Kp 0.07
@@ -70,7 +76,10 @@ void controller_rear_speed(double velocity_rear){
 
         rearWheelInput = rear_wheel_inp;
 
-      
+        // Serial.print(U);
+        // Serial.print(" ");
+        // Serial.println(prev_PWPF_rear);
+        Serial.println(rearWheelData.speed());
         //Serial.println(speed_error);
 
 }
