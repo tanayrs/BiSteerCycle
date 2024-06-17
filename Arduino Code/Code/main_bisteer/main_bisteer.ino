@@ -87,20 +87,22 @@ void loop(){
         //motor_calibration_square();
         
 
-         //controller_bicycle(0.48);
+         controller_bicycle(0.48);
          //controller_rear_speed(0.48);
          //controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
-        writeToMotor();   
+        writeToMotor(); 
+        //frontWheelMotor.setSpeed(210);  
 
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(10);
 
         //logFeedback();
-        //Serial.print(rearWheelData.speed()); 
+        //Serial.println(rearWheelData.speed()); 
         //Serial.print(" "); 
-        Serial.println(frontWheelData.speed());
+        //Serial.println(frontWheelData.speed());
+        Serial.println(phi);
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

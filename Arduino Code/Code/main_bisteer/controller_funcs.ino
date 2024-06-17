@@ -32,6 +32,36 @@ void controller_segway() {
         // Serial.println(rearWheelInput);
 }
 
+/******************************************************************************************************************************************************************************************************/
+void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
+      double Vr = rear_speed;
+
+      
+      
+      double phi_rad = phi*(PI/180);
+      double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
+      double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
+
+      double Vf = Vr*(sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+
+      double theta_F_target = 8*phi - 0.8*phi_dot;
+      
+
+      if (abs(theta_F_target) > 45){
+        theta_F_target = sgn(theta_F_target)*45;
+      }
+
+      controller_rear_speed(Vr);
+      controller_front_speed(Vf);
+      if (abs(phi) > 7.5){
+        frontWheelInput = 0;
+        rearWheelInput = 0;
+      }
+
+      holdsteering(theta_F_target,0);
+}   
+
+
 /****************************************************************************************************************************************************************************************************/
 
 
@@ -47,15 +77,17 @@ void controller_rear_speed(double velocity_rear){
         int_speed_error_rear += speed_error;
         int_speed_error_rear = constrain(int_speed_error_rear,-3000,3000);    // limiting integral error // integral windup
 
-        float* PWPF_result = PWPF(speed_error,50,30,prev_PWPF_rear);     // pwpf(error,uon,uoff,prev)
+        float* PWPF_result = PWPF(speed_error,50,-7.5,prev_PWPF_rear);     // pwpf(error,uon,uoff,prev)
         float U = PWPF_result[0];
         prev_PWPF_rear = PWPF_result[1];
 
       
         double rear_wheel_inp = 0;
 
-        if (U == 0) rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
-        else rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        if (U == 0) 
+                rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        else 
+                rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
         //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
         
@@ -71,7 +103,7 @@ void controller_rear_speed(double velocity_rear){
         // Serial.print(U);
         // Serial.print(" ");
         // Serial.println(prev_PWPF_rear);
-        Serial.println(rearWheelData.speed());
+        //Serial.println(rearWheelData.speed());
         //Serial.println(speed_error);
 
 }
@@ -91,9 +123,24 @@ void controller_front_speed(double velocity_front){
         double speed_error = (speed_deg_target - frontWheelData.speed());
 
         int_speed_error_front += speed_error;
-        int_speed_error_front = constrain(int_speed_error_front,-5000,5000);
+        int_speed_error_front = constrain(int_speed_error_front,-3000,3000);
 
-        double front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+        float* PWPF_result = PWPF(speed_error,50,-7.5,prev_PWPF_front);     // pwpf(error,uon,uoff,prev)
+        float U = PWPF_result[0];
+        prev_PWPF_front = PWPF_result[1];
+
+        double front_wheel_inp = 0;
+        if (U == 0) 
+                front_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+        else
+                front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+
+        prev_speed_error_front = speed_error;
+
+        
+
+
+        //double front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_front = speed_error;
 
@@ -107,28 +154,6 @@ void controller_front_speed(double velocity_front){
 
 /****************************************************************************************************************************************************************************************************/
 
-void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
-      double Vr = rear_speed;
-
-      
-      
-      double phi_rad = phi*(PI/180);
-      double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
-      double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
-
-      double Vf = Vr*(sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
-
-      double theta_F_target = 8*phi;
-      double sgn = constrain(theta_F,-1,1);
-
-      if (abs(theta_F_target) > 60){
-        theta_F_target = sgn*60;
-      }
-
-      controller_rear_speed(Vr);
-      controller_front_speed(Vf);
-      holdsteering(theta_F_target,0);
-}   
 
 /****************************************************************************************************************************************************************************************************/
 
@@ -225,11 +250,11 @@ void writeToMotor() {
 
         // Rear deadband: positive = 9, negative = -7 //
         if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-7:rearWheelInput+9); 
+        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-143:rearWheelInput+150); 
 
         // Front deadband: positive = 11, negative = -11 //
         if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-7:frontWheelInput+9); 
+        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-180:frontWheelInput+210); 
 }
 
 

@@ -39,6 +39,8 @@ const float r  = 0.03; // Radius of wheels in m //
 #define accelYCorrection -0.1106
 #define accelZCorrection -1.6547
 
+#define phi_offset 2.5
+
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
 float gx1, gy1, gz1;

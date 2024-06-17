@@ -23,17 +23,18 @@ phidot = z(6);
 theta_F = z(7);
 theta_R = z(8);
 
-target_F = -(8*phi + 0.8*phidot);
-error    = target_F - theta_F;
+target = -(8*phi + 0.8*phidot);
+error_F    = target - theta_F;
+error_R    = target - theta_R; 
 
-theta_Rdot = -5*(error);
-theta_Fdot = 10*(error);
+theta_Rdot = -2*(error_R);
+theta_Fdot = 10*(error_F);
 disp(dt)
 
 Vdot = 0;
 Vfdot = 0;
 
-prev_error = error;
+%prev_error = error;
 prev_t = t;
 
 

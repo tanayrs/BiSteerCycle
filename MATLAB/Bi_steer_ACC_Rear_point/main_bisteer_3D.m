@@ -30,10 +30,10 @@ p.m = m; p.g = g; p.h = h;
 % initial condition
 x0 = 0;
 y0 = 0;
-V0 = 1;
+V0 = 0.8;
 
 psi0 = deg2rad(50);  %heading
-phi0 = deg2rad(30);  %lean angle  -30
+phi0 = deg2rad(15);  %lean angle  -30
 phidot0 = 0; %lean rate
 
 theta_F0 = deg2rad(0);  %30
@@ -168,7 +168,7 @@ therhs = @(t,z) bisteer_3D_rhs(t,z,p);
 fall   = @(t,z) bicycle_fall(t,z,p);
 
 %solving parameters
-start = 0; stop = 5; t = linspace(start,stop,1000000);
+start = 0; stop = 10; t = linspace(start,stop,1000000);
 
 %solve ode
 small   = 1e-9;
@@ -186,7 +186,7 @@ plot_soln(soln,start,stop,p)
 tstart = 0;
 tend  = stop;
 save = 0;
-speed = 0.05;
+speed = 0.1;
 animate_bisteer(soln,tstart,tend,p,speed,save)
 
 %}

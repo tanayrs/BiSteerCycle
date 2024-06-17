@@ -129,15 +129,15 @@ while t1<tend
     theta_R = z(8);
     %theta_F = deg2rad(30);
 
-    Vf    = Vr*(sqrt((cos(phi)^2 + tan(theta_F)^2))/(cos(phi^2)+ tan(theta_R)^2));
+    Vf    = Vr*(sqrt((cos(phi)^2 + tan(theta_F)^2))/(cos(phi^2)+ the));
 
 
     %%
 
     lr = lr + Vr*dt;
     lf = lf + Vf*dt;
-    rot_R = 0.3*lr/R;
-    rot_F = 0.3*lf/R;
+    rot_R = lr/R;
+    rot_F = lf/R;
 
 
 
@@ -152,8 +152,8 @@ while t1<tend
     sprokR1_1     = rot_y(sprokR1,rot_R);
     sprokR2_1     = rot_y(sprokR2,rot_R);
 
-    sprokF1_1     = rot_y(sprokF1,rot_F);
-    sprokF2_1     = rot_y(sprokF2,rot_F);
+    sprokF1_1     = rot_y(sprokR1,rot_F);
+    sprokF2_1     = rot_y(sprokR2,rot_F);
 
 
 
@@ -162,8 +162,8 @@ while t1<tend
     sprokeR1_2    = lean_head(theta_R,phi,psi,sprokR1_1);
     sprokeR2_2    = lean_head(theta_R,phi,psi,sprokR2_1);
 
-    sprokeF1_2    = lean_head(theta_F,phi,psi,sprokF1_1);
-    sprokeF2_2    = lean_head(theta_F,phi,psi,sprokF2_1);
+    sprokeF1_2    = lean_head(theta_R,phi,psi,sprokF1_1);
+    sprokeF2_2    = lean_head(theta_R,phi,psi,sprokF2_1);
 
 
     wheel_R1      = lean_head(theta_R,phi,psi,wheel_R);
@@ -249,7 +249,7 @@ while t1<tend
     
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    zlim([0,delta_z]);
+    zlim([-0.1,-0.1+delta_z]);
 
     xlabel('x');
     ylabel('y');
