@@ -54,21 +54,13 @@ void controller_rear_speed(double velocity_rear){
       
         double rear_wheel_inp = 0;
 
-        if (U == 0){
-          rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
-          
-        }
-        else{
-
-          rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
-        }
-      
-      
+        if (U == 0) rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+        else rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
         //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
         
         
-    //PD loop for controling speed. //Kp 0.07
+        // PD loop for controling speed. // Kp 0.07
 
         prev_speed_error_rear = speed_error;
 
@@ -136,17 +128,9 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
       controller_rear_speed(Vr);
       controller_front_speed(Vf);
       holdsteering(theta_F_target,0);
-
-
-
-
 }   
 
-
-
 /****************************************************************************************************************************************************************************************************/
-
-
 
 /* Sets Wheel Angle for Front and Rear Wheels */
 void holdwheel(double degrees_F, double degrees_R) {
