@@ -15,12 +15,7 @@ BNO-055  - NA
 
 void calculate_state() {
         updateEncoderData();
-        // Choose Between MPU-Complimentary Filter, MPU-Kalman Filter,  BNO, BNO-Complimentary Filter, BNO-Kalman Filter //
-        // calculate_mpu_angle_kalman();
-        // calculate_mpu_angle_compfilter();
-         calculate_bno_angle();
-        // calculate_bno_angle_compfilter();
-        // calculate_bno_angle_kalman();
+        calculate_bno_angle();
 }
 
 /* Updating Encoder with Current Number of Ticks */
@@ -37,19 +32,6 @@ void updateEncoderData() {
         frontSteerData.update(frontSteerTicks, 0, 0);
         rearWheelData.update(rearWheelTicks, rearSteerTicks, 0);
         rearSteerData.update(rearSteerTicks, 0, 0);
-
-        // For Measuring Deadband and Motor Calibration Step //
-        // if (millis() - prev_time_millis > 25){
-        //         Serial.print(millis()); Serial.print(",");
-        //         Serial.print(rearWheelInput); Serial.print(",");        
-        //         Serial.print(rearWheelTicks); Serial.print(",");
-        //         Serial.print(rearWheelData.speed());
-        //         // Serial.print(frontWheelInput); Serial.print(",");        
-        //         // Serial.print(frontWheelTicks); Serial.print(",");
-        //         // Serial.print(frontWheelData.speed());
-        //         Serial.println("");
-        //         prev_time_millis = millis();
-        // }
 }
 
 /* BNO-055 Initialisation and Caliberation */
@@ -61,7 +43,6 @@ void init_bno() {
         }
         bno.setExtCrystalUse(true);
 }
-
 
 /* Calculate Angles from BNO-055 Sensor */
 void calculate_bno_angle() {

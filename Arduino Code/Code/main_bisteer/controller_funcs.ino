@@ -27,45 +27,38 @@ void controller_segway() {
 
         frontWheelInput = round(Uf);
         rearWheelInput  = round(Ur);
-        // Serial.print(frontWheelInput);
-        // Serial.print(" ");
-        // Serial.println(rearWheelInput);
 }
 
 /******************************************************************************************************************************************************************************************************/
 void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
-      double Vr = rear_speed;
+        double Vr = rear_speed;
 
-      
-      
-      double phi_rad = phi*(PI/180);
-      double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
-      double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
+        double phi_rad = phi*(PI/180);
+        double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
+        double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
 
-      double Vf = Vr*(sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+        double Vf = Vr*(sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
 
-      double theta_F_target = 8*phi - 0.8*phi_dot;
-      
+        double theta_F_target = 8*phi - 0.8*phi_dot;
 
-      if (abs(theta_F_target) > 45){
-        theta_F_target = sgn(theta_F_target)*45;
-      }
 
-      controller_rear_speed(Vr);
-      controller_front_speed(Vf);
-      if (abs(phi) > 7.5){
-        frontWheelInput = 0;
-        rearWheelInput = 0;
-      }
+        if (abs(theta_F_target) > 45){
+                theta_F_target = sgn(theta_F_target)*45;
+        }
 
-      holdsteering(theta_F_target,0);
+        controller_rear_speed(Vr);
+        controller_front_speed(Vf);
+        if (abs(phi) > 7.5){
+                frontWheelInput = 0;
+                rearWheelInput = 0;
+        }
+
+        holdsteering(theta_F_target,0);
 }   
-
 
 /****************************************************************************************************************************************************************************************************/
 
-
-/* Bicycle Controller (To be Implemented) */
+/* Bicycle Controller for Rear Wheel */
 void controller_rear_speed(double velocity_rear){
         double Vr = velocity_rear;
         long double dt = loopTimeConstant * 1e-6;
@@ -81,7 +74,7 @@ void controller_rear_speed(double velocity_rear){
         float U = PWPF_result[0];
         prev_PWPF_rear = PWPF_result[1];
 
-      
+
         double rear_wheel_inp = 0;
 
         if (U == 0) 
@@ -90,8 +83,8 @@ void controller_rear_speed(double velocity_rear){
                 rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
         //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
-        
-        
+
+
         // PD loop for controling speed. // Kp 0.07
 
         prev_speed_error_rear = speed_error;
@@ -105,7 +98,6 @@ void controller_rear_speed(double velocity_rear){
         // Serial.println(prev_PWPF_rear);
         //Serial.println(rearWheelData.speed());
         //Serial.println(speed_error);
-
 }
 
 
@@ -113,7 +105,6 @@ void controller_rear_speed(double velocity_rear){
 
 
 void controller_front_speed(double velocity_front){
-        
         double Vf = velocity_front;
 
         long double dt = loopTimeConstant * 1e-6;
@@ -137,23 +128,12 @@ void controller_front_speed(double velocity_front){
 
         prev_speed_error_front = speed_error;
 
-        
-
-
-        //double front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
-
         prev_speed_error_front = speed_error;
 
         front_wheel_inp = constrain(front_wheel_inp,-4095,4095);
 
         frontWheelInput = front_wheel_inp;
-
-        //Serial.println(int_speed_error_front);
-
 }
-
-/****************************************************************************************************************************************************************************************************/
-
 
 /****************************************************************************************************************************************************************************************************/
 
@@ -166,13 +146,6 @@ void holdwheel(double degrees_F, double degrees_R) {
 
         double wheel_error_F = -(EncTarget_F - frontWheelEnc.read());
         double wheel_error_R = -(EncTarget_R - rearWheelEnc.read());
-
-        // Serial.print(millis());
-        // Serial.print(" ");
-        // Serial.print(wheel_error_F * 360 / wheelMotorPPR);
-        // Serial.print(" ");
-        // Serial.print(wheel_error_R * 360 / wheelMotorPPR);
-        // Serial.println("");
         
         frontWheelInput = 0.5 * (0.8 * (wheel_error_F) + 0.1 * ((wheel_error_F - prev_wheel_error_F)/dt) + 10*(integral_wheel_F)*dt);
         rearWheelInput = 0.5 * (0.8 * (wheel_error_R) + 0.1 * ((wheel_error_R - prev_wheel_error_R)/dt) + 10*(integral_wheel_R)*dt);
@@ -198,11 +171,7 @@ void holdwheel(double degrees_F, double degrees_R) {
         //         rearWheelInput = -acc;
 }
 
-
 /****************************************************************************************************************************************************************************************************/
-
-
-
 void holdsteering(double degrees_F, double degrees_R) {
         int sgnF = constrain(degrees_F, -1, 1);
 
@@ -217,7 +186,6 @@ void holdsteering(double degrees_F, double degrees_R) {
 
         frontSteerInput = 10 * (steer_error_F) + 10*0.05 * ((steer_error_F - prev_steer_error_F)/dt) + 50*(integral_steer_F)*dt;
         rearSteerInput =  10 * (steer_error_R) + 10*0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 50*(integral_steer_R)*dt;
-
 
         prev_steer_error_F = steer_error_F;
         prev_steer_error_R = steer_error_R;
@@ -241,12 +209,8 @@ void holdsteering(double degrees_F, double degrees_R) {
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        //frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         frontSteerMotor.setSpeed(frontSteerInput);
-        // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         rearSteerMotor.setSpeed(rearSteerInput);
-
-        
 
         // Rear deadband: positive = 9, negative = -7 //
         if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);

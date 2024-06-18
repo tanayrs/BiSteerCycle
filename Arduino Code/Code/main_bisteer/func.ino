@@ -57,8 +57,6 @@ float* PWPF(float controlSignal, float Uon, float Uoff, float prev_output) {
         return result;
 }
 
-
 int sgn(double val){
-
-  return val>0?1:-1;
+        return val>0?1:-1;
 }
