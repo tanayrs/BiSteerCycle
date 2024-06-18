@@ -32,11 +32,11 @@ x0 = 0;
 y0 = 0;
 V0 = 1;
 
-psi0 = deg2rad(0);  %heading
-phi0 = deg2rad(20);  %lean angle  -30
+psi0 = deg2rad(50);  %heading
+phi0 = deg2rad(10);  %lean angle  -30
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(0);  %30
+theta_F0 = deg2rad(89.999);  %30
 theta_R0 = deg2rad(0); %60
  
 
@@ -59,9 +59,9 @@ R_V = diag([1e1, 1e2, 1e2]);
 
 
 
-ref_1 = [0.0,deg2rad(89.999),deg2rad(89.999)];
+ref_1 = [0.0,deg2rad(30),deg2rad(-60)];
 Q_F = diag([1e4, 1e3, 1e4, 1e0, 1e0]);
-R_F = diag([1e1, 1e10, 1e10]);    %[1e1, 1e1, 1e0, 1e0]
+R_F = diag([1e1, 1e1, 1e1]);    %[1e1, 1e1, 1e0, 1e0]
 
 ref_2 = [0.0,deg2rad(89.1),deg2rad(89)];
 %Q_R = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
@@ -186,7 +186,7 @@ plot_soln(soln,start,stop,p)
 tstart = 0;
 tend  = stop;
 save = 0;
-speed = 1;
+speed = 0.1;
 animate_bisteer(soln,tstart,tend,p,speed,save)
 
 %}

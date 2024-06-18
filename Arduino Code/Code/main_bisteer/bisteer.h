@@ -39,7 +39,7 @@ const float r  = 0.03; // Radius of wheels in m //
 #define accelYCorrection -0.1106
 #define accelZCorrection -1.6547
 
-#define phi_offset 2.5
+#define phi_offset 6.5
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -101,8 +101,8 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /* Segway Controller */
-#define Kp_lean 5000
-#define Kd_lean  1000
+#define Kp_lean 800
+#define Kd_lean 400
 #define Kd_wheel 0
 #define Ki_lean 0
 double int_lean = 0;
@@ -141,7 +141,7 @@ double vel_rs_kp = 0.1*PI/180;  double vel_rs_ki = 10*PI/180; double vel_rs_kff 
 
 /* State and control variables */
 double phi, phi_dot;
-double prv_sgn_phi = 0;
+int prv_sgn_phi = 0;
 
 /* Trajectory Variables */
 double delF = 0;        // In degrees //

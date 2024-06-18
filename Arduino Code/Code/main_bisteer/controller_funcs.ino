@@ -1,27 +1,33 @@
 /* PD Controller For Calculate Front Wheel Acceleration */
 void controller_segway() {
         holdsteering(0,0);
-        double sgn = constrain(phi,-1,1);
+        int sgn1 = sgn(phi);
         double dt = loopTimeConstant*1e-6;
-        int_lean += phi;
 
-        if (prv_sgn_phi != sgn) {
+        if (abs(phi<10)){
+                int_lean += phi;
+        }
+        
+
+        if (prv_sgn_phi != sgn1) {
                 int_lean = 0;
                 Uf = 0;
                 Ur = 0;
         }
 
-        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 0*Ki_lean*int_lean*dt + 0*Kd_wheel * (frontWheelData.speed())) * (PI / 180);
-        double rear_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 0*Ki_lean*int_lean*dt + 0*Kd_wheel * (rearWheelData.speed())) * (PI / 180);
+        int_lean = constrain(int_lean,-10,10);
+
+        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 0*Kd_wheel * (frontWheelData.speed()));
+        double rear_acc =  (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + 1*Ki_lean*int_lean*dt + 0*Kd_wheel * (rearWheelData.speed()));
  
-        prv_sgn_phi = sgn;
+        prv_sgn_phi = sgn1;
 
         Uf += front_acc*dt;
         Ur += rear_acc*dt;
         
         if (abs(phi) > 20) {
-                front_acc = 0;
-                int_lean = 0;
+                Uf = 0;
+                Ur = 0;
                 rear_acc = 0;
         }
 
@@ -214,7 +220,7 @@ void writeToMotor() {
 
         // Rear deadband: positive = 9, negative = -7 //
         if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-143:rearWheelInput+150); 
+        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-158:rearWheelInput+165);   // -143 +150
 
         // Front deadband: positive = 11, negative = -11 //
         if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);

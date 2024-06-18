@@ -27,7 +27,7 @@ target = -(8*phi + 0.8*phidot);
 error_F    = target - theta_F;
 error_R    = target - theta_R; 
 
-theta_Rdot = -2*(error_R);
+theta_Rdot = -4*(error_F);
 theta_Fdot = 10*(error_F);
 disp(dt)
 

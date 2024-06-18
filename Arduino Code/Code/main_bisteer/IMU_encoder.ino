@@ -52,5 +52,5 @@ void calculate_bno_angle() {
         roll = event.orientation.z;
         phi = roll - phi_offset;
         bno.getEvent( & event, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        phi_dot = event.gyro.x;
+        phi_dot = -event.gyro.x;
 }

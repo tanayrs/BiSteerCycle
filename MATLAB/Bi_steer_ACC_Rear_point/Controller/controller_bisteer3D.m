@@ -175,7 +175,7 @@ theta_Rdot = U(3);%0.5*sin(t);
 
 %{\
 if t >=0 && t <=1
-    theta_Fdot = bang_bang_smoothing(0,1,t,theta_Fdot);
+    %theta_Fdot = bang_bang_smoothing(0,1,t,theta_Fdot);
 end
 
 

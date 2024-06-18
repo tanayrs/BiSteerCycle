@@ -27,6 +27,14 @@ sprokR2.x = linspace(-R,R,10);
 sprokR2.y = zeros(1,10);
 sprokR2.z = R*ones(1,10);
 
+sprokR3.x  = -cos(pi/4)*linspace(-R,R,10);
+sprokR3.y  = zeros(1,10);
+sprokR3.z  = linspace(R*(1-cos(pi/4)),R*(1+cos(pi/4)),10);
+
+sprokR4.x  = cos(-pi/4)*linspace(-R,R,10);
+sprokR4.y  = zeros(1,10);
+sprokR4.z  = linspace(R*(1-cos(pi/4)),R*(1+cos(pi/4)),10);
+
 sprokF1.x  = zeros(1,10);
 sprokF1.y  = zeros(1,10);
 sprokF1.z  = linspace(0,2*R,10);
@@ -34,6 +42,14 @@ sprokF1.z  = linspace(0,2*R,10);
 sprokF2.x = linspace(-R,R,10);
 sprokF2.y = zeros(1,10);
 sprokF2.z = R*ones(1,10);
+
+sprokF3.x  = -cos(pi/4)*linspace(-R,R,10);
+sprokF3.y  = zeros(1,10);
+sprokF3.z  = linspace(R*(1-cos(pi/4)),R*(1+cos(pi/4)),10);
+
+sprokF4.x  = cos(-pi/4)*linspace(-R,R,10);
+sprokF4.y  = zeros(1,10);
+sprokF4.z  = linspace(R*(1-cos(pi/4)),R*(1+cos(pi/4)),10);
 
 
 
@@ -46,15 +62,24 @@ frame.bar.x = linspace(0,(df+dr),10)';
 frame.bar.y = zeros(10,1);
 frame.bar.z = h*ones(10,1);
 
+frame.bar_20.x = linspace(0,0.5*(df+dr),10)';
+frame.bar_20.y = zeros(10,1);
+frame.bar_20.z = linspace(2.3*R,h,10)';
+
 
 wheel_R = wheel;
 wheel_F = wheel;
-wheel_F.x = wheel_F.x + (df+dr);
+%wheel_F.x = wheel_F.x + (df+dr);
 
 
 frame.rod_R = frame.rod;
 frame.rod_F = frame.rod;
+frame.rod_F.z = linspace(R,1.1*h,10)';
 frame.rod_F.x = frame.rod.x + (df+dr);
+
+frame.handle.x = zeros(5,1);
+frame.handle.y = linspace(-R,R,5)';
+frame.handle.z = 1.1*h*ones(5,1);
 
 %{
 
@@ -129,15 +154,19 @@ while t1<tend
     theta_R = z(8);
     %theta_F = deg2rad(30);
 
-    Vf    = Vr*(sqrt((cos(phi)^2 + tan(theta_F)^2))/(cos(phi^2)+ the));
+    if theta_F == theta_R
+        Vf = Vr
+
+    Vf    = Vr*(sqrt((cos(phi)^2 + tan(theta_F)^2))/(cos(phi^2)+ tan(theta_R)^2));
+    %Vf = Vr;
 
 
     %%
 
     lr = lr + Vr*dt;
     lf = lf + Vf*dt;
-    rot_R = lr/R;
-    rot_F = lf/R;
+    rot_R = 0.5*lr/R;
+    rot_F = 0.5*lf/R;
 
 
 
@@ -151,9 +180,14 @@ while t1<tend
 
     sprokR1_1     = rot_y(sprokR1,rot_R);
     sprokR2_1     = rot_y(sprokR2,rot_R);
+    sprokR3_1     = rot_y(sprokR3,rot_R);
+    sprokR4_1     = rot_y(sprokR4,rot_R);
 
-    sprokF1_1     = rot_y(sprokR1,rot_F);
-    sprokF2_1     = rot_y(sprokR2,rot_F);
+
+    sprokF1_1     = rot_y(sprokF1,rot_F);
+    sprokF2_1     = rot_y(sprokF2,rot_F);
+    sprokF3_1     = rot_y(sprokF3,rot_F);
+    sprokF4_1     = rot_y(sprokF4,rot_F);
 
 
 
@@ -161,29 +195,46 @@ while t1<tend
 
     sprokeR1_2    = lean_head(theta_R,phi,psi,sprokR1_1);
     sprokeR2_2    = lean_head(theta_R,phi,psi,sprokR2_1);
+    sprokeR3_2    = lean_head(theta_R,phi,psi,sprokR3_1);
+    sprokeR4_2    = lean_head(theta_R,phi,psi,sprokR4_1);
 
-    sprokeF1_2    = lean_head(theta_R,phi,psi,sprokF1_1);
-    sprokeF2_2    = lean_head(theta_R,phi,psi,sprokF2_1);
+    sprokeF1_2    = lean_head(theta_F,phi,psi,sprokF1_1);
+    sprokeF2_2    = lean_head(theta_F,phi,psi,sprokF2_1);
+    sprokeF3_2    = lean_head(theta_F,phi,psi,sprokF3_1);
+    sprokeF4_2    = lean_head(theta_F,phi,psi,sprokF4_1);
 
 
     wheel_R1      = lean_head(theta_R,phi,psi,wheel_R);
     wheel_F1      = lean_head(theta_F,phi,psi,wheel_R);
+    handle_1      = lean_head(theta_F,phi,psi,frame.handle);
+
+
+
     frame.rod_R1  = lean_head(0,phi,psi,frame.rod_R);
     frame.rod_F1  = lean_head(0,phi,psi,frame.rod_F);
     frame.bar1    = lean_head(0,phi,psi,frame.bar);
+    frame.bar_2   = lean_head(0,phi,psi,frame.bar_20);
 
     sprokeR1_2   = my_translate(sprokeR1_2,x,y,0);
     sprokeR2_2   = my_translate(sprokeR2_2,x,y,0);
+    sprokeR3_2   = my_translate(sprokeR3_2,x,y,0);
+    sprokeR4_2   = my_translate(sprokeR4_2,x,y,0);
     
     sprokeF1_2   = my_translate(sprokeF1_2,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
     sprokeF2_2   = my_translate(sprokeF2_2,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
+    sprokeF3_2   = my_translate(sprokeF3_2,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
+    sprokeF4_2   = my_translate(sprokeF4_2,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
 
 
     wheel_R2     = my_translate(wheel_R1,x,y,0);
     wheel_F2     = my_translate(wheel_F1,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
+    handle_2     = my_translate(handle_1,x+(df+dr)*cos(psi),y+(df+dr)*sin(psi),0);
+
     frame.rod_R2 = my_translate(frame.rod_R1,x,y,0);
     frame.rod_F2 = my_translate(frame.rod_F1,x,y,0);
     frame.bar2   = my_translate(frame.bar1,x,y,0);
+    frame.bar_3  = my_translate(frame.bar_2,x,y,0);
+
     
    
     hold on
@@ -235,21 +286,29 @@ while t1<tend
 
     plot3(wheel_R2.x,wheel_R2.y,wheel_R2.z,'b',LineWidth=1.5)
     plot3(wheel_F2.x,wheel_F2.y,wheel_F2.z,'r',LineWidth=1.5)
-    plot3(sprokeR1_2.x,sprokeR1_2.y,sprokeR1_2.z,'k',LineWidth=1.1)
-    plot3(sprokeR2_2.x,sprokeR2_2.y,sprokeR2_2.z,'k',LineWidth=1.1)
+    plot3(handle_2.x,handle_2.y,handle_2.z,'r',LineWidth=1.5)
+
+    plot3(sprokeR1_2.x,sprokeR1_2.y,sprokeR1_2.z,'k',LineWidth=1)
+    plot3(sprokeR2_2.x,sprokeR2_2.y,sprokeR2_2.z,'k',LineWidth=1)
+    plot3(sprokeR3_2.x,sprokeR3_2.y,sprokeR3_2.z,'k',LineWidth=1)
+    plot3(sprokeR4_2.x,sprokeR4_2.y,sprokeR4_2.z,'k',LineWidth=1)
+
     plot3(sprokeF1_2.x,sprokeF1_2.y,sprokeF1_2.z,'k',LineWidth=1.1)
     plot3(sprokeF2_2.x,sprokeF2_2.y,sprokeF2_2.z,'k',LineWidth=1.1)
+    plot3(sprokeF3_2.x,sprokeF3_2.y,sprokeF3_2.z,'k',LineWidth=1.1)
+    plot3(sprokeF4_2.x,sprokeF4_2.y,sprokeF4_2.z,'k',LineWidth=1.1)
 
     plot3(frame.rod_R2.x,frame.rod_R2.y,frame.rod_R2.z,'k',LineWidth=1.2)
     plot3(frame.rod_F2.x,frame.rod_F2.y,frame.rod_F2.z,'k',LineWidth=1.2)
     plot3(frame.bar2.x,frame.bar2.y,frame.bar2.z,'k',LineWidth=1.2)
+    plot3(frame.bar_3.x,frame.bar_3.y,frame.bar_3.z,'k',LineWidth=1.2)
     
    
     axis equal
     
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    zlim([-0.1,-0.1+delta_z]);
+    zlim([0,delta_z]);
 
     xlabel('x');
     ylabel('y');
