@@ -92,7 +92,7 @@ void loop(){
         // controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
-        // writeToMotor(); 
+        writeToMotor(); 
         // frontWheelMotor.setSpeed(210);  
 
         while(loopTimeMicros < loopTimeConstant)

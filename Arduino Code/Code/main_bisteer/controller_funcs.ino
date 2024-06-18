@@ -48,7 +48,7 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
 
         controller_rear_speed(Vr);
         controller_front_speed(Vf);
-        if (abs(phi) > 7.5){
+        if (abs(phi) > 20){
                 frontWheelInput = 0;
                 rearWheelInput = 0;
         }
@@ -220,6 +220,5 @@ void writeToMotor() {
         if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
         else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-180:frontWheelInput+210); 
 }
-
 
 /****************************************************************************************************************************************************************************************************/
