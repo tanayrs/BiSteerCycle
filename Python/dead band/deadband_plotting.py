@@ -22,10 +22,10 @@ REAR_TIME_DEADBAND_END_3 = 4.6444e+05
 REAR_DEADBAND_START = -9
 REAR_DEADBAND_END = 11
 
-REAR_TIME_DEADBAND_END_UNSCALED_1 = 253569 - 245425 
-REAR_TIME_DEADBAND_END_UNSCALED_2 = 274913 - 245425 
-REAR_TIME_DEADBAND_END_UNSCALED_3 = 2.9550e+05 - 245425 
-REAR_TIME_DEADBAND_END_UNSCALED_4 = 3.1726e+05 - 245425 
+REAR_TIME_DEADBAND_END_UNSCALED_1 = 253569 - 240536
+REAR_TIME_DEADBAND_END_UNSCALED_2 = 274913 - 240536
+REAR_TIME_DEADBAND_END_UNSCALED_3 = 2.9550e+05 - 240536
+REAR_TIME_DEADBAND_END_UNSCALED_4 = 3.1726e+05 - 240536
 REAR_DEADBAND_UNSCALED_START = -9
 REAR_DEADBAND_UNSCALED_END = 11
 
@@ -110,8 +110,8 @@ def plot_rear():
 
     axs[0].axhline(y=REAR_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
     axs[0].axhline(y=REAR_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
+    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,-9,-5,5,11,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
@@ -127,10 +127,17 @@ def plot_rear():
     axs[1].plot(REAR_TIME_DEADBAND_END_UNSCALED_4,0,'o')
 
     axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
+    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
 
     # Show the plot
     plt.tight_layout()
+    plt.show()
+
+    sorted_df = df.sort_values('Rear Wheel Input')
+    plt.scatter(sorted_df['Rear Wheel Input'],sorted_df['Rear Wheel Speed'])
+    plt.xlabel('Commanded Value (PWM Input)')
+    plt.ylabel('Response (Degrees Per Second)')
+    plt.title('Commanded Value vs Response')
     plt.show()
 
 if __name__ == '__main__':
