@@ -14,7 +14,7 @@ control_array = zeros(length(time),4);
 
 for i = 1:length(time)
 
-    [Vfdot0, Vdot0, theta_Fdot0, theta_Rdot0] = controller_cyclemode(time(i),z(:,i),p);
+    [Vfdot0, Vdot0, theta_Fdot0, theta_Rdot0] = controller_bisteer3D(time(i),z(:,i),p);
 
     control_array(i,1) = Vfdot0;
     control_array(i,2) = Vdot0;

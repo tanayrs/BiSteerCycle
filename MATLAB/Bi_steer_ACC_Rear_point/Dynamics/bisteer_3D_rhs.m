@@ -17,7 +17,7 @@ h = p.h; df = p.df; dr = p.dr;
 
 
 
-[~, Vdot, theta_Fdot, theta_Rdot] = controller_cyclemode(t,z,p);
+[~, Vdot, theta_Fdot, theta_Rdot] = controller_bisteer3D(t,z,p);
 
 theta_F = z(7);
 theta_R = z(8);
@@ -39,7 +39,7 @@ end
 
 phiddot  = zdot(4);
 
-%disp(phiddot)
+disp(t)
 
 
 zdot = [xdot, ydot, Vdot, psidot, phidot, phiddot, theta_Fdot, theta_Rdot]';

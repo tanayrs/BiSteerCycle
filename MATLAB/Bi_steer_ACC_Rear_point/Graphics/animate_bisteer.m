@@ -239,7 +239,7 @@ while t1<tend
     hold on
     grid on
 
-    plot3(path_R.x,path_R.y,path_R.z,'b',LineWidth=0.1)
+    %plot3(path_R.x,path_R.y,path_R.z,'b',LineWidth=0.1)
     plot3(path_F.x,path_F.y,path_F.z,'r',LineWidth=0.1)
 %%
 
@@ -300,7 +300,7 @@ while t1<tend
     plot3(frame.rod_R2.x,frame.rod_R2.y,frame.rod_R2.z,'k',LineWidth=1.2)
     plot3(frame.rod_F2.x,frame.rod_F2.y,frame.rod_F2.z,'k',LineWidth=1.2)
     plot3(frame.bar2.x,frame.bar2.y,frame.bar2.z,'k',LineWidth=1.2)
-    %plot3(frame.bar_3.x,frame.bar_3.y,frame.bar_3.z,'k',LineWidth=1.2)
+    plot3(frame.bar_3.x,frame.bar_3.y,frame.bar_3.z,'k',LineWidth=1.2)
     
    
     axis equal
