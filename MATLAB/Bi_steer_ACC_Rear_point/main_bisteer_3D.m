@@ -168,7 +168,7 @@ therhs = @(t,z) bisteer_3D_rhs(t,z,p);
 fall   = @(t,z) bicycle_fall(t,z,p);
 
 %solving parameters
-start = 0; stop = 4.5; t = linspace(start,stop,1000000);
+start = 0; stop = 10; t = linspace(start,stop,1000000);
 
 %solve ode
 small   = 1e-9;
