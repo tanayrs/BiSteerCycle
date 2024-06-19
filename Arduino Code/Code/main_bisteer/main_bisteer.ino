@@ -103,7 +103,7 @@ void loop(){
         //Serial.println(rearWheelData.speed()-frontWheelData.speed()); 
         //Serial.print(" "); 
         //Serial.println(frontWheelData.speed());
-        Serial.println(phi);
+        //Serial.println(phi);
         //Serial.print(" ");
         //Serial.println(phi_dot);
 
