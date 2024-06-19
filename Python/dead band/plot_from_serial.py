@@ -17,8 +17,8 @@ REAR_PATH = './Python/dead band/RearDeadBandData.csv'
 FRONT_PATH = './Python/dead band/FrontDeadBandData.csv'
 FRONT_SPEED_PATH = './Python/dead band/SourceData/FrontDeadBandDataSpeed.csv'
 REAR_SPEED_PATH = './Python/dead band/SourceData/RearDeadBandDataSpeed.csv'
-TRIANGLE_FRONT_SPEED_PATH = './Python/dead band/SourceData/TriangleFrontDeadBandDataSpeedCorrected_5.csv'
-TRIANGLE_REAR_SPEED_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeedCorrected_3.csv'
+TRIANGLE_FRONT_SPEED_PATH = './Python/dead band/SourceData/TriangleFrontDeadBandDataSpeed.csv'
+TRIANGLE_REAR_SPEED_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeed.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
@@ -562,7 +562,6 @@ def plot_from_csv_front_speed_input_triangle():
     plt.tight_layout()
     plt.show()
 
-
 if __name__ == '__main__':
     # read_from_serial_rear()
     # plot_from_csv_rear()
@@ -572,8 +571,8 @@ if __name__ == '__main__':
     # plot_from_csv_rear_speed()
     # plot_from_csv_rear_speed_triangle_unscaled()
     # plot_from_csv_rear_speed_triangle_unscaled_corrected()
-    # plot_from_csv_front_speed_triangle_unscaled()
+    plot_from_csv_front_speed_triangle_unscaled()
     # plot_from_csv_front_speed_triangle_unscaled_corrected()
     # plot_from_csv_rear_speed_input_triangle()
-    plot_from_csv_front_speed_input_triangle()
+    # plot_from_csv_front_speed_input_triangle()
     # read_from_serial()
