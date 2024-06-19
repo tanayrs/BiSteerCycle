@@ -33,7 +33,7 @@ y0 = 0;
 V0 = 1;
 
 psi0 = deg2rad(0);  %heading
-phi0 = deg2rad(20);  %lean angle  -30
+phi0 = deg2rad(10);  %lean angle  -30
 phidot0 = 0; %lean rate
 
 theta_F0 = deg2rad(0);  %30
@@ -168,7 +168,7 @@ therhs = @(t,z) bisteer_3D_rhs(t,z,p);
 fall   = @(t,z) bicycle_fall(t,z,p);
 
 %solving parameters
-start = 0; stop = 10; t = linspace(start,stop,1000000);
+start = 0; stop = 2; t = linspace(start,stop,1000000);
 
 %solve ode
 small   = 1e-9;
