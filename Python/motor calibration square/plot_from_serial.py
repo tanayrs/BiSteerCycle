@@ -13,8 +13,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare150.csv'
-FRONT_PATH = './Python/motor calibration square/SourceData/FrontMotorCalibrationSquare150.csv'
+REAR_PATH = './Python/motor calibration square/SourceData/RearMotorCalibrationSquare50.csv'
+FRONT_PATH = './Python/motor calibration square/SourceData/FrontMotorCalibrationSquare50_Short.csv'
 
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
@@ -23,6 +23,8 @@ BAUD = 115200
 def plot_from_csv_rear():
     # Reading CSV into pandas DataFrame #
     df = pd.read_csv(REAR_PATH)
+    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
+    print(df['Time'].iloc[0])
 
     # Printing Statistics of DataFrame #
     positive_df = df[df['Rear Wheel Input']>0]
@@ -38,16 +40,18 @@ def plot_from_csv_rear():
     fig.set_figwidth(14)
 
     # Plot on the first axis
-    axs[0].plot(df['Time'], df['Rear Wheel Input'])
-    axs[0].set_xlabel('Time')
-    axs[0].set_ylabel('Input Speed')
+    axs[0].plot(df['Relative Time'], df['Rear Wheel Input'])
+    axs[0].set_ylabel('Commanded Input (PWM Input)', fontsize=12)
 
     # Plot on the second axis
-    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
-    axs[1].axhline(y=positive_mean)
-    axs[1].axhline(y=pos_mean)
-    axs[1].set_xlabel('Time')
-    axs[1].set_ylabel('Encoder Speed')
+    axs[1].plot(df['Relative Time'], df['Rear Wheel Speed'])
+    axs[1].axhline(y=positive_mean,color='k', linestyle='--', linewidth=1)
+    axs[1].axhline(y=negative_mean,color='k', linestyle='--', linewidth=1)
+    axs[1].set_xlabel('Time (ms)', fontsize=12)
+    axs[1].set_ylabel('Response (Degrees per Second)', fontsize=12)
+    # axs[1].set_yticks([-240,-200,-100,0,100,200,251]) # Rear 150
+    # axs[1].set_yticks([-200,-167,-100,0,100,167,200]) # Rear 100
+    axs[1].set_yticks([-100,-85,50,0,50,83,100]) # Rear 50
 
     # Show the plot
     plt.show()
@@ -56,6 +60,8 @@ def plot_from_csv_rear():
 def plot_from_csv_front():
     # Reading CSV into pandas DataFrame #
     df = pd.read_csv(FRONT_PATH)
+    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
+    print(df['Time'].iloc[0])
 
     # Printing Statistics of DataFrame #
     positive_df = df[df['Front Wheel Input']>0]
@@ -71,14 +77,18 @@ def plot_from_csv_front():
     fig.set_figwidth(12)
 
     # Plot on the first axis
-    axs[0].plot(df['Time'], df['Front Wheel Input'])
-    axs[0].set_xlabel('Time')
-    axs[0].set_ylabel('Input Speed')
+    axs[0].plot(df['Relative Time'], df['Front Wheel Input'])
+    axs[0].set_ylabel('Commanded Input (PWM Input)',fontsize=12)
 
     # Plot on the second axis
-    axs[1].plot(df['Time'], df['Front Wheel Speed'])
-    axs[1].set_xlabel('Time')
-    axs[1].set_ylabel('Encoder Speed')
+    axs[1].plot(df['Relative Time'], df['Front Wheel Speed'])
+    axs[1].axhline(y=positive_mean,color='k',linestyle='--',linewidth=1)
+    axs[1].axhline(y=negative_mean,color='k',linestyle='--',linewidth=1)
+    # axs[1].set_yticks([-300,-245,-200,-100,0,100,200,250,300]) # Front 150
+    # axs[1].set_yticks([-200,-167,-100,0,100,168,200]) # Front 100
+    axs[1].set_yticks([-100,-84,-50,0,50,84,100]) # Front 50
+    axs[1].set_xlabel('Time (ms)',fontsize=12)
+    axs[1].set_ylabel('Response (Degrees per Second)', fontsize=12)
 
     # Show the plot
     plt.show()
@@ -149,5 +159,5 @@ def read_from_serial_front():
 if __name__ == '__main__':
     # read_from_serial_rear()
     # read_from_serial_front()
-    plot_from_csv_rear()
-    # plot_from_csv_front()
+    # plot_from_csv_rear()
+    plot_from_csv_front()
