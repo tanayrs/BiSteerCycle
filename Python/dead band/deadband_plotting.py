@@ -15,26 +15,31 @@ import numpy as np
 
 FRONT_PATH = './Python/dead band/SourceData/TriangleFrontDeadBandDataSpeed.csv'
 REAR_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeedUnscaled.csv'
+FRONT_COMP_PATH = 'Python/dead band/SourceData/TriangleFrontDeadBandDataSpeedCorrected_5.csv'
+REAR_COMP_PATH = 'Python/dead band/SourceData/TriangleRearDeadBandDataSpeedCorrected_3.csv'
 
-REAR_TIME_DEADBAND_END_1 = 422400
-REAR_TIME_DEADBAND_END_2 = 443302
-REAR_TIME_DEADBAND_END_3 = 4.6444e+05
-REAR_DEADBAND_START = -9
-REAR_DEADBAND_END = 11
+FRONT_DEADBAND_END_1 = 12253
+FRONT_DEADBAND_END_2 = 33382
+FRONT_DEADBAND_END_3 = 54837
+FRONT_DEADBAND_END_4 = 75752
+FRONT_DEADBAND_INPUT_START = -11
+FRONT_DEADBAND_INPUT_END = 11
 
-REAR_TIME_DEADBAND_END_UNSCALED_1 = 253569 - 240536
-REAR_TIME_DEADBAND_END_UNSCALED_2 = 274913 - 240536
-REAR_TIME_DEADBAND_END_UNSCALED_3 = 2.9550e+05 - 240536
-REAR_TIME_DEADBAND_END_UNSCALED_4 = 3.1726e+05 - 240536
-REAR_DEADBAND_UNSCALED_START = -9
-REAR_DEADBAND_UNSCALED_END = 11
+REAR_DEADBAND_END_1 = 253569 - 240536
+REAR_DEADBAND_END_2 = 274913 - 240536
+REAR_DEADBAND_END_3 = 2.9550e+05 - 240536
+REAR_DEADBAND_END_4 = 3.1726e+05 - 240536
+REAR_DEADBAND_INPUT_START = -9
+REAR_DEADBAND_INPUT_END = 11
 
-FRONT_TIME_DEADBAND_END_UNSCALED_1 = 12253
-FRONT_TIME_DEADBAND_END_UNSCALED_2 = 33382
-FRONT_TIME_DEADBAND_END_UNSCALED_3 = 54837
-FRONT_TIME_DEADBAND_END_UNSCALED_4 = 75752
-FRONT_DEADBAND_UNSCALED_START = -11
-FRONT_DEADBAND_UNSCALED_END = 11
+FRONT_COMP_DEADBAND_END_1 = 12840
+FRONT_COMP_DEADBAND_END_2 = 34054
+FRONT_COMP_DEADBAND_END_3 = 55066
+FRONT_COMP_DEADBAND_END_4 = 76309
+
+REAR_COMP_DEADBAND_END_1 = 9464
+REAR_COMP_DEADBAND_END_2 = 30904
+REAR_COMP_DEADBAND_END_3 = 51671
 
 def plot_front():
     # Reading CSV into pandas DataFrame #
@@ -48,30 +53,30 @@ def plot_front():
 
     # Plot on the first axis
     axs[0].plot(df['Relative Time'], df['Front Wheel Input'])
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_DEADBAND_UNSCALED_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_DEADBAND_UNSCALED_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].plot(FRONT_TIME_DEADBAND_END_UNSCALED_1,FRONT_DEADBAND_UNSCALED_START,'o')
-    axs[0].plot(FRONT_TIME_DEADBAND_END_UNSCALED_2,FRONT_DEADBAND_UNSCALED_END,'o')
-    axs[0].plot(FRONT_TIME_DEADBAND_END_UNSCALED_3,FRONT_DEADBAND_UNSCALED_START,'o')
-    axs[0].plot(FRONT_TIME_DEADBAND_END_UNSCALED_4,FRONT_DEADBAND_UNSCALED_END,'o')
+    axs[0].axvline(x=FRONT_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].plot(FRONT_DEADBAND_END_1,FRONT_DEADBAND_INPUT_START,'o')
+    axs[0].plot(FRONT_DEADBAND_END_2,FRONT_DEADBAND_INPUT_END,'o')
+    axs[0].plot(FRONT_DEADBAND_END_3,FRONT_DEADBAND_INPUT_START,'o')
+    axs[0].plot(FRONT_DEADBAND_END_4,FRONT_DEADBAND_INPUT_END,'o')
     axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-11,-5,5,11,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
     axs[1].plot(df['Relative Time'], df['Front Wheel Speed'])
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
-    axs[1].plot(FRONT_TIME_DEADBAND_END_UNSCALED_1,0,'o')
-    axs[1].plot(FRONT_TIME_DEADBAND_END_UNSCALED_2,0,'o')
-    axs[1].plot(FRONT_TIME_DEADBAND_END_UNSCALED_3,0,'o')
-    axs[1].plot(FRONT_TIME_DEADBAND_END_UNSCALED_4,0,'o')
+    axs[1].axvline(x=FRONT_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].plot(FRONT_DEADBAND_END_1,0,'o')
+    axs[1].plot(FRONT_DEADBAND_END_2,0,'o')
+    axs[1].plot(FRONT_DEADBAND_END_3,0,'o')
+    axs[1].plot(FRONT_DEADBAND_END_4,0,'o')
     axs[1].set_xlabel('Time (ms)',fontsize=14)
     axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
 
@@ -98,33 +103,33 @@ def plot_rear():
 
     # Plot on the first axis
     axs[0].plot(df['Relative Time'], df['Rear Wheel Input'])
-    axs[0].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
 
-    axs[0].plot(REAR_TIME_DEADBAND_END_UNSCALED_1,REAR_DEADBAND_START,'o')
-    axs[0].plot(REAR_TIME_DEADBAND_END_UNSCALED_2,REAR_DEADBAND_END,'o')
-    axs[0].plot(REAR_TIME_DEADBAND_END_UNSCALED_3,REAR_DEADBAND_START,'o')
-    axs[0].plot(REAR_TIME_DEADBAND_END_UNSCALED_4,REAR_DEADBAND_END,'o')
+    axs[0].plot(REAR_DEADBAND_END_1,REAR_DEADBAND_INPUT_START,'o')
+    axs[0].plot(REAR_DEADBAND_END_2,REAR_DEADBAND_INPUT_END,'o')
+    axs[0].plot(REAR_DEADBAND_END_3,REAR_DEADBAND_INPUT_START,'o')
+    axs[0].plot(REAR_DEADBAND_END_4,REAR_DEADBAND_INPUT_END,'o')
 
-    axs[0].axhline(y=REAR_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
     axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
     axs[0].set_yticks([-50,-40,-30,-20,-9,-5,5,11,20,30,40,50])
     axs[0].set_xticks([])
 
     # Plot on the second axis
     axs[1].plot(df['Relative Time'], df['Rear Wheel Speed'])
-    axs[1].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_TIME_DEADBAND_END_UNSCALED_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
 
-    axs[1].plot(REAR_TIME_DEADBAND_END_UNSCALED_1,0,'o')
-    axs[1].plot(REAR_TIME_DEADBAND_END_UNSCALED_2,0,'o')
-    axs[1].plot(REAR_TIME_DEADBAND_END_UNSCALED_3,0,'o')
-    axs[1].plot(REAR_TIME_DEADBAND_END_UNSCALED_4,0,'o')
+    axs[1].plot(REAR_DEADBAND_END_1,0,'o')
+    axs[1].plot(REAR_DEADBAND_END_2,0,'o')
+    axs[1].plot(REAR_DEADBAND_END_3,0,'o')
+    axs[1].plot(REAR_DEADBAND_END_4,0,'o')
 
     axs[1].set_xlabel('Time (ms)',fontsize=14)
     axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
@@ -140,6 +145,106 @@ def plot_rear():
     plt.title('Commanded Value vs Response')
     plt.show()
 
+def plot_front_compensated():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(FRONT_COMP_PATH)
+    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(8.5)
+    fig.set_figwidth(14)
+
+    # Plot on the first axis
+    axs[0].plot(df['Relative Time'], df['Front Wheel Input'])
+    axs[0].axvline(x=FRONT_COMP_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_COMP_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_COMP_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=FRONT_COMP_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=FRONT_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].plot(FRONT_COMP_DEADBAND_END_1,FRONT_DEADBAND_INPUT_END,'o')
+    axs[0].plot(FRONT_COMP_DEADBAND_END_2,FRONT_DEADBAND_INPUT_START,'o')
+    axs[0].plot(FRONT_COMP_DEADBAND_END_3,FRONT_DEADBAND_INPUT_END,'o')
+    axs[0].plot(FRONT_COMP_DEADBAND_END_4,FRONT_DEADBAND_INPUT_START,'o')
+    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,-11,-5,5,11,20,30,40,50])
+    axs[0].set_xticks([])
+    # axs[0].set_title('Commanded Input vs Time')
+
+    # Plot on the second axis
+    axs[1].plot(df['Relative Time'], df['Front Wheel Speed'])
+    axs[1].axvline(x=FRONT_COMP_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_COMP_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_COMP_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=FRONT_COMP_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
+    axs[1].plot(FRONT_COMP_DEADBAND_END_1,0,'o')
+    axs[1].plot(FRONT_COMP_DEADBAND_END_2,0,'o')
+    axs[1].plot(FRONT_COMP_DEADBAND_END_3,0,'o')
+    axs[1].plot(FRONT_COMP_DEADBAND_END_4,0,'o')
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+    # axs[1].set_title('Response vs Time')
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
+    sorted_df = df.sort_values('Front Wheel Input')
+    plt.scatter(sorted_df['Front Wheel Input'],sorted_df['Front Wheel Speed'])
+    plt.xlabel('Commanded Value (PWM Input)')
+    plt.ylabel('Response (Degrees Per Second)')
+    plt.title('Commanded Value vs Response')
+    plt.show()
+
+def plot_rear_compensated():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(REAR_COMP_PATH)
+    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(8.5)
+    fig.set_figwidth(14)
+
+    # Plot on the first axis
+    axs[0].plot(df['Relative Time'], df['Rear Wheel Input'])
+    axs[0].axvline(x=REAR_COMP_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_COMP_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axvline(x=REAR_COMP_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
+    axs[0].axhline(y=REAR_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
+    axs[0].plot(REAR_COMP_DEADBAND_END_1,REAR_DEADBAND_INPUT_START,'o')
+    axs[0].plot(REAR_COMP_DEADBAND_END_2,REAR_DEADBAND_INPUT_END,'o')
+    axs[0].plot(REAR_COMP_DEADBAND_END_3,REAR_DEADBAND_INPUT_START,'o')
+    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+    axs[0].set_yticks([-50,-40,-30,-20,REAR_DEADBAND_INPUT_START,-5,5,REAR_DEADBAND_INPUT_END,20,30,40,50])
+    axs[0].set_xticks([])
+
+    # Plot on the second axis
+    axs[1].plot(df['Relative Time'], df['Rear Wheel Speed'])
+    axs[1].axvline(x=REAR_COMP_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_COMP_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    axs[1].axvline(x=REAR_COMP_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    axs[1].plot(REAR_COMP_DEADBAND_END_1,0,'o')
+    axs[1].plot(REAR_COMP_DEADBAND_END_2,0,'o')
+    axs[1].plot(REAR_COMP_DEADBAND_END_3,0,'o')
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
+    sorted_df = df.sort_values('Rear Wheel Input')
+    plt.scatter(sorted_df['Rear Wheel Input'],sorted_df['Rear Wheel Speed'])
+    plt.xlabel('Commanded Value (PWM Input)')
+    plt.ylabel('Response (Degrees Per Second)')
+    plt.title('Commanded Value vs Response')
+    plt.show()
+
 if __name__ == '__main__':
-    # plot_front()
-    plot_rear()
+    plot_front()
+    # plot_rear()
+    # plot_front_compensated()
+    # plot_rear_compensated()
