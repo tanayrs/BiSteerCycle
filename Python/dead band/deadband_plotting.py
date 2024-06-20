@@ -1,7 +1,7 @@
 '''
 Experiment: Dead Band Testing
 By: Jia Bhargava, Tanay Srinivasa
-Last Modified: 19 June 2024
+Last Modified: 20 June 2024
 
 Run bi_steer_cycle arduino code with set_dead_band_speed()
 '''
@@ -63,7 +63,8 @@ def plot_front():
     axs[0].plot(FRONT_DEADBAND_END_2,FRONT_DEADBAND_INPUT_END,'o')
     axs[0].plot(FRONT_DEADBAND_END_3,FRONT_DEADBAND_INPUT_START,'o')
     axs[0].plot(FRONT_DEADBAND_END_4,FRONT_DEADBAND_INPUT_END,'o')
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+    # axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+    axs[0].set_ylabel('Input (PWM)',fontsize=28)
     axs[0].set_yticks([-50,-40,-30,-20,-11,-5,5,11,20,30,40,50])
     axs[0].set_xticks([])
 
@@ -77,8 +78,9 @@ def plot_front():
     axs[1].plot(FRONT_DEADBAND_END_2,0,'o')
     axs[1].plot(FRONT_DEADBAND_END_3,0,'o')
     axs[1].plot(FRONT_DEADBAND_END_4,0,'o')
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+    axs[1].set_xlabel('Time (ms)',fontsize=28)
+    # axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+    axs[1].set_ylabel('Response (d/s)',fontsize=28)
 
     # Show the plot
     plt.tight_layout()
@@ -86,9 +88,11 @@ def plot_front():
 
     sorted_df = df.sort_values('Front Wheel Input')
     plt.scatter(sorted_df['Front Wheel Input'],sorted_df['Front Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
+    # plt.xlabel('Commanded Value (PWM Input)', fontsize=28)
+    # plt.ylabel('Response (Degrees Per Second)', fontsize=28)
+    plt.xlabel('Input (PWM)', fontsize=28)
+    plt.ylabel('Response (d/s)', fontsize=28)
+    # plt.title('Commanded Value vs Response')
     plt.show()
 
 def plot_rear():

@@ -34,8 +34,8 @@ def plot_from_csv_rear():
 
     # Plotting Angle vs Time #
     fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
+    fig.set_figheight(8.5)
+    fig.set_figwidth(14)
 
     # Plot on the first axis
     axs[0].plot(df['Time'], df['Rear Wheel Input'])
@@ -44,6 +44,8 @@ def plot_from_csv_rear():
 
     # Plot on the second axis
     axs[1].plot(df['Time'], df['Rear Wheel Speed'])
+    axs[1].axhline(y=positive_mean)
+    axs[1].axhline(y=pos_mean)
     axs[1].set_xlabel('Time')
     axs[1].set_ylabel('Encoder Speed')
 
@@ -143,6 +145,7 @@ def read_from_serial_front():
                         quoting=csv.QUOTE_MINIMAL
                         )
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
+
 if __name__ == '__main__':
     # read_from_serial_rear()
     # read_from_serial_front()
