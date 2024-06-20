@@ -240,7 +240,7 @@ while t1<tend
     grid on
 
     %plot3(path_R.x,path_R.y,path_R.z,'b',LineWidth=0.1)
-    plot3(path_F.x,path_F.y,path_F.z,'r',LineWidth=0.1)
+    %plot3(path_F.x,path_F.y,path_F.z,'r',LineWidth=0.1)
 %%
 
     min_x = min([min(wheel_R2.x),min(wheel_F2.x),min(frame.bar2.x),min(frame.rod_R2.x),min(frame.rod_F2.x)]);

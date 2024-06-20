@@ -42,7 +42,7 @@ end
 if t >= 0 && t<=10
 
     %state_ref = p.ref_1;
-    state_ref = [5,(0.5)*sin(2*t),0];
+    state_ref = [5,0.5*sin(2*t),0];
     K = p.K_1;
 
 end

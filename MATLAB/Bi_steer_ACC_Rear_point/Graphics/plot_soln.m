@@ -14,7 +14,7 @@ control_array = zeros(length(time),4);
 
 for i = 1:length(time)
 
-    [Vfdot0, Vdot0, theta_Fdot0, theta_Rdot0] = controller_bisteer3D(time(i),z(:,i),p);
+    [Vfdot0, Vdot0, theta_Fdot0, theta_Rdot0] = controller_cyclemode(time(i),z(:,i),p);
 
     control_array(i,1) = Vfdot0;
     control_array(i,2) = Vdot0;
@@ -48,8 +48,8 @@ figure(1)
 %subplot(1,2,1)
 hold on
 plot(x_array,y_array);
-plot(x_array(1),y_array(1),'b.',MarkerSize=13)
-plot(x_array(end),y_array(end),'r.',MarkerSize=13)
+plot(x_array(1),y_array(1),'b.',LineWidth=1.5)
+plot(x_array(end),y_array(end),'r.',LineWidth=1.5)
 legend('','start','end')
 title('Trajectory')
 xlabel('x')
@@ -59,11 +59,17 @@ movegui('northwest')
 
 
 figure(2)
-%subplot(1,2,2)
-plot(tarray,rad2deg(phi_array));
+subplot(2,1,1)
+plot(tarray,rad2deg(phi_array),'LineWidth',1.5);
 title('lean angle')
-xlabel('t');
+xlabel('$time(t)$');
 ylabel('$\phi$ in degrees')
+subplot(2,1,2)
+plot(tarray,rad2deg(phidot_array),'LineWidth',1.5);
+title('lean rate')
+xlabel('$time(t)$');
+ylabel('$\dot{\phi}$ in degrees')
+
 movegui('southwest')
 
 %{
@@ -73,11 +79,20 @@ plot(tarray,V_array);
 
 %
 figure(3)
-%subplot(1,3,3)
-plot(tarray,V_array);
+subplot(2,1,1)
+plot(tarray,V_array,"LineWidth",1.5);
 title('$ V_R $')
-xlabel('t');
+xlabel('$time(t)$');
 ylabel('$\ V$ in m/s')
+
+subplot(2,1,2)
+hold on
+plot(time,Vdot,'b','LineWidth',1.5);
+plot(time,Vfdot,'r','LineWidth',1.5);
+title('$ \dot{V} $ vs t')
+xlabel('$time(t)$')
+ylabel('acc in m/s2')
+legend('acc rear','acc front');
 movegui('north')
 %}
 
@@ -89,29 +104,23 @@ title('lean rate')
 
 
 figure(7)
-subplot(3,1,1)
-hold on
-
-plot(time,Vdot,'b');
-plot(time,Vfdot,'r');
-title('$ \dot{V} $ vs t')
-ylabel('acc in m/s2')
-legend('acc rear','acc front');
 %}
-subplot(3,1,2)
+subplot(2,1,1)
 hold on
-plot(time,rad2deg(theta_Fdot),'r')
-plot(time,rad2deg(theta_Rdot),'b')
+plot(time,rad2deg(theta_Fdot),'r','LineWidth',1.5)
+plot(time,rad2deg(theta_Rdot),'b','LineWidth',1.5)
 title('$ \dot{\theta} $ vs t')
+xlabel('$time(t)$')
 ylabel('steer rate in deg/s')
 legend('\theta_F','\theta_R');
 
 
-subplot(3,1,3)
+subplot(2,1,2)
 hold on
-plot(tarray,rad2deg(theta_Farray),'r')
-plot(tarray,rad2deg(theta_Rarray),'b')
+plot(tarray,rad2deg(theta_Farray),'r','LineWidth',1.5)
+plot(tarray,rad2deg(theta_Rarray),'b','LineWidth',1.5)
 title('$ \theta $ steer angles vs t')
+xlabel('$time(t)$')
 ylabel('steer angle in degrees')
 legend('\theta_F', '\theta_R')
 movegui('south')

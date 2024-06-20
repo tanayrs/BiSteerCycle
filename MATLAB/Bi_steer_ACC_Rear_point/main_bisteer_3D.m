@@ -30,14 +30,14 @@ p.m = m; p.g = g; p.h = h;
 % initial condition
 x0 = 0;
 y0 = 0;
-V0 = 5;
+V0 = 1;
 
-psi0 = deg2rad(0);  %heading
-phi0 = deg2rad(0);  %lean angle  -30
+psi0 = deg2rad(150);  %heading
+phi0 = deg2rad(-20);  %lean angle  -30
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(0);  %30
-theta_R0 = deg2rad(0); %60
+theta_F0 = deg2rad(40);  %30
+theta_R0 = deg2rad(-45); %60
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';
@@ -55,12 +55,12 @@ R_phi = diag([1e1, 1e1, 1e5]);
 
 ref_V   = [ 0.01,deg2rad(0),deg2rad(0)];
 Q_V = diag([1e4, 1e3, 1e4, 1e0, 1e0]);
-R_V = diag([1e1, 1e2, 1e2]);
+R_V = diag([1e1, 1e1, 1e1]);
 
 
 
-ref_1 = [5,deg2rad(0),deg2rad(0)];
-Q_F = diag([1e4, 1e3, 1e4, 1e2, 1e2]);
+ref_1 = [5,deg2rad(40),deg2rad(-30)];
+Q_F = diag([1e4, 1e1, 1e4, 1e2, 1e2]);
 R_F = diag([1e1, 1e1, 1e10]);    %[1e1, 1e1, 1e0, 1e0]
 
 ref_2 = [0.0,deg2rad(89.1),deg2rad(89)];
@@ -73,7 +73,7 @@ R_R = diag([5e2, 1e1, 1e1]);
 
 ref_3 = [0.0,deg2rad(80),deg2rad(80)];
 Q_3 = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
-R_3 = diag([1e2, 1e1, 1e1]);
+R_3 = diag([1e1, 1e1, 1e1]);
 
 ref_4 = [1,deg2rad(0),deg2rad(0)];
 Q_4 = diag([1e4, 1e1, 1e4, 1e1, 1e1]);
