@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Defining Path to CSV File, Com Port and Baud Rate #
-PATH = './Python/filter testing/SensorData/BNO_Test_Step_19.csv'
+PATH = './Python/filter testing/SensorData/BNO_Test_Step_17.csv'
 COM = '/dev/cu.usbmodem160229201'
 BAUD = 9600
 
@@ -49,12 +49,11 @@ def plot_from_csv(path=PATH):
     print(df.describe())
 
     # Plotting Angle vs Time #
-    plt.plot(df['Time'],df['SFA'])
-    plt.plot(df['Time'],df['Kalman'])
-
+    df['Relative time'] = df['Time'] - df['Time'][0]
+    plt.plot(df['Relative time'],df['SFA'])
+    plt.plot(df['Relative time'],df['Kalman'])
     plt.axhline(y=90,linestyle='--',linewidth=0.75)
     plt.axhline(y=0,linestyle='--',linewidth=0.75)
-    plt.xticks([])
 
 if __name__ == '__main__':
     # read_from_serial()
@@ -72,6 +71,6 @@ if __name__ == '__main__':
         if i == 5:
             plt.legend(['SFA', 'Kalman'])
 
-
     plt.suptitle('Step Response of Bosch Sensor Fusion Algorithm and Kalman Filters',fontsize=18)
     plt.show()
+    # plot_from_csv(PATH)
