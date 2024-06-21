@@ -64,9 +64,9 @@ def plot_from_csv_front():
     print(df['Time'].iloc[0])
 
     # Printing Statistics of DataFrame #
-    positive_df = df[df['Front Wheel Input']>0]
+    positive_df = df[df['Front Wheel Speed']>0]
     positive_mean = positive_df['Front Wheel Speed'].mean()
-    negative_df = df[df['Front Wheel Input']<0]
+    negative_df = df[df['Front Wheel Speed']<0]
     negative_mean = negative_df['Front Wheel Speed'].mean()
     print(f'Positive Cycle Mean: {positive_mean}')
     print(f'Negative Cycle Mean: {negative_mean}')
@@ -79,14 +79,17 @@ def plot_from_csv_front():
     # Plot on the first axis
     axs[0].plot(df['Relative Time'], df['Front Wheel Input'])
     axs[0].set_ylabel('Commanded Input (PWM Input)',fontsize=12)
+    axs[0].set_title(f'Commanded Input, Response vs Time for Front Wheel Motor')
 
     # Plot on the second axis
     axs[1].plot(df['Relative Time'], df['Front Wheel Speed'])
-    axs[1].axhline(y=positive_mean,color='k',linestyle='--',linewidth=1)
-    axs[1].axhline(y=negative_mean,color='k',linestyle='--',linewidth=1)
+    axs[1].axhline(y=positive_mean,color='k',linestyle='--',linewidth=1.5)
+    axs[1].axhline(y=negative_mean,color='k',linestyle='--',linewidth=1.5)
+    axs[1].text(df['Relative Time'].mean(), positive_mean+10,'Average Speed in Positive Direction',fontsize=12,horizontalalignment='center')
+    axs[1].text(df['Relative Time'].mean(), negative_mean-25,'Average Speed in Negative Direction',fontsize=12,horizontalalignment='center')
     # axs[1].set_yticks([-300,-245,-200,-100,0,100,200,250,300]) # Front 150
-    # axs[1].set_yticks([-200,-167,-100,0,100,168,200]) # Front 100
-    axs[1].set_yticks([-100,-84,-50,0,50,84,100]) # Front 50
+    axs[1].set_yticks([-200,-167,-100,0,100,168,200]) # Front 100
+    # axs[1].set_yticks([-100,-84,-50,0,50,84,100]) # Front 50
     axs[1].set_xlabel('Time (ms)',fontsize=12)
     axs[1].set_ylabel('Response (Degrees per Second)', fontsize=12)
 
@@ -159,5 +162,5 @@ def read_from_serial_front():
 if __name__ == '__main__':
     # read_from_serial_rear()
     # read_from_serial_front()
-    plot_from_csv_rear()
-    # plot_from_csv_front()
+    # plot_from_csv_rear()
+    plot_from_csv_front()
