@@ -45,12 +45,12 @@ REAR_20_DEADBAND_START_4 = 30476
 REAR_20_DEADBAND_INPUT_START = -100
 REAR_20_DEADBAND_INPUT_END = 100
 
-FRONT_40_DEADBAND_START_1 = 3668
-FRONT_40_DEADBAND_START_2 = 12502
-FRONT_40_DEADBAND_START_3 = 21278
-FRONT_40_DEADBAND_START_4 = 30115
-FRONT_40_DEADBAND_INPUT_START = -110
-FRONT_40_DEADBAND_INPUT_END = 120
+FRONT_40_DEADBAND_START_1 = 1983
+FRONT_40_DEADBAND_START_2 = 6312
+FRONT_40_DEADBAND_START_3 = 10880
+FRONT_40_DEADBAND_START_4 = 15268
+FRONT_40_DEADBAND_INPUT_START = -90
+FRONT_40_DEADBAND_INPUT_END = 70
 
 REAR_40_DEADBAND_START_1 = 1924
 REAR_40_DEADBAND_START_2 = 6552
@@ -309,7 +309,7 @@ def plot_front40():
     axs[0].plot(FRONT_40_DEADBAND_START_4,FRONT_40_DEADBAND_INPUT_START,'o')
     
     axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-110,0,120,200,400,600,800])
+    axs[0].set_yticks([-800,-600,-400,-200,-90,0,70,200,400,600,800])
     axs[0].set_xticks([])
     # axs[0].set_title('Commanded Input vs Time')
 
@@ -397,8 +397,8 @@ def plot_rear40():
 
 if __name__ == '__main__':
     # plot_front10()
-    plot_rear10()
+    # plot_rear10()
     # plot_front20()
-    plot_rear20()
-    # plot_front40()
-    plot_rear40()
+    # plot_rear20()
+    plot_front40()
+    # plot_rear40()
