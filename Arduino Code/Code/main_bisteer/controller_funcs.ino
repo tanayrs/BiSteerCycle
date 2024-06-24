@@ -108,9 +108,7 @@ void controller_rear_speed(double velocity_rear){
         //Serial.println(speed_error);
 }
 
-
 /****************************************************************************************************************************************************************************************************/
-
 
 void controller_front_speed(double velocity_front){
         double Vf = velocity_front;
@@ -141,6 +139,27 @@ void controller_front_speed(double velocity_front){
         front_wheel_inp = constrain(front_wheel_inp,-4095,4095);
 
         frontWheelInput = front_wheel_inp;
+}
+
+/****************************************************************************************************************************************************************************************************/
+
+void controller_track_stand(double front_angle){
+        long double dt = loopTimeConstant * 1e-6;
+
+        // Fixing the front and rear steering at an angle and 0 for track stand
+        holdsteering(front_angle, 0);
+
+        // based on phi (target = 0), PID loop will change rear velocity 
+        double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
+
+        // Calculating front velocity based on rear velocity 
+        double phi_rad = phi*(PI/180);
+        double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
+        double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
+        double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+
+        frontWheelInput = front_acc;
+        rearWheelInput = rear_acc;
 }
 
 /****************************************************************************************************************************************************************************************************/

@@ -105,6 +105,13 @@ double integral_wheel_R = 0;
 #define Kd_lean 110 //400
 #define Kd_wheel 0
 #define Ki_lean 200
+
+// Track stand controller
+#define Kp_track 100 
+#define Kd_track 20 
+#define Kd_track_wheel 0
+#define Ki_track 40
+
 double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
