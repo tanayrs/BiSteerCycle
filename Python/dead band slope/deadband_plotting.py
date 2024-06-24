@@ -1,7 +1,7 @@
 '''
 Experiment: Dead Band Testing
 By: Jia Bhargava, Tanay Srinivasa
-Last Modified: 21 June 2024
+Last Modified: 24 June 2024
 
 Run bi_steer_cycle arduino code with set_dead_band_speed()
 '''
@@ -257,7 +257,7 @@ def plot_rear_compensated():
     plt.show()
 
 if __name__ == '__main__':
-    # plot_front()
+    plot_front()
     # plot_rear()
     # plot_front_compensated()
-    plot_rear_compensated()
+    # plot_rear_compensated()

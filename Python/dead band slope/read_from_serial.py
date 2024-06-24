@@ -1,7 +1,7 @@
 '''
 Experiment: Dead Band Testing
 By: Jia Bhargava, Tanay Srinivasa
-Last Modified: 12 June 2024
+Last Modified: 24 June 2024
 
 Run bi_steer_cycle arduino code with set_dead_band_speed()
 '''
@@ -13,8 +13,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-FRONT_PATH = './Python/dead band slope/SourceData4095/FrontUncompensatedData.csv'
-REAR_PATH = './Python/dead band slope/SourceData4095/RearUncompensatedData.csv'
+FRONT_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data.csv'
+REAR_PATH = './Python/dead band slope/SourceData4095/RearSlope40Data.csv'
 FRONT_COMP_PATH = './Python/dead band slope/SourceData4095/FrontCompensatedData.csv'
 REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.csv'
 COM = '/dev/cu.usbmodem160464801'
@@ -23,7 +23,7 @@ BAUD = 115200
 # Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
 def read_from_serial():
     # Adding Header Row with Columns of CSV #
-    with open(FRONT_COMP_PATH, mode='w') as sensor_file:
+    with open(FRONT_PATH, mode='w') as sensor_file:
         sensor_writer = csv.writer(
                 sensor_file, 
                 delimiter=',', 
@@ -41,7 +41,7 @@ def read_from_serial():
         print(data)
         data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
-            with open(FRONT_COMP_PATH, mode='a') as sensor_file:
+            with open(FRONT_PATH, mode='a') as sensor_file:
                 line = data.split(',')
                 sensor_writer = csv.writer(
                         sensor_file, 

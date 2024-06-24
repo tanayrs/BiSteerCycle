@@ -94,16 +94,16 @@ void writeToMotor() {
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         // rearSteerMotor.setSpeed(rearSteerInput);
 
-        // frontWheelMotor.setSpeed(frontWheelInput);
-        // rearWheelMotor.setSpeed(rearWheelInput);
+        frontWheelMotor.setSpeed(frontWheelInput);
+        rearWheelMotor.setSpeed(rearWheelInput);
 
         // Rear deadband: positive = 170, negative = -160 //
-        if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
+        // if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
+        // else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
 
         // Front deadband: positive = 215, negative = -170 //
-        if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
+        // if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
+        // else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
 }
 
 /* Motor Calibration in Forward and Reverse Directions for Sin Input */
@@ -135,11 +135,11 @@ void deadband_test(){
         
                 // Triangle Input //
                 if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
-                frontWheelInput += (deadband_sign*10);
+                frontWheelInput += (deadband_sign*40);
                 prev_time = millis();
 
                 // if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
-                // rearWheelInput += (deadband_sign*10);
+                // rearWheelInput += (deadband_sign*40);
                 // prev_time = millis();
         }  
 }
