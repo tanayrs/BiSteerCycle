@@ -20,7 +20,7 @@ FRONT_40_END = 70
 REAR_40_START = -80
 REAR_40_END = 90
 
-x = [10, 20, 40]   # X axis if the graph 
+x = [10, 20, 40]   # X axis of the graph 
 
 # Front and rear start and end deadbands on the Y axis
 front_start = [FRONT_10_START, FRONT_20_START, FRONT_40_START]
