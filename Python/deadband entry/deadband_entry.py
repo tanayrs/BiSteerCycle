@@ -10,8 +10,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-FRONT_10_PATH = './Python/dead band slope/SourceData4095/FrontUncompensatedData.csv'
-REAR_10_PATH = './Python/dead band slope/SourceData4095/RearUncompensatedData.csv'
+FRONT_10_PATH = './Python/dead band slope/SourceData4095/FrontSlope10Data.csv'
+REAR_10_PATH = './Python/dead band slope/SourceData4095/RearSlope10Data.csv'
 FRONT_20_PATH = './Python/dead band slope/SourceData4095/FrontSlope20Data.csv'
 REAR_20_PATH = './Python/dead band slope/SourceData4095/RearSlope20Data.csv'
 FRONT_40_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data_1.csv'
