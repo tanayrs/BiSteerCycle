@@ -396,9 +396,9 @@ def plot_rear40():
     plt.show()
 
 if __name__ == '__main__':
-    plot_front10()
-    plot_rear10()
-    plot_front20()
-    plot_rear20()
+    # plot_front10()
+    # plot_rear10()
+    # plot_front20()
+    # plot_rear20()
     plot_front40()
-    plot_rear40()
+    # plot_rear40()
