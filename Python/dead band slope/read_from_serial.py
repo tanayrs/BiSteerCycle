@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-FRONT_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data.csv'
+FRONT_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data_1.csv'
 REAR_PATH = './Python/dead band slope/SourceData4095/RearSlope40Data.csv'
 FRONT_COMP_PATH = './Python/dead band slope/SourceData4095/FrontCompensatedData.csv'
 REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.csv'

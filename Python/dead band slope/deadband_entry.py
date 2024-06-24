@@ -14,7 +14,7 @@ FRONT_10_PATH = './Python/dead band slope/SourceData4095/FrontUncompensatedData.
 REAR_10_PATH = './Python/dead band slope/SourceData4095/RearUncompensatedData.csv'
 FRONT_20_PATH = './Python/dead band slope/SourceData4095/FrontSlope20Data.csv'
 REAR_20_PATH = './Python/dead band slope/SourceData4095/RearSlope20Data.csv'
-FRONT_40_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data.csv'
+FRONT_40_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data_1.csv'
 REAR_40_PATH = './Python/dead band slope/SourceData4095/RearSlope40Data.csv'
 
 FRONT_10_DEADBAND_START_1 = 5049
@@ -45,12 +45,21 @@ REAR_20_DEADBAND_START_4 = 30476
 REAR_20_DEADBAND_INPUT_START = -100
 REAR_20_DEADBAND_INPUT_END = 100
 
+# For FrontSlope40Data.csv #
 FRONT_40_DEADBAND_START_1 = 1983
 FRONT_40_DEADBAND_START_2 = 6312
 FRONT_40_DEADBAND_START_3 = 10880
 FRONT_40_DEADBAND_START_4 = 15268
 FRONT_40_DEADBAND_INPUT_START = -90
 FRONT_40_DEADBAND_INPUT_END = 70
+
+# For FrontSlope40Data_1.csv #
+# FRONT_40_DEADBAND_START_1 = 2045
+# FRONT_40_DEADBAND_START_2 = 6432
+# FRONT_40_DEADBAND_START_3 = 10941
+# FRONT_40_DEADBAND_START_4 = 15328
+# FRONT_40_DEADBAND_INPUT_START = -90
+# FRONT_40_DEADBAND_INPUT_END = 70
 
 REAR_40_DEADBAND_START_1 = 1924
 REAR_40_DEADBAND_START_2 = 6552
