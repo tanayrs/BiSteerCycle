@@ -23,7 +23,7 @@ phidot = z(6);
 theta_F = z(7);
 theta_R = z(8);
 
-target = -(8*phi + 0.8*phidot);
+target = -1*(8*phi + 0.8*phidot);
 error_F    = target - theta_F;
 error_R    = target - theta_R; 
 

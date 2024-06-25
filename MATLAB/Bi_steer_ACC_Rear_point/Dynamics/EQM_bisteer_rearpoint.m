@@ -182,7 +182,7 @@ psidot = sol.psidot;
 vFscalar = sol.vFscalar;
 
 
-psidot            = simplify(psidot);
+psidot            = simplify(psidot)
 vFscalar          = simplify(vFscalar);
 
 vF                = vFscalar*f_track;
