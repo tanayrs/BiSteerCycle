@@ -34,7 +34,7 @@ void controller_segway() {
 
         frontWheelInput = round(Uf);
         rearWheelInput  = round(Ur);
-        Serial.println(int_lean);
+        // Serial.println(int_lean);
 }
 
 /******************************************************************************************************************************************************************************************************/
@@ -209,10 +209,17 @@ void holdsteering(double degrees_F, double degrees_R) {
 
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
+
+        Serial.print(steer_error_F); Serial.print(" ");
+        Serial.print(steer_error_R); Serial.print(" ");
+        // Serial.print((steer_error_F - prev_steer_error_F)/dt); Serial.print(" ");
+        // Serial.print((steer_error_R - prev_steer_error_R)/dt); Serial.print(" ");
+        Serial.print(integral_steer_F); Serial.print(" ");
+        Serial.print(integral_steer_R); Serial.println(" ");
         
 
-        frontSteerInput = 10 * (steer_error_F) + 10*0.05 * ((steer_error_F - prev_steer_error_F)/dt) + 50*(integral_steer_F)*dt;
-        rearSteerInput =  10 * (steer_error_R) + 10*0.05 * ((steer_error_R - prev_steer_error_R)/dt) + 50*(integral_steer_R)*dt;
+        frontSteerInput = 40 * (steer_error_F) + 40*0.005 * ((steer_error_F - prev_steer_error_F)/dt) + 300*(integral_steer_F)*dt;
+        rearSteerInput =  40 * (steer_error_R) + 40*0.005 * ((steer_error_R - prev_steer_error_R)/dt) + 300*(integral_steer_R)*dt;
 
         prev_steer_error_F = steer_error_F;
         prev_steer_error_R = steer_error_R;
@@ -237,15 +244,16 @@ void holdsteering(double degrees_F, double degrees_R) {
 void writeToMotor() {
         // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
         frontSteerMotor.setSpeed(frontSteerInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
 
-        // Rear deadband: positive = 9, negative = -7 //
+        // Rear deadband: positive = 170, negative = -160 //
         if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-158:rearWheelInput+165);   // -143 +150
+        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
 
-        // Front deadband: positive = 11, negative = -11 //
+        // Front deadband: positive = 215, negative = -170 //
         if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-180:frontWheelInput+210); 
+        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
+
 }
 
 /****************************************************************************************************************************************************************************************************/

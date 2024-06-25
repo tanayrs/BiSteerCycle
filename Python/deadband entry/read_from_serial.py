@@ -1,9 +1,9 @@
 '''
-Experiment: Dead Band Testing
+Experiment: Dead Band Entry Testing 
 By: Jia Bhargava, Tanay Srinivasa
 Last Modified: 24 June 2024
 
-Run bi_steer_cycle arduino code with set_dead_band_speed()
+Run bi_steer_cycle_testing arduino code with deadband_test()
 '''
 
 import serial

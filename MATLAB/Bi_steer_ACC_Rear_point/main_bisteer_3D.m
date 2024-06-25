@@ -33,11 +33,11 @@ y0 = 0;
 V0 = 1;
 
 psi0 = deg2rad(150);  %heading
-phi0 = deg2rad(-20);  %lean angle  -30
+phi0 = deg2rad(-10);  %lean angle  -30
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(40);  %30
-theta_R0 = deg2rad(-45); %60
+theta_F0 = deg2rad(90);  %30
+theta_R0 = deg2rad(90); %60
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';

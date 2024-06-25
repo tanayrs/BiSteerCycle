@@ -219,6 +219,7 @@ void setup() {
         prev_time_millis = millis();
         frontWheelInput = -50;
         rearWheelInput = 0;
+        frontSteerInput=0;
         deadband_sign = 1;
         motor_calibration_sign = -1;
 }
@@ -240,7 +241,8 @@ void loop(){
         // holdsteering(0,0);
 
         // Testing Deadband and Motor Calibration //
-        deadband_test();
+        // deadband_test();
+        deadband_test_steer();
         //motor_calibration_square();
         // controller_bicycle(0.1);
 

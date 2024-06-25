@@ -80,9 +80,10 @@ void loop(){
         
         // Calculates Drive Input //
         //  controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
+        //  controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
-        // holdsteering(0,0);     // takes front rear steer in degrees
+        holdsteering(90,90);     // takes front rear steer in degrees
 
         // Testing Deadband and Motor Calibration //
         // deadband_test();
