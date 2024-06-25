@@ -61,9 +61,7 @@ void setup() {
         prev_time = millis();
         prev_time_millis = millis();
         frontWheelInput = 0;
-        rearWheelInput = 300;
-        frontSteerInput = 500;
-        rearSteerInput = 500;
+        rearWheelInput = 0;
         deadband_sign = 1;
         motor_calibration_sign = -1;
 }
