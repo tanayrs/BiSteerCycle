@@ -28,7 +28,7 @@ xdot     = zdot(1);
 ydot     = zdot(2);
 
 
-%
+%{
 if abs(theta_F-theta_R) < deg2rad(0.001)
     psidot = (V*(theta_F - theta_R))/((df + dr)*(cos(phi)^2 + tan(theta_R)^2)^(1/2));
 else
@@ -36,7 +36,7 @@ else
 end
 %}
 
-
+psidot = (V*(tan(theta_F) - tan(theta_R)))/((df + dr)*(cos(phi)^2 + tan(theta_R)^2)^(1/2));
 phiddot  = zdot(4);
 
 disp(t)

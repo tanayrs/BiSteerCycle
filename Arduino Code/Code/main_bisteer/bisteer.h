@@ -109,6 +109,8 @@ double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
 
+/*front segway variable*/
+
 /* cycle controller */
 double prev_speed_error_rear = 0;
 double prev_speed_error_front = 0;

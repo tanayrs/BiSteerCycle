@@ -39,79 +39,80 @@ end
 
 %}
 
-if t >= 0 && t<=10
+if t >= 0 && t<=5
 
-    %state_ref = p.ref_1;
-    state_ref = [5,0.5*sin(2*t),0];
+    state_ref = p.ref_1;
+    %state_ref = [5,0.5*sin(2*t),0];
     K = p.K_1;
 
 end
 
 %
-if t >10 && t <=20
+if t >5 && t <=10
      state_ref = p.ref_2;
      K = p.K_2;
 end
 
 %
 
-if t> 20 && t <=30
+if t> 10 && t <=15
 
     state_ref = p.ref_3;
     K = p.K_3;
 end
 
 %
-if t> 30 && t<=40
+if t> 15 && t<=25
         state_ref = [1,0,0];
         K = p.K_4;        
 end
 
 %
-if t > 40 && t <=50
-    state_ref = [1,0.3*sin(1*(t-40)),0];
+if t > 25 && t <=41
+    state_ref = [1,0.2*sin(1*(t-40)),0];
     K = p.K_4;
     %[K,~,~] = my_lqr(t,z,p,state_ref,Q,R);
 
 end
 %
 
-if t >50 && t <=55 && theta_F <= deg2rad(1) 
+if t >41 && t <=45 && theta_F <= deg2rad(1) 
     state_ref = p.ref_phi;
     K = p.K_phi;
     %K = p.K_4;
 end
 
-if t >50 && t <=55 && theta_F > deg2rad(1)
-     state_ref = [1,0.3*sin(1*(t-40)),0];
+if t >41 && t <=45 && theta_F > deg2rad(1)
+     state_ref = [1,0.2*sin(1*(t-40)),0];
      K = p.K_4;
 end
 
 %
-if t > 55
+if t > 45 && t <= 46
     state_ref = [0.1,0,0];
-    K=p.K_4;
+    K=p.K_5;
 end
-%{
-if t >58 && t <=65
-    state_ref = p.ref_theta_F;
-    K= p.K_theta_F;
+%
+if t >46 && t <=50
+    state_ref = p.ref_6;
+    K= p.K_6;
 end
-
-if t> 65 && t<=70
-    state_ref=p.ref_theta_R;
-    K = p.K_theta_R;
+%}
+%
+if t> 50 && t<=53
+    state_ref=p.ref_6;
+    K = p.K_6;
 end
-
-if t>70 && t<= 75
-    state_ref=p.ref_theta_F
-    K = p.K_theta_F
+%
+if t>53 && t<= 58
+    state_ref=p.ref_8;
+    K = p.K_8;
 end
+%
+if t > 58
 
-if t > 75
-
-    state_ref=p.ref_theta_R;
-    K=p.K_theta_R;
+    state_ref=p.ref_7;
+    K=p.K_7;
 
 end
 
@@ -175,8 +176,8 @@ theta_Rdot = U(3);%0.5*sin(t);
 
 
 %{\
-if t >=0 && t <=1
-    %theta_Fdot = bang_bang_smoothing(0,1,t,theta_Fdot);
+if t >=0 && t <=5
+    theta_Fdot = bang_bang_smoothing(0,1,t,theta_Fdot);
 end
 
 
@@ -201,13 +202,7 @@ if theta_F ~= deg2rad(90) || theta_F ~= deg2rad(-90) || norm(Tr) > 1e-3
 end
 %}
 
-if abs(theta_F) <= deg2rad(92) && abs(theta_F) >= deg2rad(88) && abs(abs(theta_R)-abs(theta_F)) >= deg2rad(2) 
-    %Tr = 0;
-end
 
-if abs(theta_R) <= deg2rad(92) && abs(theta_R) >= deg2rad(88) && abs(abs(theta_R)-abs(theta_F)) >= deg2rad(2)
-    %Tf = 0;
-end
 
 
 %{
