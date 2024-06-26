@@ -49,11 +49,11 @@ void updateEncoderData() {
                 // Serial.print(frontWheelTicks); Serial.print(",");
                 // Serial.print(frontWheelData.speed());
                 // Serial.print(frontSteerInput); Serial.print(",");        
-                // Serial.print(frontSteerTicks); Serial.print(",");
+                Serial.print(frontSteerTicks); Serial.print(",");
                 // Serial.print(frontSteerData.speed());
-                Serial.print(rearSteerInput); Serial.print(",");        
+                // Serial.print(rearSteerInput); Serial.print(",");        
                 Serial.print(rearSteerTicks); Serial.print(",");
-                Serial.print(rearSteerData.speed());
+                // Serial.print(rearSteerData.speed());
                 Serial.println("");
                 prev_time_millis = millis();
         }
@@ -98,20 +98,20 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         
-        // Directly Writing Input without any Compensation //
-        frontSteerMotor.setSpeed(frontSteerInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // // Directly Writing Input without any Compensation //
+        // frontSteerMotor.setSpeed(frontSteerInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
         // frontWheelMotor.setSpeed(frontWheelInput);
         // rearWheelMotor.setSpeed(rearWheelInput);
         
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
-        // if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
-        // else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
+        if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
+        else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
 
-        // Rear Steer deadband: positive = 240, negative = -190 //
-        // if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
-        // else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-240:rearSteerInput+350); 
+        // Rear Steer deadband: positive = 130, negative = -190 //
+        if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
+        else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
         // Rear deadband: positive = 170, negative = -160 //
         // if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
@@ -179,7 +179,7 @@ void deadband_test_steer(){
 
 /* Finding Maximum Input Value Corresponding to Max Motor Speed */
 void max_input_speed(){
-        if (millis() - prev_time > 1000){
+        if (millis() - prev_time > 100){
                 frontSteerInput += 10;
                 rearSteerInput += 10;
                 prev_time = millis();

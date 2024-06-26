@@ -17,10 +17,16 @@ void controller_segway() {
 
         int_lean = constrain(int_lean,-300,300);
 
+        double front_acc, rear_acc;
 
-        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
-        double rear_acc =  (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
- 
+        if (abs(phi) < 10) {
+                front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
+        } else {
+                front_acc = 2*(300* (phi) + 60* (phi_dot) + 200 * int_lean + 0 * (frontWheelData.speed()));
+                rear_acc =  2*(300* (phi) + 60* (phi_dot) + 200 * int_lean + 0 * (rearWheelData.speed())); 
+        }
+
         prv_sgn_phi = sgn1;
 
         Uf += front_acc*dt;
@@ -36,7 +42,6 @@ void controller_segway() {
         rearWheelInput  = round(Ur);
         // Serial.println(int_lean);
 }
-
 /******************************************************************************************************************************************************************************************************/
 void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
         double Vr = rear_speed;
@@ -150,16 +155,16 @@ void controller_track_stand(double front_angle){
         holdsteering(front_angle, 0);
 
         // based on phi (target = 0), PID loop will change rear velocity 
-        double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
+        // double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
 
         // Calculating front velocity based on rear velocity 
-        double phi_rad = phi*(PI/180);
-        double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
-        double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
-        double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+        // double phi_rad = phi*(PI/180);
+        // double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
+        // double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
+        // double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
 
-        frontWheelInput = front_acc;
-        rearWheelInput = rear_acc;
+        // frontWheelInput = front_acc;
+        // rearWheelInput = rear_acc;
 }
 
 /****************************************************************************************************************************************************************************************************/
@@ -199,52 +204,58 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /****************************************************************************************************************************************************************************************************/
+/* Sets Steering Angle for Front and Rear Wheels */
 void holdsteering(double degrees_F, double degrees_R) {
-        int sgnF = constrain(degrees_F, -1, 1);
-
         long double dt = loopTimeConstant * 1e-6;
 
-        double EncTarget_F = (degrees_F + 0*sgnF) * (steerMotorPPR) / 360; // Add 3 in deadband //
+        double EncTarget_F = degrees_F * (steerMotorPPR) / 360;  // Add 3 in deadband //
         double EncTarget_R = degrees_R * (steerMotorPPR) / 360;
 
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
 
-        Serial.print(steer_error_F); Serial.print(" ");
-        Serial.print(steer_error_R); Serial.print(" ");
-        // Serial.print((steer_error_F - prev_steer_error_F)/dt); Serial.print(" ");
-        // Serial.print((steer_error_R - prev_steer_error_R)/dt); Serial.print(" ");
-        Serial.print(integral_steer_F); Serial.print(" ");
-        Serial.print(integral_steer_R); Serial.println(" ");
-        
+        frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
+        rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
 
-        frontSteerInput = 40 * (steer_error_F) + 40*0.005 * ((steer_error_F - prev_steer_error_F)/dt) + 300*(integral_steer_F)*dt;
-        rearSteerInput =  40 * (steer_error_R) + 40*0.005 * ((steer_error_R - prev_steer_error_R)/dt) + 300*(integral_steer_R)*dt;
+        integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
+        integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
+        integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
+        integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
+
+        if (steer_error_F < 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
+        else integral_steer_F = 0;
+
+        if (steer_error_R < 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
+
+        if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
+        if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
 
         prev_steer_error_F = steer_error_F;
         prev_steer_error_R = steer_error_R;
 
-        if (steer_error_F < 5*steerMotorPPR/360) integral_steer_F += steer_error_F; // 5 is for degrees can change // 
-        else integral_steer_F = 0;
-         
-        if(steer_error_R < 5*steerMotorPPR/360) integral_steer_R += steer_error_R;
-        else integral_steer_R = 0;
-        
-        double acc = 3000;
-        
-        if (frontSteerInput > acc)  frontSteerInput = acc;
+        double acc = 1600;
+        if (frontSteerInput > acc) frontSteerInput = acc;
         if (frontSteerInput < -acc) frontSteerInput = -acc;
-        if (rearSteerInput > acc)   rearSteerInput = acc;
-        if (rearSteerInput < -acc)  rearSteerInput = -acc;
+        if (rearSteerInput > acc) rearSteerInput = acc;
+        if (rearSteerInput < -acc) rearSteerInput = -acc;
+
+        if (abs(steer_error_F) < 10) frontSteerInput = 0;
+        if (abs(steer_error_R) < 10) rearSteerInput = 0;
 }
 
 /****************************************************************************************************************************************************************************************************/
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
-        // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        frontSteerMotor.setSpeed(frontSteerInput);
-        // rearSteerMotor.setSpeed(rearSteerInput);
+        // Deadband Compensation for all Motors //
+        // Front Steer deadband: positive = 260, negative = -250 //
+        if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
+        else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
+
+        // Rear Steer deadband: positive = 130, negative = -190 //
+        if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
+        else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
         // Rear deadband: positive = 170, negative = -160 //
         if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
@@ -253,7 +264,6 @@ void writeToMotor() {
         // Front deadband: positive = 215, negative = -170 //
         if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
         else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
-
 }
 
 /****************************************************************************************************************************************************************************************************/

@@ -85,10 +85,9 @@ void loop(){
 
         // Testing Deadband and Motor Calibration //
         // deadband_test();
-        deadband_test_steer();
+        // deadband_test_steer();
         // motor_calibration_square();
         // controller_bicycle(0.1);
-
         // max_input_speed();
 
         // Writes Inputs to Motor //
