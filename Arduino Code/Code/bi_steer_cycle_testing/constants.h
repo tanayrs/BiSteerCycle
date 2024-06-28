@@ -15,8 +15,8 @@
 
 /****************** Declaring GLobal Variables ******************/
 
-#define steerMotorPPR 9048    //8540
-#define wheelMotorPPR 1960.4    //2264
+#define steerMotorPPR 2262    //8540
+#define wheelMotorPPR 490    //2264
 const double loopTimeConstSec = loopTimeConstant*1e-6f;
 double sampling_time = loopTimeConstSec;
 

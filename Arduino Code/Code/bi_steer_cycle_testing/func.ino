@@ -49,12 +49,12 @@ void updateEncoderData() {
                 // Serial.print(frontWheelTicks); Serial.print(",");
                 // Serial.print(frontWheelData.speed());
                 // Serial.print(frontSteerInput); Serial.print(",");        
-                Serial.print(frontSteerTicks); Serial.print(",");
+                // Serial.print(frontSteerTicks); Serial.print(",");
                 // Serial.print(frontSteerData.speed());
                 // Serial.print(rearSteerInput); Serial.print(",");        
-                Serial.print(rearSteerTicks); Serial.print(",");
+                // Serial.print(rearSteerTicks); Serial.print(",");
                 // Serial.print(rearSteerData.speed());
-                Serial.println("");
+                // Serial.println("");
                 prev_time_millis = millis();
         }
 }
@@ -114,12 +114,12 @@ void writeToMotor() {
         else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
         // Rear deadband: positive = 170, negative = -160 //
-        // if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        // else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
+        if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
+        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
 
         // Front deadband: positive = 215, negative = -170 //
-        // if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        // else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
+        if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
+        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
 }
 
 /* Motor Calibration in Forward and Reverse Directions for Sin Input */

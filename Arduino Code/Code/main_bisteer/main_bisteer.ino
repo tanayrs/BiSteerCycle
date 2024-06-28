@@ -70,30 +70,20 @@ void setup() {
 
 void loop(){
         digitalWrite(13,HIGH);
-        
-        // Sets Wheel to an Angle //
-        // holdwheel(0*sin(millis()*1e-3), 0*sin(millis()*1e-3));
-        // holdwheel(0, 90);
 
         // Updates Encoder Angle and IMU Angle //
         calculate_state();   
         
         // Calculates Drive Input //
-        // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
+        controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
-        holdsteering(90,90);     // takes front rear steer in degrees
-
-        // Testing Deadband and Motor Calibration //
-        // deadband_test();
-        // motor_calibration_square();
+        // holdsteering(90,90);     // takes front rear steer in degrees
         
-
         //controller_bicycle(0.48);
         //controller_rear_speed(0.48);
         //controller_front_speed(0.48);
-        //frontWheelInput = -600;
-        //rearWheelInput  = -600;
+
         // Writes Inputs to Motor //
         writeToMotor(); 
         // frontWheelMotor.setSpeed(210);  

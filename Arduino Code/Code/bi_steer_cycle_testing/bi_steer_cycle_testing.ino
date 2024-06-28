@@ -59,8 +59,8 @@ void setup() {
         // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
         prev_time_millis = millis();
-        frontWheelInput = -50;
-        rearWheelInput = 0;
+        frontWheelInput = 409;
+        rearWheelInput = 409;
         frontSteerInput = 0;
         rearSteerInput = 0;
         deadband_sign = 1;
@@ -97,7 +97,7 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
 
-        // logFeedback();
+        logFeedback();
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

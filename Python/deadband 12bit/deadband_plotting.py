@@ -13,10 +13,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-FRONT_PATH = './Python/dead band slope/SourceData4095/FrontUncompensatedData.csv'
-REAR_PATH = './Python/dead band slope/SourceData4095/RearUncompensatedData.csv'
-FRONT_COMP_PATH = './Python/dead band slope/SourceData4095/FrontCompensatedData.csv'
-REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.csv'
+FRONT_PATH = './Python/deadband 12bit/SourceData/FrontUncompensatedData.csv'
+REAR_PATH = './Python/deadband 12bit/SourceData/RearUncompensatedData.csv'
+FRONT_COMP_PATH = './Python/deadband 12bit/SourceData/FrontCompensatedData.csv'
+REAR_COMP_PATH = './Python/deadband 12bit/SourceData/RearCompensatedData.csv'
 
 FRONT_DEADBAND_END_1 = 8174
 FRONT_DEADBAND_END_2 = 26449
@@ -88,9 +88,15 @@ def plot_front():
 
     sorted_df = df.sort_values('Wheel Input')
     plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
+    plt.vlines(x=FRONT_DEADBAND_INPUT_START, ymin= -80,ymax=0, color='k', linestyle='--',linewidth=0.75)
+    plt.vlines(x=FRONT_DEADBAND_INPUT_END, ymin= -80,ymax=0, color='k', linestyle='--',linewidth=0.75)
+    plt.axhline(y=0, color='k', linestyle='--',linewidth=0.75)
+    plt.plot(FRONT_DEADBAND_INPUT_START, 0, 'o', color='tab:red')
+    plt.plot(FRONT_DEADBAND_INPUT_END, 0, 'o', color='tab:orange')
+    plt.xticks([-800,-600,-400,FRONT_DEADBAND_INPUT_START, 0, FRONT_DEADBAND_INPUT_END, 400, 600, 800])
     plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
     plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-    plt.title('Commanded Value vs Response')
+    plt.title('Commanded Value vs Response', fontsize=14)
     plt.show()
 
 def plot_rear():
@@ -143,9 +149,15 @@ def plot_rear():
 
     sorted_df = df.sort_values('Wheel Input')
     plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
+    plt.vlines(x=REAR_DEADBAND_INPUT_START, ymin= -80,ymax=0, color='k', linestyle='--',linewidth=0.75)
+    plt.vlines(x=REAR_DEADBAND_INPUT_END, ymin= -80,ymax=0, color='k', linestyle='--',linewidth=0.75)
+    plt.axhline(y=0, color='k', linestyle='--',linewidth=0.75)
+    plt.plot(REAR_DEADBAND_INPUT_START, 0, 'o', color='tab:red')
+    plt.plot(REAR_DEADBAND_INPUT_END, 0, 'o', color='tab:orange')
+    plt.xticks([-800,-600,-400,REAR_DEADBAND_INPUT_START, 0, REAR_DEADBAND_INPUT_END, 400, 600, 800])
+    plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
+    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+    plt.title('Commanded Value vs Response', fontsize=14)
     plt.show()
 
 def plot_front_compensated():
@@ -195,9 +207,17 @@ def plot_front_compensated():
 
     sorted_df = df.sort_values('Wheel Input')
     plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
+    plt.axvline(x=FRONT_DEADBAND_INPUT_START, color='k', linestyle='--',linewidth=0.75)
+    plt.axvline(x=FRONT_DEADBAND_INPUT_END, color='k', linestyle='--',linewidth=0.75)
+    plt.axhline(y=0, color='k', linestyle='--',linewidth=0.75)
+    # plt.plot(FRONT_DEADBAND_INPUT_START, -19, 'o', color='tab:red')
+    # plt.plot(FRONT_DEADBAND_INPUT_END, 24.7, 'o', color='tab:orange')
+    plt.plot(FRONT_DEADBAND_INPUT_START, 0, 'o', color='tab:red')
+    plt.plot(FRONT_DEADBAND_INPUT_END, 0, 'o', color='tab:orange')
+    plt.xticks([-800,-600,-400,FRONT_DEADBAND_INPUT_START, 0, FRONT_DEADBAND_INPUT_END, 400, 600, 800])
+    plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
+    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+    plt.title('Commanded Value vs Response', fontsize=14)
     plt.show()
 
 def plot_rear_compensated():
@@ -251,13 +271,19 @@ def plot_rear_compensated():
 
     sorted_df = df.sort_values('Wheel Input')
     plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
+    plt.axvline(x=REAR_DEADBAND_INPUT_START, color='k', linestyle='--',linewidth=0.75)
+    plt.axvline(x=REAR_DEADBAND_INPUT_END, color='k', linestyle='--',linewidth=0.75)
+    plt.axhline(y=0, color='k', linestyle='--',linewidth=0.75)
+    plt.plot(REAR_DEADBAND_INPUT_START, 0, 'o', color='tab:red')
+    plt.plot(REAR_DEADBAND_INPUT_END, 0, 'o', color='tab:orange')
+    plt.xticks([-800,-600,-400,REAR_DEADBAND_INPUT_START, 0, REAR_DEADBAND_INPUT_END, 400, 600, 800])
+    plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
+    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+    plt.title('Commanded Value vs Response', fontsize=14)
     plt.show()
 
 if __name__ == '__main__':
-    plot_front()
+    # plot_front()
     # plot_rear()
     # plot_front_compensated()
-    # plot_rear_compensated()
+    plot_rear_compensated()

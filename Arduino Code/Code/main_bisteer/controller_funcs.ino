@@ -19,12 +19,12 @@ void controller_segway() {
 
         double front_acc, rear_acc;
 
-        if (abs(phi) < 10) {
-                front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
-                rear_acc =  (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
+        if (abs(phi) < 7.5) {
+                front_acc = (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
         } else {
-                front_acc = 2*(300* (phi) + 60* (phi_dot) + 200 * int_lean + 0 * (frontWheelData.speed()));
-                rear_acc =  2*(300* (phi) + 60* (phi_dot) + 200 * int_lean + 0 * (rearWheelData.speed())); 
+                front_acc = 4*(Kp_lean * (phi) + 5000 * (phi_dot) + 2*int_lean + 0 * (frontWheelData.speed()));
+                rear_acc =  4*(Kp_lean * (phi) + 5000 * (phi_dot) + 2*int_lean + 0 * (rearWheelData.speed())); 
         }
 
         prv_sgn_phi = sgn1;
@@ -149,7 +149,7 @@ void controller_front_speed(double velocity_front){
 /****************************************************************************************************************************************************************************************************/
 
 void controller_track_stand(double front_angle){
-        long double dt = loopTimeConstant * 1e-6;
+        // long double dt = loopTimeConstant * 1e-6;
 
         // Fixing the front and rear steering at an angle and 0 for track stand
         holdsteering(front_angle, 0);
