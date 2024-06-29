@@ -51,10 +51,9 @@ void calculate_bno_angle() {
 /* Calculate Angles from BNO-055 Sensor using a Kalman Filter */
 void calculate_bno_angle_kalman() {
         // Finding Sensor Readings //
-        sensors_event_t a, g, event;
+        sensors_event_t a, g;
         bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
         bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        bno.getEvent(&event);
 
         // Calculating Angle from Accelerometer //
         float ax = a.acceleration.x;
@@ -67,13 +66,6 @@ void calculate_bno_angle_kalman() {
         
         phi = kalX;
         phi_dot = g.gyro.x;
-
-        // Printing Accelerometer, Complimentary Filter, and Kalman Filter Angles //
-        Serial.print(millis()); Serial.print(" ");
-        Serial.print(-acc_angle_x); Serial.print(" ");
-        Serial.print(event.orientation.z); Serial.print(" ");
-        Serial.print(-kalX); Serial.println("");
-
 }
 
 /* Calibration of BNO-055 */
@@ -97,6 +89,33 @@ void gyro_bias(){
         Serial.print("Z bias: "); Serial.print(z_error); Serial.println("");
 }
 
+void filter_testing() {
+        // Finding Sensor Readings //
+        sensors_event_t a, g, event;
+        bno.getEvent( & a, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+        bno.getEvent( & g, Adafruit_BNO055::VECTOR_GYROSCOPE);
+        bno.getEvent(&event);
+
+        // Calculating Angle from Accelerometer //
+        float ax = a.acceleration.x;
+        float ay = a.acceleration.y;
+        float az = a.acceleration.z;
+        float acc_angle_y = -180 * atan2(ax, sqrt(ay*ay + az*az))/PI;     
+
+        // Passing Angle and Angle Rate to Kalman Filter Object //
+        float kalY = (kalmanX.update(acc_angle_y, g.gyro.y * 180/PI));
+        
+        phi = kalY;
+        phi_dot = g.gyro.y;
+
+        // Printing Accelerometer, Complimentary Filter, and Kalman Filter Angles //
+        Serial.print(millis()); Serial.print(" ");
+        Serial.print(acc_angle_y); Serial.print(" ");
+        Serial.print(-event.orientation.y); Serial.print(" ");
+        Serial.print(kalY); Serial.println("");
+
+}
+
 void setup(void) {
         Serial.begin(9600);
         Serial.println("Orientation Sensor Test"); Serial.println("");
@@ -117,5 +136,6 @@ void setup(void) {
 
 void loop(void) {
         // calculate_bno_angle();
-        calculate_bno_angle_kalman();
+        // calculate_bno_angle_kalman();
+        filter_testing();
 }
