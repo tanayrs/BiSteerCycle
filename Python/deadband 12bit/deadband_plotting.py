@@ -16,12 +16,17 @@ import numpy as np
 FRONT_PATH = './Python/deadband 12bit/SourceData/FrontUncompensatedData.csv'
 REAR_PATH = './Python/deadband 12bit/SourceData/RearUncompensatedData.csv'
 FRONT_COMP_PATH = './Python/deadband 12bit/SourceData/FrontCompensatedData.csv'
-REAR_COMP_PATH = './Python/deadband 12bit/SourceData/RearCompensatedData.csv'
+REAR_COMP_PATH = './Python/deadband 12bit/SourceData/RearOverCompensatedData.csv'
 
 FRONT_DEADBAND_END_1 = 8174
 FRONT_DEADBAND_END_2 = 26449
 FRONT_DEADBAND_END_3 = 43525
 FRONT_DEADBAND_END_4 = 61378
+FRONT_DEADBAND_START_1 = 5066
+FRONT_DEADBAND_START_2 = 22488
+FRONT_DEADBAND_START_3 = 40158
+FRONT_DEADBAND_START_4 = 57770
+
 FRONT_DEADBAND_INPUT_START = -170
 FRONT_DEADBAND_INPUT_END = 215
 
@@ -282,8 +287,138 @@ def plot_rear_compensated():
     plt.title('Commanded Value vs Response', fontsize=14)
     plt.show()
 
+def command_response_front():
+    df = pd.read_csv(FRONT_PATH)
+    df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
+    KINETIC_COEFF_DEC = 130
+    KINETIC_COEFF_INC = -135
+    STATIC_COEFF_INC = FRONT_DEADBAND_INPUT_END
+    STATIC_COEFF_DEC = FRONT_DEADBAND_INPUT_START
+
+    plt.figure(figsize=(14,8.5))
+    ### Command Response Plot for decreasing speed ###
+    plt.subplot(2,2,1)
+    NEG_SLOPE_TIME_END = 15209
+    plt.scatter(df[df['Relative Time']<= NEG_SLOPE_TIME_END]['Wheel Input'],df[df['Relative Time']<=NEG_SLOPE_TIME_END]['Wheel Speed'])
+    
+    # Plotting Vertical Lines Corresponding to Static and Kinetic Coefficients #
+    plt.axvline(x=STATIC_COEFF_DEC, color='k', linestyle='--',linewidth=0.75)
+    plt.axvline(x=KINETIC_COEFF_DEC, color='k', linestyle='--',linewidth=0.75)
+    
+    # Plotting Horizontal Line to Demarkate Line for No Response Speed #
+    plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
+    
+    # Plotting Points at which Static and Kinetic Coefficients are Measured #
+    plt.plot(STATIC_COEFF_DEC,0,'o',color='tab:orange',ms=10)
+    plt.plot(KINETIC_COEFF_DEC,0,'o',color='tab:cyan', ms=10)
+    
+    # Setting x-ticks, axese limits, axese labels and sub-plot title #
+    plt.xticks([-800,-600,-400,STATIC_COEFF_DEC, 0, KINETIC_COEFF_DEC, 400, 600, 800])
+    plt.xlim([400,-400])
+    plt.ylim([-30,30])
+    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+    plt.title('Deadband Static Coefficient for Reducing Speed', fontsize=14)
+
+    ### Command vs Time Plot ###
+    plt.subplot(2,2,2)
+    plt.plot(df['Relative Time'], df['Wheel Input'])
+    
+    # Plotting Vertical Lines at Times where deadband is entered and exitted #
+    plt.vlines(x=FRONT_DEADBAND_END_1, ymin=-900, ymax=STATIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_END_2, ymin=-900, ymax=STATIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_END_3, ymin=-900, ymax=STATIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_END_4, ymin=-900,ymax=STATIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_START_1, ymin=-900, ymax=KINETIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_START_2, ymin=-900, ymax=KINETIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_START_3, ymin=-900, ymax=KINETIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.vlines(x=FRONT_DEADBAND_START_4, ymin=-900, ymax=KINETIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    
+    # Plotting Horizontal lines with Input Corresponding to Static and Kinetic Coefficients #
+    plt.axhline(y=STATIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.axhline(y=STATIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    plt.axhline(y=KINETIC_COEFF_DEC, color='k', linestyle='--', linewidth=0.5)
+    plt.axhline(y=KINETIC_COEFF_INC, color='k', linestyle='--', linewidth=0.5)
+    
+    # Plotting Individual Points Corresponding to Static and Kinetic Coefficients for Increasing and Reducing Speed #
+    plt.plot(FRONT_DEADBAND_END_1,STATIC_COEFF_DEC,'o', color='tab:orange', label='Static Coefficient for Decreasing Speed', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_2,STATIC_COEFF_INC,'o', color='tab:pink', label='Static Coefficient for Increasing Speed', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_3,STATIC_COEFF_DEC,'o', color='tab:orange', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_4,STATIC_COEFF_INC,'o', color='tab:pink', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_2,KINETIC_COEFF_INC,'o', color='tab:olive', label='Kinetic Coefficient for Increasing Speed', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_1,KINETIC_COEFF_DEC,'o', color='tab:cyan', label='Kinetic Coefficient for Decreasing Speed', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_4,KINETIC_COEFF_INC,'o', color='tab:olive', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_3,KINETIC_COEFF_DEC,'o', color='tab:cyan', ms=7.5)
+    
+    # Adding Axis Labels, y-ticks and sub-plot title #
+    plt.ylabel('Commanded Input (PWM Value)',fontsize=14)
+    plt.xlabel('Time (ms)', fontsize=14)
+    plt.yticks([-800,-600,-400,-170,0,KINETIC_COEFF_DEC,215,400,600,800])
+    plt.ylim([-820,820])
+    plt.legend(loc='upper right', fontsize=14)
+    plt.title('Commanded Input vs Time', fontsize=14)
+
+    ### Command Response Plot for Increasing Speed #
+    plt.subplot(2,2,3)
+    POS_SLOPE_TIME_END = 32759
+    time = df[df['Relative Time']>=NEG_SLOPE_TIME_END]
+    time = time[time['Relative Time']<=POS_SLOPE_TIME_END]
+    plt.scatter(time['Wheel Input'],time['Wheel Speed'])
+    
+    # Plotting Vertical Doted Line for Kinetic and Static Coefficient #
+    plt.axvline(x=STATIC_COEFF_INC, color='k', linestyle='--',linewidth=0.75)
+    plt.axvline(x=KINETIC_COEFF_INC, color='k', linestyle='--',linewidth=0.75)
+
+    # Plotting Horizonal Dotted Line to Show Where Response is 0 #
+    plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
+
+    # Plotting Points Demarkating Static and Kinetic Coefficient #
+    plt.plot(STATIC_COEFF_INC,0,'o',color='tab:pink', ms=10)
+    plt.plot(KINETIC_COEFF_INC,0,'o',color='tab:olive', ms=10)
+
+    # Plotting ticks, setting plot limits and adding axis labels with sub-plot title #
+    plt.xticks([-800,-600,-400,KINETIC_COEFF_INC, 0, STATIC_COEFF_INC, 400, 600, 800])
+    plt.xlim([-400,400])
+    plt.ylim([-30,30])
+    plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
+    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+    plt.title('Deadband Static Coefficient for Increasing Speed', fontsize=14)
+    
+    ### Response vs Time Plot ###
+    plt.subplot(2,2,4)
+    plt.plot(df['Relative Time'], df['Wheel Speed'])
+    
+    # Plotting Vertical Dotted Lines for Start and End of Deadband #
+    plt.axvline(x=FRONT_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_END_4, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
+    plt.axvline(x=FRONT_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
+    
+    # Plotting Colored Dots Corresponding to the Static and Kinetic Coefficients #
+    plt.plot(FRONT_DEADBAND_END_1,0,'o', color='tab:orange', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_2,0,'o', color='tab:pink', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_3,0,'o', color='tab:orange', ms=7.5)
+    plt.plot(FRONT_DEADBAND_END_4,0,'o', color='tab:pink', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_1,0,'o', color='tab:cyan', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_2,0,'o', color='tab:olive', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_3,0,'o', color='tab:cyan', ms=7.5)
+    plt.plot(FRONT_DEADBAND_START_4,0,'o', color='tab:olive', ms=7.5)
+    
+    # Plotting Axis Labels and Sub-Plot Title #
+    plt.xlabel('Time (ms)',fontsize=14)
+    plt.ylabel('Response (Degrees per Second)',fontsize=14)
+    plt.title('Response vs Time', fontsize=14)
+    
+    ### Plotting Final Graph ###
+    plt.tight_layout(pad=1.08, w_pad=0.1, h_pad=0.1)
+    plt.show()
+    
 if __name__ == '__main__':
     # plot_front()
     # plot_rear()
     # plot_front_compensated()
-    plot_rear_compensated()
+    # plot_rear_compensated()
+    command_response_front()
