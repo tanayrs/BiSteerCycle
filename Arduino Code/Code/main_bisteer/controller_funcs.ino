@@ -91,9 +91,9 @@ void controller_rear_speed(double velocity_rear){
         double rear_wheel_inp = 0;
 
         if (U == 0) 
-                rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+                rear_wheel_inp = 0.1*(speed_error) + 0*0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
         else 
-                rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+                rear_wheel_inp = 7*(speed_error) + 0*0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
         //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
@@ -133,9 +133,9 @@ void controller_front_speed(double velocity_front){
 
         double front_wheel_inp = 0;
         if (U == 0) 
-                front_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+                front_wheel_inp = 0.1*(speed_error) + 0*0.002*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
         else
-                front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+                front_wheel_inp = 7*(speed_error) + 0*0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_front = speed_error;
 

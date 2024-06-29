@@ -75,12 +75,12 @@ void loop(){
         calculate_state();   
         
         // Calculates Drive Input //
-        controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
+        // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
         // holdsteering(90,90);     // takes front rear steer in degrees
         
-        //controller_bicycle(0.48);
+        controller_bicycle(1);
         //controller_rear_speed(0.48);
         //controller_front_speed(0.48);
 
@@ -93,13 +93,8 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(10);
 
-        Serial.print(rearWheelData.speed()-frontWheelData.speed()); 
-        Serial.print(" "); 
-        Serial.print(frontWheelData.speed());
-        Serial.print(" ");
-        Serial.print(phi);
-        Serial.print(" ");
-        Serial.println(phi_dot);
+        Serial.println(rearWheelData.speed());
+
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);
