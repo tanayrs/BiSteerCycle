@@ -151,7 +151,7 @@ void deadband_test(){
         
                 // Triangle Input //
                 if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
-                frontWheelInput += (deadband_sign*6);
+                frontWheelInput += (deadband_sign*10);
                 prev_time = millis();
 
                 // if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
