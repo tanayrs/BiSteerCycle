@@ -10,13 +10,12 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import re
 
-PLOTTING_CONSTANTS_PATH = './Python/deadband entry/plotting_constants.csv'
+PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plotting_constants.csv'
 
 class MotorCompensation:
     def __init__(self, file_path, deadband_starts, deadband_ends, kinetic_coeffs, static_coeffs, slope_ends):
         self.df = pd.read_csv(file_path)
         self.df['Relative Time'] = self.df['Time']-self.df['Time'].iloc[0]
-        self.df['Wheel Speed Corrected'] = self.df['Wheel Speed']*8
         
         self.deadband_starts = deadband_starts
         self.deadband_ends = deadband_ends
@@ -48,10 +47,10 @@ class MotorCompensation:
         plt.show()
 
     def __plot_input(self):
-        self.df['Effective Input'] = self.df['Wheel Speed Corrected'].apply(self.__calculate_effective_input)
+        self.df['Effective Input'] = self.df['Wheel Speed'].apply(self.__calculate_effective_input)
         plt.plot(self.df['Relative Time'], self.df['Wheel Input'])
         # plt.plot(self.df['Relative Time'], self.df['Wheel Input'], label = 'Actual Input')
-        # plt.plot(df['Relative Time'], df['Effective Input'], label = 'Effective Input')
+        # plt.plot(self.df['Relative Time'], self.df['Effective Input'], label = 'Effective Input')
         
         # Plotting Vertical Lines at Times where deadband is entered and exitted #
         plt.vlines(x=self.deadband_ends[0], ymin=-900, ymax=self.static_coeffs['decreasing'], color='k', linestyle='--', linewidth=0.5)
@@ -202,54 +201,58 @@ def sign(num):
     return -1
 
 def find_constants(path,motor,speed):
+    # Readiong in Data into the DataFrame #
     df = pd.read_csv(path)
     df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
 
+    # Calculating Slope Ends where the Wheel Input takes Maximum Value and finding Corresponing Time #
     slope_ends = {'positive':df.iloc[df['Wheel Input'].idxmax()]['Relative Time'],
-                'negative':df.iloc[df['Wheel Input'].idxmin()]['Relative Time']}
+                'negative':df.iloc[df['Wheel Input'].idxmin()]['Relative Time']}               
 
-    num_rows = len(df)
-    prev_row_zero = 0
-    pprev_row_zero = 0
-    ppprev_row_zero = 0
-    pppprev_row_zero = 0                       
+    # Empty Lists for Deadband Starts, Ends and Coefficients #
     deadband_starts = []
     deadband_ends = []
     kinetic_coeffs = []
     static_coeffs = []
+
+    # Delay to prevent incorrect measurement of static coefficient #
     if speed < 10:
         static_delay = 2000
-    else:
+    elif speed < 20:
         static_delay = 500
-    for i in range(num_rows):
+    else:
+        static_delay = 0
+
+    # Iterate over Each Measured Instant #
+    for i in range(len(df)):
+        # Extracting row for current time instant #
         ser = df.iloc[i]
-        if ser['Wheel Speed'] == 0 and prev_row_zero == 0 and pprev_row_zero == 0 and pppprev_row_zero == 0 and pppprev_row_zero == 0:
+
+        # If wheel speed is not turning, and was previously turning, potentially a kinetic coefficient #
+        if ser['Wheel Speed'] == 0 and df.iloc[i-1]['Wheel Speed'] != 0 and df.iloc[i-2]['Wheel Speed'] != 0  and df.iloc[i-3]['Wheel Speed'] != 0 and df.iloc[i-4]['Wheel Speed'] != 0 :
+            # To Prevent Indexing Error with kinetic_coeff #
             if len(kinetic_coeffs) == 0:
                 deadband_starts.append(ser['Relative Time'])
                 kinetic_coeffs.append(ser['Wheel Input'])
+            # If the current instant is suspected to be the kinetic coefficient, it must not have the same sign as the previous kinetic coefficient #
             elif sign(kinetic_coeffs[-1]) != sign(ser['Wheel Input']):
                 deadband_starts.append(ser['Relative Time'])
                 kinetic_coeffs.append(ser['Wheel Input'])
         
-        if ser['Wheel Speed'] != 0 and prev_row_zero == 1 and df.iloc[i+1]['Wheel Speed'] != 0 and df.iloc[i+2]['Wheel Speed'] != 0 and (ser['Relative Time']-deadband_starts[-1])>static_delay:
+        # If the wheel is about to start turning, and was not turning, potentially a static coefficient #
+        if ser['Wheel Speed'] == 0 and df.iloc[i-1]['Wheel Speed'] == 0 and df.iloc[i+1]['Wheel Speed'] != 0 and df.iloc[i+2]['Wheel Speed'] != 0 and  df.iloc[i+3]['Wheel Speed'] != 0 and (ser['Relative Time']-deadband_starts[-1])>static_delay:
+            # To Prevent Indexing Error with static_coeffs #
             if len(static_coeffs) == 0:
                 deadband_ends.append(ser['Relative Time'])
                 static_coeffs.append(ser['Wheel Input'])
+            # For the static deadband we want the last point before which the wheel starts continuously turning, until then replace the last suspected point #
             elif sign(static_coeffs[-1]) == sign(ser['Wheel Input']):
                 deadband_ends[-1] = ser['Relative Time']
                 static_coeffs[-1] = ser['Wheel Input']
+            # Append the point to the static coefficients if the sign has changed #
             else:
                 deadband_ends.append(ser['Relative Time'])
                 static_coeffs.append(ser['Wheel Input'])
-
-        pppprev_row_zero = ppprev_row_zero
-        ppprev_row_zero = pprev_row_zero
-        pprev_row_zero = prev_row_zero
-
-        if ser['Wheel Speed'] == 0:
-            prev_row_zero = 1
-        else:
-            prev_row_zero = 0
 
     pos_kinetic = [val for val in kinetic_coeffs if val > 0]
     neg_kinetic = [val for val in kinetic_coeffs if val < 0]
@@ -259,29 +262,56 @@ def find_constants(path,motor,speed):
     neg_static = [val for val in static_coeffs if val < 0]
     static_coeffs = {'decreasing':int((sum(neg_static)/len(neg_static))),'increasing':int(sum(pos_static)/len(pos_static))}
 
-    # print(f'{deadband_starts=}')
-    # print(f'{deadband_ends=}')
-    # print(f'{kinetic_coeffs=}')
-    # print(f'{static_coeffs=}')
-    # print(f'{slope_ends=}')
+    print(f'{deadband_starts=}')
+    print(f'{deadband_ends=}')
+    print(f'{kinetic_coeffs=}')
+    print(f'{static_coeffs=}')
+    print(f'{slope_ends=}')
 
     print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
     
     motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
     motor_obj.plot_compensation()
 
+def plot_raw(path):
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(path)
+    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
+    print(df['Time'].iloc[0])
+
+    # Plotting Angle vs Time #
+    fig, axs = plt.subplots(2, 1)
+    fig.set_figheight(8.5)
+    fig.set_figwidth(14)
+
+    # Plot on the first axis
+    axs[0].plot(df['Relative Time'], df['Wheel Input'])
+    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
+
+    # Plot on the second axis
+    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
+    axs[1].set_xlabel('Time (ms)',fontsize=14)
+    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+
+    plt.show()
+
 if __name__ == '__main__':
-    # plot_raw_data('./Python/deadband coeff/SourceData/FrontSlope1Data.csv')
-    # find_constants('./Python/deadband coeff/SourceData/FrontSlope7Data.csv','front',7)
-    # plot_motor_data(10,'front')
+    # find_constants('./Python/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
+    # plot_raw('./Python/deadband coeff/SourceData/RearSlope35Data.csv')
+
+    # plot_motor_data(35,'rear')
     for i in range(1,11,1):
-        find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+        # find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+        plot_motor_data(i,'front')
     
-    for i in range(15,41,5):
-        find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    for i in range(15,36,5):
+        # find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+        plot_motor_data(i,'front')
 
     for i in range(1,11,1):
-        find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+        # find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+        plot_motor_data(i,'rear')
 
-    for i in range(15,41,5):
-        find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+    for i in range(15,36,5):
+        # find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+        plot_motor_data(i,'rear')
