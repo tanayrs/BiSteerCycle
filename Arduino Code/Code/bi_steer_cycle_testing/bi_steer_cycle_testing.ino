@@ -2,7 +2,7 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 13 Jun 2024 11:07 AM
+Last Modified: 1 Jul 2024
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
@@ -59,8 +59,8 @@ void setup() {
         // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
         prev_time_millis = millis();
-        frontWheelInput = 409;
-        rearWheelInput = 409;
+        frontWheelInput = 0;
+        rearWheelInput = 0;
         frontSteerInput = 0;
         rearSteerInput = 0;
         deadband_sign = 1;
@@ -84,7 +84,7 @@ void loop(){
         // holdsteering(90,90);
 
         // Testing Deadband and Motor Calibration //
-        // deadband_test();
+        deadband_test();
         // deadband_test_steer();
         // motor_calibration_square();
         // controller_bicycle(0.1);
@@ -97,7 +97,7 @@ void loop(){
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(50);
 
-        logFeedback();
+        // logFeedback();
 
         loopTimeMicros = 0;
         digitalWrite(13,LOW);

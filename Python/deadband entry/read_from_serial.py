@@ -21,9 +21,9 @@ COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
 # Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
-def read_from_serial():
+def read_from_serial(path):
     # Adding Header Row with Columns of CSV #
-    with open(FRONT_PATH, mode='w') as sensor_file:
+    with open(path, mode='w') as sensor_file:
         sensor_writer = csv.writer(
                 sensor_file, 
                 delimiter=',', 
@@ -41,7 +41,7 @@ def read_from_serial():
         print(data)
         data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
-            with open(FRONT_PATH, mode='a') as sensor_file:
+            with open(path, mode='a') as sensor_file:
                 line = data.split(',')
                 sensor_writer = csv.writer(
                         sensor_file, 
@@ -52,4 +52,5 @@ def read_from_serial():
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
 
 if __name__ == '__main__':
-    read_from_serial()
+    path = './Python/deadband entry/SourceData/FrontSlope5Data.csv'
+    read_from_serial(path)

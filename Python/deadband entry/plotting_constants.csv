@@ -1,0 +1,2 @@
+speed,motor,path,deadband_start1,deadband_start2,deadband_start3,deadband_start4,deadband_end1,deadband_end2,deadband_end3,deadband_end4,kinetic_coeff_inc,kinetic_coeff_dec,static_coeff_inc,static_coeff_dec,slope_end_pos,slope_end_neg
+10,front,./Python/deadband entry/SourceData/FrontSlope10Data.csv,5066,22488,40158,57770,8174,26449,43525,61378,-135,130,215,-170,32759,15209
