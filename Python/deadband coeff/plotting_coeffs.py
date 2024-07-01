@@ -8,7 +8,6 @@ Run bi_steer_cycle_testing arduino code with deadband_test()
 
 from matplotlib import pyplot as plt
 import pandas as pd
-import re
 
 PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plotting_constants.csv'
 
@@ -200,6 +199,7 @@ def sign(num):
         return 1
     return -1
 
+# Note this function throws an error for front 30, front 40, rear 20, rear 35 and rear 40 #
 def find_constants(path,motor,speed):
     # Readiong in Data into the DataFrame #
     df = pd.read_csv(path)
@@ -254,22 +254,27 @@ def find_constants(path,motor,speed):
                 deadband_ends.append(ser['Relative Time'])
                 static_coeffs.append(ser['Wheel Input'])
 
+    # Finding Kinetic Coefficients in each direction by averaging #
     pos_kinetic = [val for val in kinetic_coeffs if val > 0]
     neg_kinetic = [val for val in kinetic_coeffs if val < 0]
     kinetic_coeffs = {'increasing':int((sum(neg_kinetic)/len(neg_kinetic))),'decreasing':int(sum(pos_kinetic)/len(pos_kinetic))}
 
+    # Finding Static Coefficients in each direction by averaging #
     pos_static = [val for val in static_coeffs if val > 0]
     neg_static = [val for val in static_coeffs if val < 0]
     static_coeffs = {'decreasing':int((sum(neg_static)/len(neg_static))),'increasing':int(sum(pos_static)/len(pos_static))}
 
+    # Print Statements to Check Values #
     print(f'{deadband_starts=}')
     print(f'{deadband_ends=}')
     print(f'{kinetic_coeffs=}')
     print(f'{static_coeffs=}')
     print(f'{slope_ends=}')
 
+    # Print Statment in format of CSV File #
     print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
     
+    # Calling Motor Object and Plotting #
     motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
     motor_obj.plot_compensation()
 
