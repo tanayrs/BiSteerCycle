@@ -510,9 +510,9 @@ def effective_input(speed):
     return effective_input
 
 if __name__ == '__main__':
-    # plot_front()
+    plot_front()
     # plot_rear()
     # plot_front_compensated()
     # plot_rear_compensated()
-    command_response_front()
+    # command_response_front()
     # expected_actual()

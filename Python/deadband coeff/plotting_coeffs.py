@@ -8,6 +8,7 @@ Run bi_steer_cycle_testing arduino code with deadband_test()
 
 from matplotlib import pyplot as plt
 import pandas as pd
+import re
 
 PLOTTING_CONSTANTS_PATH = './Python/deadband entry/plotting_constants.csv'
 
@@ -82,17 +83,16 @@ class MotorCompensation:
         # Adding Axis Labels, y-ticks and sub-plot title #
         plt.ylabel('Commanded Input (PWM Value)',fontsize=14)
         plt.xlabel('Time (ms)', fontsize=14)
-        plt.yticks([-800,-600,-400,-170,0,self.kinetic_coeffs['decreasing'],215,400,600,800])
+        plt.yticks([-800,-600,-400,self.static_coeffs['decreasing'],0,self.kinetic_coeffs['decreasing'],self.static_coeffs['increasing'],400,600,800])
         plt.ylim([-820,820])
         plt.legend(loc='upper right', fontsize=14)
         plt.title('Input', fontsize=14)
 
     def __plot_output(self):
         self.df['Expected Response'] = self.df['Wheel Input'].apply(self.__calculate_expected_output)
-        self.df['Wheel Speed Corrected'] = self.df['Wheel Speed']*8
         
         ### Command vs Time Plot ###
-        plt.plot(self.df['Relative Time'], self.df['Wheel Speed Corrected'], label='Actual Response')
+        plt.plot(self.df['Relative Time'], self.df['Wheel Speed'], label='Actual Response')
         plt.plot(self.df['Relative Time'], self.df['Expected Response'], label='Expected Response', color='gray')
 
         # Plotting Vertical Dotted Lines for Start and End of Deadband #
@@ -143,7 +143,7 @@ class MotorCompensation:
         # Setting x-ticks, axese limits, axese labels and sub-plot title #
         plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
         plt.xlim([400,-400])
-        plt.ylim([-30,30])
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.title('Deadband Static Coefficient for Reducing Speed', fontsize=14)
 
@@ -166,7 +166,7 @@ class MotorCompensation:
         # Plotting ticks, setting plot limits and adding axis labels with sub-plot title #
         plt.xticks([-800,-600,-400,self.kinetic_coeffs['increasing'], 0, self.static_coeffs['increasing'], 400, 600, 800])
         plt.xlim([-400,400])
-        plt.ylim([-30,30])
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.title('Deadband Static Coefficient for Increasing Speed', fontsize=14)
@@ -215,5 +215,80 @@ def plot_raw_data(path):
     axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
     plt.show()
 
+def sign(num):
+    if num > 0:
+        return 1
+    return -1
+
+def find_constants(path,motor,speed):
+    df = pd.read_csv(path)
+    df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
+
+    slope_ends = {'positive':df.iloc[df['Wheel Input'].idxmax()]['Relative Time'],
+                'negative':df.iloc[df['Wheel Input'].idxmin()]['Relative Time']}
+
+    num_rows = len(df)
+    prev_row_zero = 0
+    pprev_row_zero = 0
+    ppprev_row_zero = 0
+    pppprev_row_zero = 0                       
+    deadband_starts = []
+    deadband_ends = []
+    kinetic_coeffs = []
+    static_coeffs = []
+    for i in range(num_rows):
+        ser = df.iloc[i]
+        if ser['Wheel Speed'] == 0 and prev_row_zero == 0 and pprev_row_zero == 0 and pppprev_row_zero == 0 and pppprev_row_zero == 0:
+            if len(kinetic_coeffs) == 0:
+                deadband_starts.append(ser['Relative Time'])
+                kinetic_coeffs.append(ser['Wheel Input'])
+            elif sign(kinetic_coeffs[-1]) != sign(ser['Wheel Input']):
+                deadband_starts.append(ser['Relative Time'])
+                kinetic_coeffs.append(ser['Wheel Input'])
+        
+        if ser['Wheel Speed'] != 0 and prev_row_zero == 1 and df.iloc[i+1]['Wheel Speed'] != 0 and df.iloc[i+2]['Wheel Speed'] != 0 and (ser['Relative Time']-deadband_starts[-1])>2000:
+            if len(static_coeffs) == 0:
+                deadband_ends.append(ser['Relative Time'])
+                static_coeffs.append(ser['Wheel Input'])
+            elif sign(static_coeffs[-1]) == sign(ser['Wheel Input']):
+                deadband_ends[-1] = ser['Relative Time']
+                static_coeffs[-1] = ser['Wheel Input']
+            else:
+                deadband_ends.append(ser['Relative Time'])
+                static_coeffs.append(ser['Wheel Input'])
+
+        pppprev_row_zero = ppprev_row_zero
+        ppprev_row_zero = pprev_row_zero
+        pprev_row_zero = prev_row_zero
+
+        if ser['Wheel Speed'] == 0:
+            prev_row_zero = 1
+        else:
+            prev_row_zero = 0
+
+    pos_kinetic = [val for val in kinetic_coeffs if val > 0]
+    neg_kinetic = [val for val in kinetic_coeffs if val < 0]
+    kinetic_coeffs = {'increasing':int((sum(neg_kinetic)/len(neg_kinetic))),'decreasing':int(sum(pos_kinetic)/len(pos_kinetic))}
+
+    pos_static = [val for val in static_coeffs if val > 0]
+    neg_static = [val for val in static_coeffs if val < 0]
+    static_coeffs = {'decreasing':int((sum(neg_static)/len(neg_static))),'increasing':int(sum(pos_static)/len(pos_static))}
+
+
+    # print(f'{deadband_starts=}')
+    # print(f'{deadband_ends=}')
+    # print(f'{kinetic_coeffs=}')
+    # print(f'{static_coeffs=}')
+    # print(f'{slope_ends=}')
+
+    print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
+    
+    motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
+    motor_obj.plot_compensation()
+
 if __name__ == '__main__':
-    plot_motor_data(10,'front')
+    # plot_raw_data('./Python/deadband coeff/SourceData/FrontSlope1Data.csv')
+    # find_constants('./Python/deadband coeff/SourceData/FrontSlope4Data.csv','front',4)
+    # plot_motor_data(10,'front')
+    for i in range(1,11):
+        find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)

@@ -1,2 +1,7 @@
 speed,motor,path,deadband_start1,deadband_start2,deadband_start3,deadband_start4,deadband_end1,deadband_end2,deadband_end3,deadband_end4,kinetic_coeff_inc,kinetic_coeff_dec,static_coeff_inc,static_coeff_dec,slope_end_pos,slope_end_neg
 10,front,./Python/deadband entry/SourceData/FrontSlope10Data.csv,5066,22488,40158,57770,8174,26449,43525,61378,-135,130,215,-170,32759,15209
+10,rear,./Python/deadband entry/SourceData/RearSlope10Data.csv,7341,24766,42319,59875,10279,27891,45383,62937,-120,115,170,-160,34748,17317
+20,front,./Python/deadband entry/SourceData/FrontSlope20Data.csv,3668,12502,21278,30115,5235,14070,22849,31555,-110,120,215,-170,17619,8779
+20,rear,./Python/deadband entry/SourceData/RearSlope20Data.csv,3846,12743,21642,30476,5279,14190,23083,31737,-100,100,170,-160,17735,8959
+40,front,./Python/deadband entry/SourceData/FrontSlope40Data.csv,1983,6312,10880,15268,2585,7093,11425,15989,-90,70,215,-170,8849,4451
+40,rear,./Python/deadband entry/SourceData/RearSlope40Data.csv,1924,6552,11065,15685,2710,7273,11781,16350,-80,90,170,-160,9078,4574

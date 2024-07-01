@@ -1,0 +1,21 @@
+speed,motor,path,deadband_start1,deadband_start2,deadband_start3,deadband_start4,deadband_end1,deadband_end2,deadband_end3,deadband_end4,kinetic_coeff_inc,kinetic_coeff_dec,static_coeff_inc,static_coeff_dec,slope_end_pos,slope_end_neg
+1,front,./Python/deadband coeff/SourceData/FrontSlope1Data.csv,72977.0,244900.0,419107.0,590369.0,103574.0,278203.0,452049.0,626076.0,-149,131,169,-162,346972.0,173426.0
+2,front,./Python/deadband coeff/SourceData/FrontSlope2Data.csv,35828.0,123895.0,210218.0,296301.0,52179.0,139524.0,226449.0,313374.0,-131,133,171,-167,173729.0,86805.0
+3,front,./Python/deadband coeff/SourceData/FrontSlope3Data.csv,23684.0,81932.0,140180.0,197227.0,34624.0,93414.0,150339.0,209128.0,-135,130,190,-160,0.0,57707.0
+4,front,./Python/deadband coeff/SourceData/FrontSlope4Data.csv,18394.0,62096.0,105317.0,149200.0,26449.0,69791.0,113673.0,157315.0,-120,130,172,-174,60.0,43581.0
+5,front,./Python/deadband coeff/SourceData/FrontSlope5Data.csv,14907.0,49531.0,84756.0,119680.0,20918.0,56865.0,90827.0,126533.0,-125,117,197,-157,69849.0,34864.0
+6,front,./Python/deadband coeff/SourceData/FrontSlope6Data.csv,12022.0,41056.0,70150.0,99484.0,17312.0,47007.0,75620.0,104894.0,-126,135,189,-165,0.0,28973.0
+7,front,./Python/deadband coeff/SourceData/FrontSlope7Data.csv,10699.0,35645.0,60471.0,85718.0,14727.0,40394.0,65039.0,90406.0,-115,126,189,-150,0.0,24946.0
+8,front,./Python/deadband coeff/SourceData/FrontSlope8Data.csv,9077.0,31018.0,52839.0,74840.0,13104.0,35106.0,56866.0,78748.0,-120,128,176,-168,43582.0,21701.0
+9,front,./Python/deadband coeff/SourceData/FrontSlope9Data.csv,8175.0,27410.0,46826.0,66181.0,11661.0,31197.0,50372.0,70149.0,-130,126,189,-162,0.0,19295.0
+10,front,./Python/deadband coeff/SourceData/FrontSlope10Data.csv,7213.0,24766.0,42498.0,59991.0,10700.0,28673.0,45804.0,63958.0,-140,135,220,-175,35105.0,17492.0
+1,rear,./Python/deadband coeff/SourceData/RearSlope1Data.csv,73519.0,245865.0,420014.0,593503.0,103636.0,278266.0,451694.0,625483.0,-130,124,167,-161,346976.0,173488.0
+2,rear,./Python/deadband coeff/SourceData/RearSlope2Data.csv,36068.0,123472.0,210095.0,296598.0,53320.0,140063.0,227227.0,314090.0,-132,132,183,-185,173666.0,86803.0
+3,rear,./Python/deadband coeff/SourceData/RearSlope3Data.csv,24284.0,82111.0,140058.0,197885.0,36186.0,93833.0,152080.0,209787.0,-141,136,182,-192,0.0,58127.0
+4,rear,./Python/deadband coeff/SourceData/RearSlope4Data.csv,18214.0,61676.0,105378.0,148960.0,26750.0,70272.0,113974.0,157376.0,-128,128,184,-190,86983.0,43461.0
+5,rear,./Python/deadband coeff/SourceData/RearSlope5Data.csv,14427.0,49472.0,84216.0,118419.0,21760.0,56805.0,91549.0,126774.0,-152,137,207,-197,69789.0,34865.0
+6,rear,./Python/deadband coeff/SourceData/RearSlope6Data.csv,12083.0,41237.0,70270.0,99424.0,17913.0,47007.0,76101.0,105194.0,-128,130,187,-188,0.0,29034.0
+7,rear,./Python/deadband coeff/SourceData/RearSlope7Data.csv,10279.0,34804.0,60351.0,84696.0,15268.0,40154.0,65220.0,90166.0,-163,130,186,-181,49832.0,24826.0
+8,rear,./Python/deadband coeff/SourceData/RearSlope8Data.csv,9077.0,30898.0,52899.0,74299.0,13345.0,35106.0,57107.0,78988.0,-148,128,180,-184,43642.0,21761.0
+9,rear,./Python/deadband coeff/SourceData/RearSlope9Data.csv,8115.0,27290.0,46947.0,66423.0,12022.0,31558.0,50854.0,70450.0,-140,130,202,-194,0.0,19356.0
+10,rear,./Python/deadband coeff/SourceData/RearSlope10Data.csv,7394.0,24285.0,42439.0,60051.0,10520.0,28192.0,45985.0,63537.0,-155,125,185,-180,35045.0,17433.0
