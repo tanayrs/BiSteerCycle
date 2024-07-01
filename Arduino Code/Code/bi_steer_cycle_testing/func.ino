@@ -100,9 +100,9 @@ void writeToMotor() {
         
         // // Directly Writing Input without any Compensation //
         frontSteerMotor.setSpeed(frontSteerInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
         frontWheelMotor.setSpeed(frontWheelInput);
-        rearWheelMotor.setSpeed(rearWheelInput);
+        // rearWheelMotor.setSpeed(rearWheelInput);
         
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
@@ -151,7 +151,7 @@ void deadband_test(){
         
                 // Triangle Input //
                 if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
-                frontWheelInput += (deadband_sign*5);
+                frontWheelInput += (deadband_sign*3);
                 prev_time = millis();
 
                 // if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
