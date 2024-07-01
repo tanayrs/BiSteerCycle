@@ -52,5 +52,5 @@ def read_from_serial(path):
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
 
 if __name__ == '__main__':
-    path = './Python/deadband coeff/SourceData/RearSlope25Data.csv'
+    path = './Python/deadband coeff/SourceData/RearSlope40Data.csv'
     read_from_serial(path)
