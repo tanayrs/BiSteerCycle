@@ -155,7 +155,7 @@ void deadband_test(){
                 // prev_time = millis();
 
                 if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
-                rearWheelInput += (deadband_sign*15);
+                rearWheelInput += (deadband_sign*25);
                 prev_time = millis();
         }  
 }
