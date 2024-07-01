@@ -196,25 +196,6 @@ def plot_motor_data(speed,motor):
     motor_obj = MotorCompensation(file_path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
     motor_obj.plot_compensation()
 
-def plot_raw_data(path):
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(path)
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
-
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-170,0,215,400,600,800])
-    axs[0].set_xticks([])
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-    plt.show()
-
 def sign(num):
     if num > 0:
         return 1
@@ -236,6 +217,10 @@ def find_constants(path,motor,speed):
     deadband_ends = []
     kinetic_coeffs = []
     static_coeffs = []
+    if speed < 10:
+        static_delay = 2000
+    else:
+        static_delay = 500
     for i in range(num_rows):
         ser = df.iloc[i]
         if ser['Wheel Speed'] == 0 and prev_row_zero == 0 and pprev_row_zero == 0 and pppprev_row_zero == 0 and pppprev_row_zero == 0:
@@ -246,7 +231,7 @@ def find_constants(path,motor,speed):
                 deadband_starts.append(ser['Relative Time'])
                 kinetic_coeffs.append(ser['Wheel Input'])
         
-        if ser['Wheel Speed'] != 0 and prev_row_zero == 1 and df.iloc[i+1]['Wheel Speed'] != 0 and df.iloc[i+2]['Wheel Speed'] != 0 and (ser['Relative Time']-deadband_starts[-1])>2000:
+        if ser['Wheel Speed'] != 0 and prev_row_zero == 1 and df.iloc[i+1]['Wheel Speed'] != 0 and df.iloc[i+2]['Wheel Speed'] != 0 and (ser['Relative Time']-deadband_starts[-1])>static_delay:
             if len(static_coeffs) == 0:
                 deadband_ends.append(ser['Relative Time'])
                 static_coeffs.append(ser['Wheel Input'])
@@ -274,7 +259,6 @@ def find_constants(path,motor,speed):
     neg_static = [val for val in static_coeffs if val < 0]
     static_coeffs = {'decreasing':int((sum(neg_static)/len(neg_static))),'increasing':int(sum(pos_static)/len(pos_static))}
 
-
     # print(f'{deadband_starts=}')
     # print(f'{deadband_ends=}')
     # print(f'{kinetic_coeffs=}')
@@ -288,7 +272,16 @@ def find_constants(path,motor,speed):
 
 if __name__ == '__main__':
     # plot_raw_data('./Python/deadband coeff/SourceData/FrontSlope1Data.csv')
-    # find_constants('./Python/deadband coeff/SourceData/FrontSlope4Data.csv','front',4)
+    # find_constants('./Python/deadband coeff/SourceData/FrontSlope7Data.csv','front',7)
     # plot_motor_data(10,'front')
-    for i in range(1,11):
+    for i in range(1,11,1):
+        find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    
+    for i in range(15,41,5):
+        find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+
+    for i in range(1,11,1):
+        find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+
+    for i in range(15,41,5):
         find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
