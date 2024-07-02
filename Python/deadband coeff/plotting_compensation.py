@@ -210,23 +210,30 @@ class MotorCompensation:
         return effective_input
 
 def plot_motor_data(speed,motor):
+    # Loading Dataframe Containing Plotting Constants #
     df = pd.read_csv(PLOTTING_CONSTANTS_PATH)
+
+    # Loading series with compensated and uncompensated constants #
     ser = df.loc[(df['speed']==speed) & (df['motor']==motor) & (df['comp']=='comp')]
     uncomp_ser = df.loc[(df['speed']==speed) & (df['motor']==motor) & (df['comp']=='uncomp')]
 
+    # Finding filepaths for compensated and uncompensated data #
     comp_file_path = ser['path'].values[0]
     uncomp_file_path = uncomp_ser['path'].values[0]
     
+    # Loading times where the deadband starts and ends for the uncompensated data #
     deadband_starts = [ser['deadband_start1'].values[0], ser['deadband_start2'].values[0], ser['deadband_start3'].values[0], ser['deadband_start4'].values[0]]
     deadband_ends = [ser['deadband_end1'].values[0], ser['deadband_end2'].values[0], ser['deadband_end3'].values[0], ser['deadband_end4'].values[0]]
     
+    # Loading Input corresponding to deadband entry and exist for the motor #
     kinetic_coeffs = {'increasing':ser['kinetic_coeff_inc'].values[0],'decreasing':ser['kinetic_coeff_dec'].values[0]}
-    
     static_coeffs = {'increasing': ser['static_coeff_inc'].values[0], 'decreasing':ser['static_coeff_dec'].values[0]}
     
+    # Finding Time at which the first slope in the positive and negative direction ends #
     slope_ends = {'positive':ser['slope_end_pos'].values[0],'negative':ser['slope_end_neg'].values[0]}
     slope_ends_uncomp = {'positive':uncomp_ser['slope_end_pos'].values[0],'negative':uncomp_ser['slope_end_neg'].values[0]}
     
+    # Creating a motor object and plotting #
     motor_obj = MotorCompensation(comp_file_path, uncomp_file_path,deadband_starts, deadband_ends, kinetic_coeffs, static_coeffs, slope_ends, slope_ends_uncomp)
     motor_obj.plot_compensation()
 

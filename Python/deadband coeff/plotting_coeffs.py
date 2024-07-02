@@ -183,14 +183,27 @@ class MotorCompensation:
         return effective_input
 
 def plot_motor_data(speed,motor):
+    # Loading Dataframe with Plotting Constants #
     df = pd.read_csv(PLOTTING_CONSTANTS_PATH)
+
+    # Finding Row with Particular Speed and Motor #
     ser = df.loc[(df['speed']==speed) & (df['motor']==motor) & (df['comp']=='uncomp')]
+
+    # Finding File Path of Raw Data #
     file_path = ser['path'].values[0]
+
+    # Finding Times of Deadband Starts and Ends #
     deadband_starts = [ser['deadband_start1'].values[0], ser['deadband_start2'].values[0], ser['deadband_start3'].values[0], ser['deadband_start4'].values[0]]
     deadband_ends = [ser['deadband_end1'].values[0], ser['deadband_end2'].values[0], ser['deadband_end3'].values[0], ser['deadband_end4'].values[0]]
+    
+    # Finding Kinetic and Static Coefficients #
     kinetic_coeffs = {'increasing':ser['kinetic_coeff_inc'].values[0],'decreasing':ser['kinetic_coeff_dec'].values[0]}
     static_coeffs = {'increasing': ser['static_coeff_inc'].values[0], 'decreasing':ser['static_coeff_dec'].values[0]}
+    
+    # Finding Time where the slope ends in negative and positive direction #
     slope_ends = {'positive':ser['slope_end_pos'].values[0],'negative':ser['slope_end_neg'].values[0]}
+
+    # Creating a motor object and plotting #
     motor_obj = MotorCompensation(file_path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
     motor_obj.plot_compensation()
 
@@ -265,18 +278,18 @@ def find_constants(path,motor,speed):
     static_coeffs = {'decreasing':int((sum(neg_static)/len(neg_static))),'increasing':int(sum(pos_static)/len(pos_static))}
 
     # Print Statements to Check Values #
-    print(f'{deadband_starts=}')
-    print(f'{deadband_ends=}')
-    print(f'{kinetic_coeffs=}')
-    print(f'{static_coeffs=}')
-    print(f'{slope_ends=}')
+    # print(f'{deadband_starts=}')
+    # print(f'{deadband_ends=}')
+    # print(f'{kinetic_coeffs=}')
+    # print(f'{static_coeffs=}')
+    # print(f'{slope_ends=}')
 
     # Print Statment in format of CSV File #
-    # print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
+    print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
     
     # Calling Motor Object and Plotting #
-    # motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
-    # motor_obj.plot_compensation()
+    motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
+    motor_obj.plot_compensation()
 
 def plot_raw(path):
     # Reading CSV into pandas DataFrame #
