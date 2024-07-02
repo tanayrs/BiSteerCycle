@@ -159,3 +159,14 @@ float prevFrontSteerInput = 0.0;
 float prevFrontWheelInput = 0.0;
 float prevRearSteerInput = 0.0;
 float prevRearWheelInput = 0.0;
+
+/* Motor Compensation */
+#define frontWheelStaticDec -170
+#define frontWheelStaticInc 200
+#define frontWheelKineticDec 130
+#define frontWheelKineticInc -120
+
+#define rearWheelStaticDec -175
+#define rearWheelStaticInc 180
+#define rearWheelKineticDec 125
+#define rearWheelKineticInc -155

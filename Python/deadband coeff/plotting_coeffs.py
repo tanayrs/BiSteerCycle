@@ -171,20 +171,20 @@ class MotorCompensation:
 
     def __calculate_expected_output(self,pwm):
         PWM_RESOLUTION = 4095
-        MOTOR_RPM = 500
+        MOTOR_RPM = 587
         ratio = pwm/PWM_RESOLUTION
         expected_speed = (MOTOR_RPM/60)* ratio * 360
         return expected_speed
 
     def __calculate_effective_input(self,speed):
         PWM_RESOLUTION = 4095
-        MOTOR_RPM = 500
+        MOTOR_RPM = 587
         effective_input = (60/MOTOR_RPM)*PWM_RESOLUTION*(1/360)*speed
         return effective_input
 
 def plot_motor_data(speed,motor):
     df = pd.read_csv(PLOTTING_CONSTANTS_PATH)
-    ser = df.loc[(df['speed']==speed) & (df['motor']==motor)]
+    ser = df.loc[(df['speed']==speed) & (df['motor']==motor) & (df['comp']=='uncomp')]
     file_path = ser['path'].values[0]
     deadband_starts = [ser['deadband_start1'].values[0], ser['deadband_start2'].values[0], ser['deadband_start3'].values[0], ser['deadband_start4'].values[0]]
     deadband_ends = [ser['deadband_end1'].values[0], ser['deadband_end2'].values[0], ser['deadband_end3'].values[0], ser['deadband_end4'].values[0]]
@@ -272,11 +272,11 @@ def find_constants(path,motor,speed):
     print(f'{slope_ends=}')
 
     # Print Statment in format of CSV File #
-    print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
+    # print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
     
     # Calling Motor Object and Plotting #
-    motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
-    motor_obj.plot_compensation()
+    # motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
+    # motor_obj.plot_compensation()
 
 def plot_raw(path):
     # Reading CSV into pandas DataFrame #
@@ -304,19 +304,20 @@ if __name__ == '__main__':
     # find_constants('./Python/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
     # plot_raw('./Python/deadband coeff/SourceData/RearSlope35Data.csv')
 
-    # plot_motor_data(35,'rear')
-    for i in range(1,11,1):
-        # find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
-        plot_motor_data(i,'front')
+    plot_motor_data(20,'front')
+    # plot_motor_data(5,'rear')
+    # for i in range(1,11,1):
+    #     find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    #     # plot_motor_data(i,'front')
     
-    for i in range(15,36,5):
-        # find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
-        plot_motor_data(i,'front')
+    # for i in range(15,36,5):
+    #     find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    #     # plot_motor_data(i,'front')
 
-    for i in range(1,11,1):
-        # find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
-        plot_motor_data(i,'rear')
+    # for i in range(1,11,1):
+    #     find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+    #     # plot_motor_data(i,'rear')
 
-    for i in range(15,36,5):
-        # find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
-        plot_motor_data(i,'rear')
+    # for i in range(15,36,5):
+    #     find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+    #     # plot_motor_data(i,'rear')
