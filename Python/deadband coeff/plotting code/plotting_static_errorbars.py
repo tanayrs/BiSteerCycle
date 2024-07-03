@@ -1,5 +1,5 @@
 '''
-Experiment: Plotting kinetic deadband coefficients for different slopes with error bars
+Experiment: Plotting static deadband coefficients for different slopes with error bars
 By: Jia Bhargava, Tanay Srinivasa
 Last Modified: 3 Jul 2024
 '''
@@ -28,10 +28,10 @@ def find_errors(motor):
     for i in x:
         path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{i}Constants.csv'
         df = pd.read_csv(path)
-        y_inc.append(df['kinetic_coeffs_inc'].mean())
-        y_dec.append(df['kinetic_coeffs_dec'].mean())
-        err_inc.append(abs(df['kinetic_coeffs_inc'].std()))
-        err_dec.append(abs(df['kinetic_coeffs_dec'].std()))
+        y_inc.append(df['static_coeffs_inc'].mean())
+        y_dec.append(df['static_coeffs_dec'].mean())
+        err_inc.append(abs(df['static_coeffs_inc'].std()))
+        err_dec.append(abs(df['static_coeffs_dec'].std()))
 
     return (y_inc, y_dec, err_inc, err_dec)
 
@@ -53,7 +53,7 @@ plt.scatter(x_rear, y_rear_dec)
 plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
 plt.ylabel('Deadband Value (PWM)',fontsize=14)
 plt.legend(loc='center right', fontsize=14)
-plt.title('Deadband Entry for Different Slopes of Input Triangle Wave with error bars', fontsize=14)
+plt.title('Deadband Exit for Different Slopes of Input Triangle Wave with error bars', fontsize=14)
 plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
 plt.yticks(range(-200,201,50))
 plt.grid()
