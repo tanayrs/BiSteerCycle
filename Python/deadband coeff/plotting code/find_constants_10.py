@@ -149,7 +149,7 @@ def plot_raw_with_measured_constants(path,constants_path):
 
 if __name__ == '__main__':
     motor = 'Front'
-    speed = 30
+    speed = 40
     path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
     constants_path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
     plot_raw_with_measured_constants(path,constants_path)
