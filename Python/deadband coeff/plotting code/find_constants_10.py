@@ -149,7 +149,7 @@ def plot_raw_with_measured_constants(path,constants_path):
 
 if __name__ == '__main__':
     motor = 'Front'
-    speed = 1
+    speed = 5
     path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
     constants_path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
     plot_raw_with_measured_constants(path,constants_path)
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     #         with open(slope_ends_path, "a", newline="\n") as f:
     #             csv.writer(f, delimiter=',').writerow([speed, motor, slope_ends['positive'], slope_ends['negative']])
 
-    # speeds = [1,2,3,4,5,6,15,25,30,35,40,20,25,30,35,3]
+    # speeds = [1,5,6,15,25,30,35,40,3,20,25,30,35]
     # motors = ['Front','Front','Front','Front','Front','Front','Front','Front','Rear','Rear','Rear','Rear','Rear']
     # for speed,motor in zip(speeds,motors):
     #     path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
