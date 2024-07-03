@@ -162,8 +162,8 @@ def plot_raw(path):
     plt.show()
 
 if __name__ == '__main__':
-    front_path = './Python/deadband coeff/SourceData10/FrontSlope3Data.csv'
-    rear_path = './Python/deadband coeff/SourceData10/RearSlope3Data.csv'
+    front_path = './Python/deadband coeff/SourceData10/FrontSlope2Data.csv'
+    rear_path = './Python/deadband coeff/SourceData10/RearSlope2Data.csv'
     read_front_and_rear(front_path,rear_path)
     plot_raw(front_path)
     plot_raw(rear_path)
