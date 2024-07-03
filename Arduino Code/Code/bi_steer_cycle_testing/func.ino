@@ -173,7 +173,7 @@ void deadband_test(){
                 if (zero_deadband_crosses < 21){
                         if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
                         
-                        frontWheelInput += (deadband_sign*4);
+                        frontWheelInput += (deadband_sign*3);
                         rearWheelInput = frontWheelInput;
                         
                         if (sign(frontWheelInput) != prev_input_sign){
