@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 import csv
 
 def sign(num):
@@ -90,6 +91,7 @@ def find_constants(path, constants_path, deadbands_path):
         "deadband_starts": deadband_starts, 
         "deadband_ends": deadband_ends
     }
+
     max_len = max(len(v) for v in data_constants.values())
     df_constants = pd.DataFrame({k: [v[i] if i < len(v) else pd.NA for i in range(max_len)] for k, v in data_constants.items()})
     df_constants.to_csv(constants_path)
@@ -100,18 +102,53 @@ def find_constants(path, constants_path, deadbands_path):
 
     return slope_ends
 
+def plot_raw_with_measured_constants(path,constants_path,deadbands_path):
+    df = pd.read_csv(path)
+    df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
+    constants_df = pd.read_csv(constants_path)
+    deadbands_df = pd.read_csv(deadbands_path)
+    # constants_df.dropna(how='any')
+    # deadbands_df.dropna(how='any')
+
+    plt.subplot(2,1,1)
+    plt.plot(df['Relative Time'],df['Wheel Input'])
+    for _,row in deadbands_df.iterrows():
+        # print(row['deadband_starts'])
+        plt.axvline(x=row['deadband_starts'],color='k',linestyle='--',linewidth=1)
+        plt.axvline(x=row['deadband_ends'],color='k',linestyle='--',linewidth=1)
+    plt.title(path)
+    
+    plt.subplot(2,1,2)
+    plt.plot(df['Relative Time'],df['Wheel Speed'])
+    for _,row in deadbands_df.iterrows():
+        # print(row)
+        plt.axvline(x=row['deadband_ends'],color='k',linestyle='--',linewidth=1)
+        plt.axvline(x=row['deadband_starts'],color='k',linestyle='--',linewidth=1)
+
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+    plt.show()
+
 if __name__ == '__main__':
-    motor = 'Front'
-    slope_ends_path = "./Python/deadband coeff/SlopeEnds10.csv"
+    motor = 'Rear'
+    speed = 5
+    # slope_ends_path = "./Python/deadband coeff/SlopeEnds10.csv"
     # with open(slope_ends_path, "w", newline="\n") as f:
     #     csv.writer(f, delimiter=',').writerow(['speed', 'motor', 'positive', 'negative'])
 
-    for speed in range(4,11):
+    # path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv'
+    # constants_path = f'./Python/deadband coeff/Constants10/{motor}Slope{speed}Constants.csv'
+    # deadbands_path = f'./Python/deadband coeff/Deadbands10/{motor}Slope{speed}Deadbands.csv' 
+    # plot_raw_with_measured_constants(path,constants_path,deadbands_path)
+    speeds = [4,5,6,7,8,9,10,15,20,25,30,35,40]
+    for speed in speeds:
         path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
         constants_path = f'./Python/deadband coeff/Constants10/{motor}Slope{speed}Constants.csv'
         deadbands_path = f'./Python/deadband coeff/Deadbands10/{motor}Slope{speed}Deadbands.csv'  
 
-        slope_ends = find_constants(path, constants_path, deadbands_path)
-        with open(slope_ends_path, "a", newline="\n") as f:
-            csv.writer(f, delimiter=',').writerow([speed, motor, slope_ends['positive'], slope_ends['negative']])
+        plot_raw_with_measured_constants(path,constants_path,deadbands_path)
 
+        # slope_ends = find_constants(path, constants_path, deadbands_path)
+
+        # with open(slope_ends_path, "a", newline="\n") as f:
+        #     csv.writer(f, delimiter=',').writerow([speed, motor, slope_ends['positive'], slope_ends['negative']])
