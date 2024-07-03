@@ -44,10 +44,10 @@ void updateEncoderData() {
                 Serial.print(millis()); Serial.print(",");
                 Serial.print(frontWheelInput); Serial.print(",");        
                 Serial.print(frontWheelTicks); Serial.print(",");
-                Serial.print(frontWheelData.speed());
+                Serial.print(frontWheelData.speed()); Serial.print(",");
                 // Serial.print(rearWheelInput); Serial.print(",");        
-                // Serial.print(rearWheelTicks); Serial.print(",");
-                // Serial.print(rearWheelData.speed());
+                Serial.print(rearWheelTicks); Serial.print(",");
+                Serial.print(rearWheelData.speed());
                 // Serial.print(frontSteerInput); Serial.print(",");        
                 // Serial.print(frontSteerTicks); Serial.print(",");
                 // Serial.print(frontSteerData.speed());
@@ -172,19 +172,23 @@ void deadband_test(){
                 // Triangle Input //
                 if (zero_deadband_crosses < 21){
                         if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
-                        frontWheelInput += (deadband_sign*1);
-                        prev_time = millis();
+                        
+                        frontWheelInput += (deadband_sign*40);
+                        rearWheelInput = frontWheelInput;
+                        
                         if (sign(frontWheelInput) != prev_input_sign){
                                 zero_deadband_crosses++;
                                 prev_input_sign = sign(frontWheelInput);
                         }
                 } else {
                         frontWheelInput = 0;
+                        rearWheelInput = 0;
                 }
 
                 // if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
                 // rearWheelInput += (deadband_sign*40);
-                // prev_time = millis();
+                
+                prev_time = millis();
         }  
 }
 

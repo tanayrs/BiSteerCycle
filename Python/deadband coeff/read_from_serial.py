@@ -52,8 +52,8 @@ def read_from_serial(path):
                         )
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
 
-def read_front_and_rear(front_path, rear_path):
-    if os.path.exists(front_path) or os.path.exists(rear_path):
+def read_front_and_rear(front_path, rear_path,overwrite=False):
+    if overwrite == False and (os.path.exists(front_path) or os.path.exists(rear_path)):
         print('File Already Exists, Try Again')
         return
 
@@ -103,7 +103,7 @@ def read_front_and_rear(front_path, rear_path):
                         quotechar='"', 
                         quoting=csv.QUOTE_MINIMAL
                         )
-                sensor_writer.writerow([line[0],line[4],line[5],line[6]])
+                sensor_writer.writerow([line[0],line[1],line[4],line[5]])
 
 def sign(num):
     if num > 0:
@@ -162,8 +162,13 @@ def plot_raw(path):
     plt.show()
 
 if __name__ == '__main__':
-    path = './Python/deadband coeff/SourceData10/FrontSlope1Data.csv'
+    front_path = './Python/deadband coeff/SourceData10/FrontSlope40Data.csv'
+    rear_path = './Python/deadband coeff/SourceData10/RearSlope40Data.csv'
+    read_front_and_rear(front_path,rear_path)
+    plot_raw(front_path)
+    plot_raw(rear_path)
+    
     # read_from_serial(path)
-    plot_raw(path)
+    # plot_raw(path)
     # path = './Python/deadband coeff/tmp.csv'
     # read_and_store_constants(path)
