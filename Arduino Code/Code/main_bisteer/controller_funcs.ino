@@ -154,6 +154,25 @@ void controller_track_stand(double front_angle){
         // Fixing the front and rear steering at an angle and 0 for track stand
         holdsteering(front_angle, 0);
 
+        // If front wheel is turned left:
+        //      If leaning left:
+        //              Accelerate Forwards
+        //      If leaning right:
+        //              Accelerate Backwards
+        // If front wheel is turned right:
+        //      If leaning left:
+        //              Accelerate Backwards
+        //      If leaning right:
+        //              Accelerate Forwards
+
+        // now back calculate Vr to maintain rigid body constraint
+
+        // lean towards left = +ve
+        // lean towards right = -ve
+
+        // steer towards left = +ve
+        // steer towards right = -ve
+
         // based on phi (target = 0), PID loop will change rear velocity 
         // double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
 
@@ -208,8 +227,8 @@ void holdwheel(double degrees_F, double degrees_R) {
 void holdsteering(double degrees_F, double degrees_R) {
         long double dt = loopTimeConstant * 1e-6;
 
-        double EncTarget_F = degrees_F * (steerMotorPPR) / 360;  // Add 3 in deadband //
-        double EncTarget_R = degrees_R * (steerMotorPPR) / 360;
+        double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
+        double EncTarget_R = degrees_R * (steerMotorPPR) / 90;
 
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
@@ -242,6 +261,10 @@ void holdsteering(double degrees_F, double degrees_R) {
 
         if (abs(steer_error_F) < 10) frontSteerInput = 0;
         if (abs(steer_error_R) < 10) rearSteerInput = 0;
+        
+        Serial.print(EncTarget_F); Serial.print(" ");
+        Serial.print(steer_error_F); Serial.print(" ");
+        Serial.print(frontSteerEnc.read()); Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/

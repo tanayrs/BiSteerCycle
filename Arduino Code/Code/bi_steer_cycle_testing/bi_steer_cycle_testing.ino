@@ -59,10 +59,14 @@ void setup() {
         // For the Deadband Testing and Motor Calibration //
         prev_time = millis();
         prev_time_millis = millis();
+        zero_deadband_crosses = 0;
+        prev_input_sign = 1;
+        
         frontWheelInput = 0;
         rearWheelInput = 0;
         frontSteerInput = 0;
         rearSteerInput = 0;
+        
         deadband_sign = 1;
         motor_calibration_sign = -1;
 }

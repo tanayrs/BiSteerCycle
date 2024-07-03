@@ -12,7 +12,7 @@ speed,motor,comp,path,deadband_start1,deadband_start2,deadband_start3,deadband_s
 10,front,comp,./Python/deadband coeff/SourceData/FrontSlope10CompData.csv,7093.0,24646.0,42378.0,59871.0,10520.0,28493.0,45624.0,63778.0,-140,135,215,-175,34985.0,17372.0
 15,front,uncomp,./Python/deadband coeff/SourceData/FrontSlope15Data.csv,4749.0,16471.0,28072.0,40034.0,6853.0,18635.0,30657.0,42319.0,-120,142,187,-180,23263.0,11541.0
 20,front,uncomp,./Python/deadband coeff/SourceData/FrontSlope20Data.csv,3606.0,12503.0,21279.0,30236.0,5169.0,14246.0,22962.0,31979.0,-120,130,200,-170,17552.0,8656.0
-20,front,comp,./Python/deadband coeff/SourceData/FrontSlope20CompData.csv,3606.0,12503.0,21279.0,30236.0,5169.0,14246.0,22962.0,31979.0,-120,130,200,-170,17552.0,8656.0
+20,front,comp,./Python/deadband coeff/SourceData/FrontSlope20CompData_1.csv,3606.0,12503.0,21279.0,30236.0,5169.0,14246.0,22962.0,31979.0,-120,130,200,-170,17552.0,8656.0
 25,front,uncomp,./Python/deadband coeff/SourceData/FrontSlope25Data.csv,2826.0,10039.0,17193.0,24286.0,4208.0,11362.0,18275.0,25669.0,-125,125,187,-150,14127.0,6973.0
 30,front,uncomp,./Python/deadband coeff/SourceData/FrontSlope30Data.csv,1803.0,6371.0,10819.0,15388.0,2464.0,7213.0,11781.0,16290,-140,140,180,-160,8896.0,4328.0
 35,front,uncomp,./Python/deadband coeff/SourceData/FrontSlope35Data.csv,2044.0,7033.0,11963.0,17012.0,2885.0,8055.0,12684.0,17914.0,-105,122,192,-122,9859.0,4869.0

@@ -15,6 +15,7 @@ class MotorCompensation:
     def __init__(self, file_path, deadband_starts, deadband_ends, kinetic_coeffs, static_coeffs, slope_ends):
         self.df = pd.read_csv(file_path)
         self.df['Relative Time'] = self.df['Time']-self.df['Time'].iloc[0]
+        self.df['Expected Response'] = self.df['Wheel Input'].apply(self.__calculate_expected_output)
         
         self.deadband_starts = deadband_starts
         self.deadband_ends = deadband_ends
@@ -32,17 +33,20 @@ class MotorCompensation:
         ### Command Response Plot for decreasing speed ###
         plt.subplot(2,2,2)
         self.__plot_cr_decreasing()
+        self.__plot_cr_increasing()
 
         # ### Response vs Time Plot ###
         plt.subplot(2,2,3)
         self.__plot_output()
 
         ### Command Response Plot for Increasing Speed #
-        plt.subplot(2,2,4)
-        self.__plot_cr_increasing()
+        # plt.subplot(2,2,4)
+
 
         ### Plotting Final Graph ###
         plt.tight_layout(pad=1.08, w_pad=0.1, h_pad=0.1)
+        manager = plt.get_current_fig_manager()
+        manager.full_screen_toggle()
         plt.show()
 
     def __plot_input(self):
@@ -68,13 +72,13 @@ class MotorCompensation:
         plt.axhline(y=self.kinetic_coeffs['increasing'], color='k', linestyle='--', linewidth=0.5)
         
         # Plotting Individual Points Corresponding to Static and Kinetic Coefficients for Increasing and Reducing Speed #
-        plt.plot(self.deadband_ends[0],self.static_coeffs['decreasing'],'o', color='tab:orange', label='Static Coefficient for Decreasing Speed', ms=7.5)
-        plt.plot(self.deadband_ends[1],self.static_coeffs['increasing'],'o', color='tab:pink', label='Static Coefficient for Increasing Speed', ms=7.5)
+        plt.plot(self.deadband_ends[0],self.static_coeffs['decreasing'],'o', color='tab:orange', label='Deadband Exit for Decreasing Speed', ms=7.5)
+        plt.plot(self.deadband_ends[1],self.static_coeffs['increasing'],'o', color='tab:pink', label='Deadband Exit for Increasing Speed', ms=7.5)
         plt.plot(self.deadband_ends[2],self.static_coeffs['decreasing'],'o', color='tab:orange', ms=7.5)
         plt.plot(self.deadband_ends[3],self.static_coeffs['increasing'],'o', color='tab:pink', ms=7.5)
 
-        plt.plot(self.deadband_starts[0],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', label='Kinetic Coefficient for Decreasing Speed', ms=7.5)
-        plt.plot(self.deadband_starts[1],self.kinetic_coeffs['increasing'],'o', color='tab:olive', label='Kinetic Coefficient for Increasing Speed', ms=7.5)
+        plt.plot(self.deadband_starts[0],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', label='Deadband Entry for Decreasing Speed', ms=7.5)
+        plt.plot(self.deadband_starts[1],self.kinetic_coeffs['increasing'],'o', color='tab:olive', label='Deadband Entry for Increasing Speed', ms=7.5)
         plt.plot(self.deadband_starts[2],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', ms=7.5)
         plt.plot(self.deadband_starts[3],self.kinetic_coeffs['increasing'],'o', color='tab:olive', ms=7.5)
         
@@ -87,11 +91,9 @@ class MotorCompensation:
         plt.title('Input', fontsize=14)
 
     def __plot_output(self):
-        self.df['Expected Response'] = self.df['Wheel Input'].apply(self.__calculate_expected_output)
-        
         ### Command vs Time Plot ###
-        plt.plot(self.df['Relative Time'], self.df['Wheel Speed'], label='Actual Response')
-        plt.plot(self.df['Relative Time'], self.df['Expected Response'], label='Expected Response', color='gray')
+        plt.plot(self.df['Relative Time'], self.df['Wheel Speed'], label='Measured Response')
+        plt.plot(self.df['Relative Time'], self.df['Expected Response'], label='Ideal Response', color='gray')
 
         # Plotting Vertical Dotted Lines for Start and End of Deadband #
         plt.axvline(x=self.deadband_ends[0], color='k', linestyle='--', linewidth=0.5)
@@ -116,16 +118,26 @@ class MotorCompensation:
         # Plotting Axis Labels and Sub-Plot Title #
         plt.xlabel('Time (ms)',fontsize=14)
         plt.ylabel('Response (Degrees per Second)',fontsize=14)
-        plt.legend(fontsize=14)
-        plt.title('Expected and Actual Response', fontsize=14)
+        plt.legend(loc='upper right', fontsize=14)
+        plt.title('Measured and Ideal Response', fontsize=14)
 
         # plt.show()
 
     def __plot_cr_decreasing(self):
         plt.scatter(
             self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
-            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed']
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
+            marker='x',
+            label = 'Measured Response'
             )
+        
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Expected Response'],
+            color = 'gray',
+            s=10,
+            label = 'Ideal Response'
+        )
         
         # Plotting Vertical Lines Corresponding to Static and Kinetic Coefficients #
         plt.axvline(x=self.static_coeffs['decreasing'], color='k', linestyle='--',linewidth=0.75)
@@ -140,15 +152,19 @@ class MotorCompensation:
         
         # Setting x-ticks, axese limits, axese labels and sub-plot title #
         plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
-        plt.xlim([400,-400])
+        plt.xlim([-400,400])
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        plt.title('Deadband Static Coefficient for Reducing Speed', fontsize=14)
+        plt.legend(fontsize=14)
+        plt.title('Commanded Input vs Response for Reducing Speed', fontsize=14)
 
     def __plot_cr_increasing(self):
-        time = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
-        time = time[time['Relative Time']<=self.slope_ends['positive']]
-        plt.scatter(time['Wheel Input'],time['Wheel Speed'])
+        # time = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
+        # time = time[time['Relative Time']<=self.slope_ends['positive']]
+        subset = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
+        subset = subset[subset['Relative Time']<=self.slope_ends['positive']]
+        plt.scatter(subset['Wheel Input'],subset['Wheel Speed'], label='Measured Response', color='tab:red',s=25,marker='o',facecolors='none')
+        # plt.scatter(subset['Wheel Input'],subset['Expected Response'],color='gray',s=10,label='Ideal Response')
         
         # Plotting Vertical Doted Line for Kinetic and Static Coefficient #
         plt.axvline(x=self.static_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
@@ -167,7 +183,8 @@ class MotorCompensation:
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        plt.title('Deadband Static Coefficient for Increasing Speed', fontsize=14)
+        plt.legend(loc='upper left',fontsize=14)
+        plt.title('Commanded Input vs Response for Increasing Speed', fontsize=14)
 
     def __calculate_expected_output(self,pwm):
         PWM_RESOLUTION = 4095
@@ -317,7 +334,8 @@ if __name__ == '__main__':
     # find_constants('./Python/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
     # plot_raw('./Python/deadband coeff/SourceData/RearSlope35Data.csv')
 
-    plot_motor_data(20,'front')
+    plot_motor_data(10,'front')
+    
     # plot_motor_data(5,'rear')
     # for i in range(1,11,1):
     #     find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)

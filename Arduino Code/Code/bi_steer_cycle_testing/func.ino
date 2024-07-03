@@ -42,12 +42,12 @@ void updateEncoderData() {
         // For Measuring Deadband and Motor Calibration Step //
         if (millis() - prev_time_millis > 25){
                 Serial.print(millis()); Serial.print(",");
-                // Serial.print(rearWheelInput); Serial.print(",");        
-                // Serial.print(rearWheelTicks); Serial.print(",");
-                // Serial.print(rearWheelData.speed());
                 Serial.print(frontWheelInput); Serial.print(",");        
                 Serial.print(frontWheelTicks); Serial.print(",");
                 Serial.print(frontWheelData.speed());
+                // Serial.print(rearWheelInput); Serial.print(",");        
+                // Serial.print(rearWheelTicks); Serial.print(",");
+                // Serial.print(rearWheelData.speed());
                 // Serial.print(frontSteerInput); Serial.print(",");        
                 // Serial.print(frontSteerTicks); Serial.print(",");
                 // Serial.print(frontSteerData.speed());
@@ -99,10 +99,10 @@ void writeToMotor() {
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         
         // // // Directly Writing Input without any Compensation //
-        // frontSteerMotor.setSpeed(frontSteerInput);
-        // rearSteerMotor.setSpeed(rearSteerInput);
-        // frontWheelMotor.setSpeed(frontWheelInput);
-        // rearWheelMotor.setSpeed(rearWheelInput);
+        frontSteerMotor.setSpeed(frontSteerInput);
+        rearSteerMotor.setSpeed(rearSteerInput);
+        frontWheelMotor.setSpeed(frontWheelInput);
+        rearWheelMotor.setSpeed(rearWheelInput);
         
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
@@ -122,21 +122,21 @@ void writeToMotor() {
         // else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
 
         // Using Kinetic Coefficient for Motor Compensation //
-        if (frontWheelInput == 0){
-                frontWheelMotor.setSpeed(0);
-        } else if (frontWheelData.speed() == 0){
-                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelStaticInc : frontWheelInput+frontWheelStaticDec);
-        } else {
-                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelKineticDec : frontWheelInput+frontWheelKineticInc);
-        }
+        // if (frontWheelInput == 0){
+        //         frontWheelMotor.setSpeed(0);
+        // } else if (frontWheelData.speed() == 0){
+        //         frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelStaticInc : frontWheelInput+frontWheelStaticDec);
+        // } else {
+        //         frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelKineticDec : frontWheelInput+frontWheelKineticInc);
+        // }
 
-        if (rearWheelInput == 0){
-                rearWheelMotor.setSpeed(0);
-        } else if (rearWheelData.speed() == 0) {
-                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelStaticInc : rearWheelInput+rearWheelStaticDec);
-        } else {
-                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelKineticDec : rearWheelInput+rearWheelKineticInc);
-        }
+        // if (rearWheelInput == 0){
+        //         rearWheelMotor.setSpeed(0);
+        // } else if (rearWheelData.speed() == 0) {
+        //         rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelStaticInc : rearWheelInput+rearWheelStaticDec);
+        // } else {
+        //         rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelKineticDec : rearWheelInput+rearWheelKineticInc);
+        // }
 }
 
 /* Motor Calibration in Forward and Reverse Directions for Sin Input */
@@ -160,6 +160,9 @@ void motor_calibration_square(){
         rearWheelInput = (motor_calibration_sign > 0)? 150 : -150;
 }
 
+int sign(int num){
+        return num<0?-1:1;
+}
 /* Testing Deadband for Wheel Motors using Triangle Input */
 void deadband_test(){  
         if (millis() - prev_time > 100) {
@@ -167,9 +170,17 @@ void deadband_test(){
                 //   frontWheelInput = frontWheelInput>50?-50:frontWheelInput+1;
         
                 // Triangle Input //
-                if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
-                frontWheelInput += (deadband_sign*20);
-                prev_time = millis();
+                if (zero_deadband_crosses < 21){
+                        if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
+                        frontWheelInput += (deadband_sign*1);
+                        prev_time = millis();
+                        if (sign(frontWheelInput) != prev_input_sign){
+                                zero_deadband_crosses++;
+                                prev_input_sign = sign(frontWheelInput);
+                        }
+                } else {
+                        frontWheelInput = 0;
+                }
 
                 // if ((rearWheelInput > 800)||(rearWheelInput < -800)) deadband_sign *= -1;
                 // rearWheelInput += (deadband_sign*40);

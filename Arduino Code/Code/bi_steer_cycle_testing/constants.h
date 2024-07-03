@@ -152,6 +152,7 @@ elapsedMillis runTimeMillis;
 // For Deadband and Motor Calibration Square //
 int prev_time, prev_time_millis;
 int deadband_sign, motor_calibration_sign;
+int zero_deadband_crosses, prev_input_sign;
 
 /* Low Pass Filter */
 float alpha = 0.2;

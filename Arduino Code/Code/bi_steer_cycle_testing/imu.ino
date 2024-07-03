@@ -49,7 +49,7 @@ void calculate_mpu_angle_compfilter() {
 
 /* Calculate Angles from MPU6050 Sensor using a Kalman Filter */
 void calculate_mpu_angle_kalman() {
-mpu.getEvent( & a, & g, & temp);
+        mpu.getEvent( & a, & g, & temp);
         elapsedTimeIMU = IMUTimeMicros / 1000.0;
         IMUTimeMicros = 0;
         IMUFilterConstant = IMUTimeConstant / (IMUTimeConstant + (elapsedTimeIMU / 1000.0));
