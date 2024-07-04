@@ -44,28 +44,9 @@ BNO-055  - NA
 void setup() {
         Serial.begin(115200);
         Serial.println("Starting Serial Print");
-        
-        //init_IMU();
-        //delay(500);
-        init_bno();
-        delay(1000);
 
-        loopTimeMicros = 0;
-        runTimeMillis = 0;
-        
         // Setting Encoder Pins to PULLUP and Initialises Ticks //
         startup_routine();
-        analogWriteResolution(12);
-
-        // For the Deadband Testing and Motor Calibration //
-        prev_time = millis();
-        prev_time_millis = millis();
-        frontWheelInput = 0;
-        rearWheelInput = 0;
-        frontSteerInput = 200;
-        rearSteerInput = 0;
-        deadband_sign = 1;
-        motor_calibration_sign = -1;
 }
 
 void loop(){
@@ -78,12 +59,12 @@ void loop(){
         // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
         
         // Calculates Steer Input //
-        // holdsteering(90,90);     // takes front rear steer in degrees
+        // holdsteering(0,0);     // takes front rear steer in degrees
         
         // controller_bicycle(1);
         //controller_rear_speed(0.48);
         //controller_front_speed(0.48);
-        controller_track_stand(45);
+        controller_track_stand(-45);
 
         // Writes Inputs to Motor //
         writeToMotor(); 

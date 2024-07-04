@@ -2,6 +2,9 @@
 
 /* Setting Encoder Pins to PULLUP and Initialises Ticks */
 void startup_routine() {
+        analogWriteResolution(12);
+        init_bno();
+
         // Reference: void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double steerTicksOffset) //
         frontSteerData.update(0, 0, 0);
         rearSteerData.update(0, 0, 0);
@@ -21,6 +24,20 @@ void startup_routine() {
 
         frontWheelInput = 0;
         rearWheelInput = 0;
+        
+        frontSteerInput = 0;
+        rearSteerInput = 0;
+        
+        prev_time = millis();
+        prev_time_millis = millis();
+        
+        loopTimeMicros = 0;
+        runTimeMillis = 0;
+        
+
+        deadband_sign = 1;
+        int_track = 0;
+        motor_calibration_sign = -1;
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */

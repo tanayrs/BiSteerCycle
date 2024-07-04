@@ -172,3 +172,11 @@ elapsedMillis runTimeMillis;
 // For Deadband and Motor Calibration Square //
 int prev_time, prev_time_millis;
 int deadband_sign, motor_calibration_sign;
+
+/* Track Stand Varliables */
+#define Kp_track 250
+#define Kd_track 100
+#define Ki_track 80
+#define Kd_track_wheel 2
+
+double int_track, front_int_track, rear_int_track;

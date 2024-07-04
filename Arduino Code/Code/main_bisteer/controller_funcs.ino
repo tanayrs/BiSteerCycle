@@ -149,10 +149,6 @@ void controller_front_speed(double velocity_front){
 /****************************************************************************************************************************************************************************************************/
 
 void controller_track_stand(double front_angle){
-        // long double dt = loopTimeConstant * 1e-6;
-
-        // Fixing the front and rear steering at an angle and 0 for track stand
-        holdsteering(front_angle, 0);
 
         // If front wheel is turned left:
         //      If leaning left:
@@ -173,17 +169,46 @@ void controller_track_stand(double front_angle){
         // steer towards left = +ve
         // steer towards right = -ve
 
+        // Vf -> positive for if sign(psi) == sign(phi)
+        // Vf -> negative for if sign(psi) != sign(phi)
+
+        // Idea: Multiple control output with sign(psi)
+
+        // Control Must be dependent on phi, phidot and phi_int
+
+        // Finally integrate to get PID with respect to acceleation control
+
+        long double dt = loopTimeConstant * 1e-6;
+
+        // Fixing the front and rear steering at an angle and 0 for track stand
+        holdsteering(-90, 0);
+        // holdsteering(front_angle, 0);
+
         // based on phi (target = 0), PID loop will change rear velocity 
-        // double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
+        double rear_acc = (Kp_track*(phi)) + (Kd_track * (phi_dot)) + (Ki_track * int_track) + (Kd_track_wheel * frontWheelData.speed());
+        rear_acc *= sgn(front_angle);
 
-        // Calculating front velocity based on rear velocity 
-        // double phi_rad = phi*(PI/180);
-        // double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
-        // double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
-        // double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+        // Calculating front velocity based on rear velocity
+        int_track += phi*dt;
+        constrain(int_track,-300,300);
 
-        // frontWheelInput = front_acc;
-        // rearWheelInput = rear_acc;
+        double phi_rad = phi*(PI/180);
+        double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
+        double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
+        double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+
+        front_int_track = front_acc;
+        rear_int_track = rear_acc;
+
+        frontWheelInput = abs(phi)>20?0:front_int_track;
+        rearWheelInput = abs(phi)>20?0:rear_int_track;
+
+        Serial.print(phi); Serial.print(" ");
+        Serial.print(Kp_track*(phi)); Serial.print(" ");
+        Serial.print(Ki_track * int_track); Serial.print(" ");
+        Serial.print(Kd_track * (phi_dot)); Serial.print(" ");
+        Serial.print(rearWheelInput); Serial.print(" ");
+        Serial.println(frontWheelInput);
 }
 
 /****************************************************************************************************************************************************************************************************/
@@ -262,9 +287,9 @@ void holdsteering(double degrees_F, double degrees_R) {
         if (abs(steer_error_F) < 10) frontSteerInput = 0;
         if (abs(steer_error_R) < 10) rearSteerInput = 0;
         
-        Serial.print(EncTarget_F); Serial.print(" ");
-        Serial.print(steer_error_F); Serial.print(" ");
-        Serial.print(frontSteerEnc.read()); Serial.println("");
+        // Serial.print(EncTarget_F); Serial.print(" ");
+        // Serial.print(steer_error_F); Serial.print(" ");
+        // Serial.print(frontSteerEnc.read()); Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/
