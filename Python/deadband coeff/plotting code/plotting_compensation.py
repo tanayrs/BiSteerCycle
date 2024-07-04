@@ -9,7 +9,7 @@ Run bi_steer_cycle_testing arduino code with deadband_test()
 from matplotlib import pyplot as plt
 import pandas as pd
 
-PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plotting_constants.csv'
+PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plot constants/plotting_constants.csv'
 
 class MotorCompensation:
     def __init__(self, comp_file_path, uncomp_file_path,deadband_starts, deadband_ends, kinetic_coeffs, static_coeffs, slope_ends, slope_ends_uncomp):
@@ -35,15 +35,17 @@ class MotorCompensation:
 
         ### Command Response Plot for decreasing speed ###
         plt.subplot(2,2,2)
-        self.__plot_cr_decreasing()
+        self.__plot_cr_combined()
+        # self.__plot_cr_decreasing()
+        # self.__plot_cr_increasing()
 
         # ### Response vs Time Plot ###
         plt.subplot(2,2,3)
         self.__plot_output()
 
         ### Command Response Plot for Increasing Speed #
-        plt.subplot(2,2,4)
-        self.__plot_cr_increasing()
+        # plt.subplot(2,2,4)
+        
 
         ### Plotting Final Graph ###
         plt.tight_layout(pad=1.08, w_pad=0.1, h_pad=0.1)
@@ -140,8 +142,8 @@ class MotorCompensation:
         plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
         
         # Plotting Points at which Static and Kinetic Coefficients are Measured #
-        plt.plot(self.static_coeffs['decreasing'],0,'o',color='tab:orange',ms=10)
-        plt.plot(self.kinetic_coeffs['decreasing'],0,'o',color='tab:cyan', ms=10)
+        plt.plot(self.static_coeffs['decreasing'],0,'o',color='tab:orange',ms=7.5)
+        plt.plot(self.kinetic_coeffs['decreasing'],0,'o',color='tab:cyan', ms=7.5)
         
         # Plotting Uncompensated, Compensated and Ideal Compensation #
         plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray',linestyle='dotted',label='Ideal Compensation')
@@ -151,23 +153,29 @@ class MotorCompensation:
             self.df_uncomp[self.df_uncomp['Relative Time']<=self.slope_ends_uncomp['negative']]['Wheel Speed'],
             color='gray',
             marker='o',
-            label='Uncompensated Points',
+            facecolor='none',
+            label='Uncompensated Points for Decreasing Speed',
             s=20
         )
 
         plt.scatter(
             self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
             self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
-            label='Compensated Points'
+            marker='o',
+            color='tab:blue',
+            facecolors='none',
+            linewidths=2,
+            s=75,
+            label='Compensated Points for Decreasing Speed'
         )
 
         # Setting x-ticks, axese limits, axese labels and sub-plot title #
-        plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
-        plt.xlim([400,-400])
-        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
-        plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        plt.legend(fontsize=14)
-        plt.title('Commanded Input vs Response for Reducing Speed', fontsize=14)
+        # plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
+        # plt.xlim([-400,400])
+        # plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
+        # plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+        # plt.legend(fontsize=14)
+        # plt.title('Commanded Input vs Response', fontsize=14)
 
     def __plot_cr_increasing(self):
         comp_subset = self.df.loc[(self.df['Relative Time']>=self.slope_ends['negative']) & (self.df['Relative Time']<=self.slope_ends['positive'])]
@@ -181,24 +189,115 @@ class MotorCompensation:
         plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
 
         # Plotting Points Demarkating Static and Kinetic Coefficient #
-        plt.plot(self.static_coeffs['increasing'],0,'o',color='tab:pink', ms=10)
-        plt.plot(self.kinetic_coeffs['increasing'],0,'o',color='tab:olive', ms=10)
+        plt.plot(self.static_coeffs['increasing'],0,'o',color='tab:pink', ms=7.5)
+        plt.plot(self.kinetic_coeffs['increasing'],0,'o',color='tab:olive', ms=7.5)
 
         # Scatter Plots for Uncompensated, Compensated and Ideal Compensation #
-        plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray', linestyle='dotted', label='Ideal Compensation')
+        # plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray', linestyle='dotted', label='Ideal Compensation')
 
-        plt.scatter(uncomp_subset['Wheel Input'], uncomp_subset['Wheel Speed'], color='gray', marker='o', label='Uncompensated Points', s=30)
+        plt.scatter(
+            uncomp_subset['Wheel Input'], 
+            uncomp_subset['Wheel Speed'], 
+            color='gray', 
+            marker='x', 
+            label='Uncompensated Points For Increasing Speed', 
+            s=30
+        )
         
-        plt.scatter(comp_subset['Wheel Input'], comp_subset['Wheel Speed'], label='Compensated Points', s=50)
+        plt.scatter(
+            comp_subset['Wheel Input'], 
+            comp_subset['Wheel Speed'], 
+            marker = 'x',
+            color='darkgoldenrod',
+            linewidths=2,
+            label='Compensated Points for Increasing Speed', 
+            s=75
+        )
 
         # Plotting ticks, setting plot limits and adding axis labels with sub-plot title #
-        plt.xticks([-800,-600,-400,self.kinetic_coeffs['increasing'], 0, self.static_coeffs['increasing'], 400, 600, 800])
+        plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'],self.kinetic_coeffs['increasing'], 0, self.static_coeffs['increasing'], self.kinetic_coeffs['decreasing'], 400, 600, 800])
         plt.xlim([-400,400])
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.legend(fontsize=14)
-        plt.title('Commanded Input vs Response for Increasing Speed', fontsize=14)
+        plt.title('Commanded Input vs Response', fontsize=18)
+
+    def __plot_cr_combined(self):
+        comp_subset = self.df.loc[self.df['Relative Time']>=self.slope_ends['negative']]
+        comp_subset = comp_subset.loc[comp_subset['Relative Time']<=self.slope_ends['positive']]
+        uncomp_subset = self.df_uncomp.loc[self.df_uncomp['Relative Time']>=self.slope_ends['negative']]
+        uncomp_subset = uncomp_subset.loc[uncomp_subset['Relative Time']<=self.slope_ends['positive']]
+        
+        # Plotting Vertical Lines Corresponding to Static and Kinetic Coefficients #
+        plt.axvline(x=self.static_coeffs['decreasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.kinetic_coeffs['decreasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.static_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.kinetic_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
+        
+        # Plotting Horizontal Line to Demarkate Line for No Response Speed #
+        plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
+        
+        # Plotting Points at which Static and Kinetic Coefficients are Measured #
+        plt.plot(self.static_coeffs['decreasing'],0,'o',color='tab:orange',ms=7.5)
+        plt.plot(self.kinetic_coeffs['decreasing'],0,'o',color='tab:cyan', ms=7.5)
+        plt.plot(self.static_coeffs['increasing'],0,'o',color='tab:pink', ms=7.5)
+        plt.plot(self.kinetic_coeffs['increasing'],0,'o',color='tab:olive', ms=7.5)
+        
+        # Plotting Ideal Compensation #
+        plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray',linestyle='dotted',label='Ideal Compensation')
+
+        # Plotting Uncompensated Response #
+        plt.scatter(
+            uncomp_subset['Wheel Input'], 
+            uncomp_subset['Wheel Speed'], 
+            color='gray', 
+            marker='x', 
+            label='Uncompensated Points For Increasing Speed', 
+            s=30
+        )
+        plt.scatter(
+            self.df_uncomp[self.df_uncomp['Relative Time']<= self.slope_ends_uncomp['negative']]['Wheel Input'],
+            self.df_uncomp[self.df_uncomp['Relative Time']<=self.slope_ends_uncomp['negative']]['Wheel Speed'],
+            color='gray',
+            marker='o',
+            facecolor='none',
+            label='Uncompensated Points for Decreasing Speed',
+            s=20
+        )
+
+        # Plotting Compensated Response #
+        plt.scatter(
+            comp_subset['Wheel Input'], 
+            comp_subset['Wheel Speed'], 
+            marker = '^',
+            color='tab:green',
+            linewidths=1.75,
+            label='Compensated Points for Increasing Speed', 
+            s=50
+        )
+
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
+            marker='o',
+            color='tab:purple',
+            facecolors='none',
+            linewidths=2,
+            s=100,
+            label='Compensated Points for Decreasing Speed'
+        )
+        
+
+
+        # Plotting ticks, setting plot limits and adding axis labels with sub-plot title #
+        plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'],self.kinetic_coeffs['increasing'], 0, self.static_coeffs['increasing'], self.kinetic_coeffs['decreasing'], 400, 600, 800])
+        plt.xlim([-400,400])
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
+        plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
+        plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+        plt.legend(fontsize=14)
+        plt.title('Commanded Input vs Response', fontsize=18)
 
     def __calculate_expected_output(self,pwm):
         PWM_RESOLUTION = 4095
