@@ -17,10 +17,10 @@ def find_errors(motor):
     err_inc = []
     err_dec = []
 
-    # if motor == "Front":
-    #     x = x_front
-    # else:
-    #     x = x_rear
+    if motor == "Front":
+        x = x_front
+    else:
+        x = x_rear
 
     for i in x:
         path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{i}Constants.csv'

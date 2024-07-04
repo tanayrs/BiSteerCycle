@@ -252,9 +252,9 @@ class MotorCompensation:
             uncomp_subset['Wheel Input'], 
             uncomp_subset['Wheel Speed'], 
             color='gray', 
-            marker='x', 
+            marker='^', 
             label='Uncompensated Points For Increasing Speed', 
-            s=30
+            s=20
         )
         plt.scatter(
             self.df_uncomp[self.df_uncomp['Relative Time']<= self.slope_ends_uncomp['negative']]['Wheel Input'],
@@ -263,7 +263,8 @@ class MotorCompensation:
             marker='o',
             facecolor='none',
             label='Uncompensated Points for Decreasing Speed',
-            s=20
+            s=40,
+            linewidths=1.5
         )
 
         # Plotting Compensated Response #
