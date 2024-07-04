@@ -35,16 +35,16 @@ class MotorCompensation:
 
         ### Command Response Plot for decreasing speed ###
         plt.subplot(2,2,2)
-        self.__plot_cr_combined()
-        # self.__plot_cr_decreasing()
-        # self.__plot_cr_increasing()
+        # self.__plot_cr_combined()
+        self.__plot_cr_decreasing()
 
         # ### Response vs Time Plot ###
         plt.subplot(2,2,3)
         self.__plot_output()
 
         ### Command Response Plot for Increasing Speed #
-        # plt.subplot(2,2,4)
+        plt.subplot(2,2,4)
+        self.__plot_cr_increasing()
         
 
         ### Plotting Final Graph ###
@@ -92,7 +92,7 @@ class MotorCompensation:
         plt.yticks([-800,-600,-400,self.static_coeffs['decreasing'],0,self.kinetic_coeffs['decreasing'],self.static_coeffs['increasing'],400,600,800])
         plt.ylim([-820,820])
         plt.legend(loc='upper right', fontsize=14)
-        plt.title('Input', fontsize=14)
+        plt.title('Input', fontsize=18)
 
     def __plot_output(self):
         total_speed_error = self.df['Expected Response']-self.df['Wheel Speed']
@@ -129,8 +129,9 @@ class MotorCompensation:
         plt.ylabel('Response (Degrees per Second)',fontsize=14)
         plt.ylim([-720,720])
         plt.legend(loc='upper right',fontsize=14)
-        plt.title('Compensated and Ideal Responses', fontsize=14)
+        plt.title('Compensated and Ideal Responses', fontsize=18)
 
+        plt.grid()
         # plt.show()
 
     def __plot_cr_decreasing(self):
@@ -152,8 +153,6 @@ class MotorCompensation:
             self.df_uncomp[self.df_uncomp['Relative Time']<= self.slope_ends_uncomp['negative']]['Wheel Input'],
             self.df_uncomp[self.df_uncomp['Relative Time']<=self.slope_ends_uncomp['negative']]['Wheel Speed'],
             color='gray',
-            marker='o',
-            facecolor='none',
             label='Uncompensated Points for Decreasing Speed',
             s=20
         )
@@ -161,21 +160,17 @@ class MotorCompensation:
         plt.scatter(
             self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
             self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
-            marker='o',
-            color='tab:blue',
-            facecolors='none',
-            linewidths=2,
             s=75,
             label='Compensated Points for Decreasing Speed'
         )
 
         # Setting x-ticks, axese limits, axese labels and sub-plot title #
-        # plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
-        # plt.xlim([-400,400])
-        # plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
-        # plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        # plt.legend(fontsize=14)
-        # plt.title('Commanded Input vs Response', fontsize=14)
+        plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'], 0, self.kinetic_coeffs['decreasing'], 400, 600, 800])
+        plt.xlim([-400,400])
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
+        plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+        plt.legend(fontsize=14)
+        plt.title('Commanded Input vs Response', fontsize=18)
 
     def __plot_cr_increasing(self):
         comp_subset = self.df.loc[(self.df['Relative Time']>=self.slope_ends['negative']) & (self.df['Relative Time']<=self.slope_ends['positive'])]
@@ -193,13 +188,12 @@ class MotorCompensation:
         plt.plot(self.kinetic_coeffs['increasing'],0,'o',color='tab:olive', ms=7.5)
 
         # Scatter Plots for Uncompensated, Compensated and Ideal Compensation #
-        # plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray', linestyle='dotted', label='Ideal Compensation')
+        plt.plot(self.df['Wheel Input'], self.df['Expected Response'], color='gray', linestyle='dotted', label='Ideal Compensation')
 
         plt.scatter(
             uncomp_subset['Wheel Input'], 
             uncomp_subset['Wheel Speed'], 
             color='gray', 
-            marker='x', 
             label='Uncompensated Points For Increasing Speed', 
             s=30
         )
@@ -207,9 +201,6 @@ class MotorCompensation:
         plt.scatter(
             comp_subset['Wheel Input'], 
             comp_subset['Wheel Speed'], 
-            marker = 'x',
-            color='darkgoldenrod',
-            linewidths=2,
             label='Compensated Points for Increasing Speed', 
             s=75
         )

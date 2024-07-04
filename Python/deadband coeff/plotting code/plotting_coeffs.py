@@ -32,8 +32,9 @@ class MotorCompensation:
 
         ### Command Response Plot for decreasing speed ###
         plt.subplot(2,2,2)
-        self.__plot_cr_decreasing()
-        self.__plot_cr_increasing()
+        # self.__plot_cr_decreasing()
+        # self.__plot_cr_increasing()
+        self.__plot_cr_combined()
 
         # ### Response vs Time Plot ###
         plt.subplot(2,2,3)
@@ -41,6 +42,7 @@ class MotorCompensation:
 
         ### Command Response Plot for Increasing Speed #
         # plt.subplot(2,2,4)
+        # self.__plot_cr_increasing()
 
 
         ### Plotting Final Graph ###
@@ -88,7 +90,7 @@ class MotorCompensation:
         plt.yticks([-800,-600,-400,self.static_coeffs['decreasing'],0,self.kinetic_coeffs['decreasing'],self.static_coeffs['increasing'],400,600,800])
         plt.ylim([-820,820])
         plt.legend(loc='upper right', fontsize=14)
-        plt.title('Input', fontsize=14)
+        plt.title('Input', fontsize=18)
 
     def __plot_output(self):
         ### Command vs Time Plot ###
@@ -119,7 +121,7 @@ class MotorCompensation:
         plt.xlabel('Time (ms)',fontsize=14)
         plt.ylabel('Response (Degrees per Second)',fontsize=14)
         plt.legend(loc='upper right', fontsize=14)
-        plt.title('Measured and Ideal Response', fontsize=14)
+        plt.title('Measured and Ideal Response', fontsize=18)
 
         # plt.show()
 
@@ -127,7 +129,6 @@ class MotorCompensation:
         plt.scatter(
             self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
             self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
-            marker='x',
             label = 'Measured Response'
             )
         
@@ -156,15 +157,15 @@ class MotorCompensation:
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.legend(fontsize=14)
-        plt.title('Commanded Input vs Response for Reducing Speed', fontsize=14)
+        plt.title('Commanded Input vs Response for Reducing Speed', fontsize=18)
 
     def __plot_cr_increasing(self):
         # time = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
         # time = time[time['Relative Time']<=self.slope_ends['positive']]
         subset = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
         subset = subset[subset['Relative Time']<=self.slope_ends['positive']]
-        plt.scatter(subset['Wheel Input'],subset['Wheel Speed'], label='Measured Response', color='tab:red',s=25,marker='o',facecolors='none')
-        # plt.scatter(subset['Wheel Input'],subset['Expected Response'],color='gray',s=10,label='Ideal Response')
+        plt.scatter(subset['Wheel Input'],subset['Wheel Speed'], label='Measured Response')
+        plt.scatter(subset['Wheel Input'],subset['Expected Response'],color='gray',s=10,label='Ideal Response')
         
         # Plotting Vertical Doted Line for Kinetic and Static Coefficient #
         plt.axvline(x=self.static_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
@@ -184,7 +185,64 @@ class MotorCompensation:
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.legend(loc='upper left',fontsize=14)
-        plt.title('Commanded Input vs Response for Increasing Speed', fontsize=14)
+        plt.title('Commanded Input vs Response for Increasing Speed', fontsize=18)
+
+    def __plot_cr_combined(self):
+        subset = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
+        subset = subset[subset['Relative Time']<=self.slope_ends['positive']]
+    
+        plt.scatter(
+            subset['Wheel Input'],
+            subset['Wheel Speed'], 
+            label='Measured Response', 
+            marker='^',
+            color='tab:green',
+            s=25,
+            linewidths=1.75
+            )
+        
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
+            label = 'Measured Response',
+            color='tab:purple',
+            s=50,
+            marker='o',
+            facecolors='none',
+            linewidths=2
+            )
+        
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Expected Response'],
+            color = 'gray',
+            s=10,
+            label = 'Ideal Response'
+        )
+        
+        # Plotting Vertical Lines Corresponding to Static and Kinetic Coefficients #
+        plt.axvline(x=self.static_coeffs['decreasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.kinetic_coeffs['decreasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.static_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
+        plt.axvline(x=self.kinetic_coeffs['increasing'], color='k', linestyle='--',linewidth=0.75)
+        
+        # Plotting Horizontal Line to Demarkate Line for No Response Speed #
+        plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
+        
+        # Plotting Points at which Static and Kinetic Coefficients are Measured #
+        plt.plot(self.static_coeffs['decreasing'],0,'o',color='tab:orange',ms=10)
+        plt.plot(self.kinetic_coeffs['decreasing'],0,'o',color='tab:cyan', ms=10)
+        plt.plot(self.static_coeffs['increasing'],0,'o',color='tab:pink', ms=10)
+        plt.plot(self.kinetic_coeffs['increasing'],0,'o',color='tab:olive', ms=10)
+        
+        # Setting x-ticks, axese limits, axese labels and sub-plot title #
+        plt.xticks([400,-300,self.static_coeffs['decreasing'],self.kinetic_coeffs['increasing'], -100, 0, 100,self.kinetic_coeffs['decreasing'], 300,self.static_coeffs['increasing'],400])
+        plt.xlim([-400,400])
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
+        plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+        plt.legend(fontsize=14)
+        plt.legend(loc='upper left',fontsize=14)
+        plt.title('Commanded Input vs Response', fontsize=18)
 
     def __calculate_expected_output(self,pwm):
         PWM_RESOLUTION = 4095
