@@ -12,6 +12,7 @@ import pandas as pd
 PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plot constants/plotting_constants.csv'
 
 class MotorCompensation:
+    # Constructor to Initialise Variables #
     def __init__(self, file_path, deadband_starts, deadband_ends, kinetic_coeffs, static_coeffs, slope_ends):
         self.df = pd.read_csv(file_path)
         self.df['Relative Time'] = self.df['Time']-self.df['Time'].iloc[0]
@@ -23,6 +24,7 @@ class MotorCompensation:
         self.static_coeffs = static_coeffs
         self.slope_ends = slope_ends
 
+    # Main Plotting Function to Handle Subplots #
     def plot_compensation(self):
         plt.figure(figsize=(14,8.5))
         
