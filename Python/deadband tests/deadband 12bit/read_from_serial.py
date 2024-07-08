@@ -20,7 +20,6 @@ REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.cs
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
-# Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
 def read_from_serial():
     # Adding Header Row with Columns of CSV #
     with open(FRONT_PATH, mode='w') as sensor_file:
