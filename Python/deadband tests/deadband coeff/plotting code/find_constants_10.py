@@ -153,8 +153,8 @@ if __name__ == '__main__':
     ## Use to Plot a Particular File ##
     motor = 'Rear'
     speed = 35
-    path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
-    constants_path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
+    path = f'./Python/deadband tests/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
+    constants_path = f'./Python/deadband tests/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
     plot_raw_with_measured_constants(path,constants_path)
     
     ## Use To Create Slope Constants CSV ##
@@ -168,8 +168,8 @@ if __name__ == '__main__':
     
     # for speed in speeds:
     #     for motor in motors:
-    #         path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
-    #         constants_path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
+    #         path = f'./Python/deadband tests/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
+    #         constants_path = f'./Python/deadband tests/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
 
     #         plot_raw_with_measured_constants(path,constants_path)
             # slope_ends = find_constants(path, constants_path)
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     # speeds = [1,5,6,15,25,30,35,40,3,20,25,30,35]
     # motors = ['Front','Front','Front','Front','Front','Front','Front','Front','Rear','Rear','Rear','Rear','Rear']
     # for speed,motor in zip(speeds,motors):
-    #     path = f'./Python/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
-    #     constants_path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
+    #     path = f'./Python/deadband tests/deadband coeff/SourceData10/{motor}Slope{speed}Data.csv' 
+    #     constants_path = f'./Python/deadband tests/deadband coeff/plot constants/CombinedConstants/{motor}Slope{speed}Constants.csv'
 
     #     plot_raw_with_measured_constants(path,constants_path)

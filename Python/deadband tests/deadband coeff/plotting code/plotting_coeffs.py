@@ -391,24 +391,24 @@ def plot_raw(path):
     plt.show()
 
 if __name__ == '__main__':
-    # find_constants('./Python/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
-    # plot_raw('./Python/deadband coeff/SourceData/RearSlope35Data.csv')
+    # find_constants('./Python/deadband tests/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
+    # plot_raw('./deadband tests/Python/deadband coeff/SourceData/RearSlope35Data.csv')
 
     plot_motor_data(10,'front')
     
     # plot_motor_data(5,'rear')
     # for i in range(1,11,1):
-    #     find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    #     find_constants(f'./Python/deadband tests/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
     #     # plot_motor_data(i,'front')
     
     # for i in range(15,36,5):
-    #     find_constants(f'./Python/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
+    #     find_constants(f'./Python/deadband tests/deadband coeff/SourceData/FrontSlope{i}Data.csv','front',i)
     #     # plot_motor_data(i,'front')
 
     # for i in range(1,11,1):
-    #     find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+    #     find_constants(f'./Python/deadband tests/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
     #     # plot_motor_data(i,'rear')
 
     # for i in range(15,36,5):
-    #     find_constants(f'./Python/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
+    #     find_constants(f'./Python/deadband tests/deadband coeff/SourceData/RearSlope{i}Data.csv','rear',i)
     #     # plot_motor_data(i,'rear')

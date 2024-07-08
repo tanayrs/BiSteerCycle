@@ -20,9 +20,9 @@ REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.cs
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
-def read_from_serial():
+def read_from_serial(path):
     # Adding Header Row with Columns of CSV #
-    with open(FRONT_PATH, mode='w') as sensor_file:
+    with open(path, mode='w') as sensor_file:
         sensor_writer = csv.writer(
                 sensor_file, 
                 delimiter=',', 
@@ -40,7 +40,7 @@ def read_from_serial():
         print(data)
         data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
-            with open(FRONT_PATH, mode='a') as sensor_file:
+            with open(path, mode='a') as sensor_file:
                 line = data.split(',')
                 sensor_writer = csv.writer(
                         sensor_file, 

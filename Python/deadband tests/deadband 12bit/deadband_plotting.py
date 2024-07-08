@@ -13,10 +13,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-FRONT_PATH = './Python/deadband 12bit/SourceData/FrontUncompensatedData.csv'
-REAR_PATH = './Python/deadband 12bit/SourceData/RearUncompensatedData.csv'
-FRONT_COMP_PATH = './Python/deadband 12bit/SourceData/FrontCompensatedData.csv'
-REAR_COMP_PATH = './Python/deadband 12bit/SourceData/RearOverCompensatedData.csv'
+FRONT_PATH = './Python/deadband tests/deadband 12bit/SourceData/FrontUncompensatedData.csv'
+REAR_PATH = './Python/deadband tests/deadband 12bit/SourceData/RearUncompensatedData.csv'
+FRONT_COMP_PATH = './Python/deadband tests/deadband 12bit/SourceData/FrontCompensatedData.csv'
+REAR_COMP_PATH = './Python/deadband tests/deadband 12bit/SourceData/RearOverCompensatedData.csv'
 
 FRONT_DEADBAND_END_1 = 8174
 FRONT_DEADBAND_END_2 = 26449
@@ -511,8 +511,7 @@ def effective_input(speed):
 
 if __name__ == '__main__':
     plot_front()
-    # plot_rear()
-    # plot_front_compensated()
-    # plot_rear_compensated()
-    # command_response_front()
-    # expected_actual()
+    plot_rear()
+    plot_front_compensated()
+    plot_rear_compensated()
+    command_response_front()

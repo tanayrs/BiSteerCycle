@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plotting_constants.csv'
+PLOTTING_CONSTANTS_PATH = './Python/deadband tests/deadband coeff/plotting_constants.csv'
 df = pd.read_csv(PLOTTING_CONSTANTS_PATH)
 
 df_front = df.where(df['motor'] == 'front')

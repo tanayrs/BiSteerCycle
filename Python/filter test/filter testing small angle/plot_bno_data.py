@@ -70,7 +70,7 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # plt.text(step_time,0,'Point of Step Input')
 
 def small_angle_plots():
-    DATA_PATH = './Python/filter testing small angle/SensorData'
+    DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
     files = [f for f in os.listdir(DATA_PATH) if os.path.isfile(os.path.join(DATA_PATH,f))]
     for path in files:
         # plt.hlines(y=plot_max[i],xmin=0,xmax=plot_step_time[i], color='tab:gray', linestyle='--',linewidth=1, label='_nolegend_')
@@ -135,17 +135,7 @@ def find_overshoot(path):
     # print(f'{os_per_kal=}, {os_per_sfa=}')
     return settle_time_kal,os_per_kal,settle_time_sfa,os_per_sfa, step_time, max_angle_sfa, settle_angle_sfa
 
-if __name__ == '__main__':
-    path = './Python/filter testing small angle/SensorData/BNO_Test_Step_10.csv'
-    
-    # try:
-    #     read_from_serial(path)
-    # except:
-    #     pass
-
-    # small_angle_plots()
-    
-    DATA_PATH = './Python/filter testing small angle/SensorData'
+def plot_comparison(DATA_PATH):
     files = [f for f in os.listdir(DATA_PATH) if os.path.isfile(os.path.join(DATA_PATH,f))]
     print(files)
     settle_times_kal = []
@@ -180,6 +170,19 @@ if __name__ == '__main__':
     manager.full_screen_toggle()
     plt.grid()
     plt.show()
+
+if __name__ == '__main__':
+    path = './Python/filter test/filter testing small angle/SensorData/BNO_Test_Step_10.csv'
+    
+    # try:
+    #     read_from_serial(path)
+    # except:
+    #     pass
+
+    small_angle_plots()
+    
+    # DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
+    # plot_comparison(DATA_PATH)
 
     # plot_from_csv(path)
     # plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=18)

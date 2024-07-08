@@ -14,10 +14,6 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-# FRONT_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data_1.csv'
-# REAR_PATH = './Python/dead band slope/SourceData4095/RearSlope40Data.csv'
-# FRONT_COMP_PATH = './Python/dead band slope/SourceData4095/FrontCompensatedData.csv'
-# REAR_COMP_PATH = './Python/dead band slope/SourceData4095/RearCompensatedData.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
@@ -162,13 +158,11 @@ def plot_raw(path):
     plt.show()
 
 if __name__ == '__main__':
-    front_path = './Python/deadband coeff/SourceData10/FrontSlope2Data.csv'
-    rear_path = './Python/deadband coeff/SourceData10/RearSlope2Data.csv'
+    front_path = './Python/deadband tests/deadband coeff/SourceData10/FrontSlope2Data.csv'
+    rear_path = './Python/deadband tests/deadband coeff/SourceData10/RearSlope2Data.csv'
     read_front_and_rear(front_path,rear_path)
     plot_raw(front_path)
     plot_raw(rear_path)
     
     # read_from_serial(path)
     # plot_raw(path)
-    # path = './Python/deadband coeff/tmp.csv'
-    # read_and_store_constants(path)

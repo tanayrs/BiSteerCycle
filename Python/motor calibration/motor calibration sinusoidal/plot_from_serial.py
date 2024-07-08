@@ -4,7 +4,7 @@ import csv
 from matplotlib import pyplot as plt
 import pandas as pd
 
-PATH = './Python/motor calibration/SpeedData.csv'
+PATH = './Python/motor calibration/motor calibration sinusoidal/SpeedData.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 9600
 
