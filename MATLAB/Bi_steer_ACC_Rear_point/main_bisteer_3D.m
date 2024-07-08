@@ -7,18 +7,12 @@ clc;
 restoredefaultpath
 addpath("Controller","Dynamics","Graphics");
 
-
-
-
-
-
 dr = 0.1; df = 0.1;
 
 I11 = 0.01; I22 = 0.01; I33 = 0.01;
 m = 2.54;   g = 10;    h = 0.1;
 
-%%
-%packing parameters
+%% packing parameters
 p = struct();
 p.dr = dr; p.df = df;
 
@@ -26,38 +20,30 @@ p.I11 = I11; p.I22 = I22; p.I33 = I33;
 
 p.m = m; p.g = g; p.h = h;
 
-%%
-% initial condition
+%% initial condition
 x0 = 0;
 y0 = 0;
 V0 = 1;
 
-psi0 = deg2rad(150);  %heading
-phi0 = deg2rad(-10);  %lean angle  -30
-phidot0 = 0; %lean rate
+psi0 = deg2rad(150);  % heading
+phi0 = deg2rad(-10);  % lean angle  -30
+phidot0 = 0;          % lean rate
 
-theta_F0 = deg2rad(90);  %30
-theta_R0 = deg2rad(90); %60
+theta_F0 = deg2rad(89.999);  % 30
+theta_R0 = deg2rad(89.999);  % 60
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';
 
-%%
-%
-
-%lqr stuff
+%% lqr stuff
 
 ref_phi = [1,deg2rad(0),deg2rad(0)];
 Q_phi = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
 R_phi = diag([1e1, 1e2, 1e2]);
 
-
-
 ref_V   = [ 0.01,deg2rad(0),deg2rad(0)];
 Q_V = diag([1e4, 1e2, 1e4, 1e1 1e1]);
 R_V = diag([1e3, 1e2, 1e2]);
-
-
 
 ref_1 = [0,deg2rad(89),deg2rad(0)];
 Q_F = diag([1e4, 1e2, 1e4, 1e0, 1e0]);
@@ -70,7 +56,6 @@ Q_R = diag([1e4, 1e3, 1e4, 1e0, 1e0]);
 R_R = diag([1e2, 1e1, 1e1]);
 
 
-
 ref_3 = [0.0,deg2rad(10),deg2rad(0)];
 Q_3 = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
 R_3 = diag([1e2, 1e1, 1e1]);
@@ -78,8 +63,6 @@ R_3 = diag([1e2, 1e1, 1e1]);
 ref_4 = [1,deg2rad(0),deg2rad(0)];
 Q_4 = diag([1e3, 1e2, 1e3, 1e1, 1e1]);
 R_4 = diag([1e2, 1e1, 1e10]);
-
-
 
 ref_5 = [0.1,deg2rad(0),deg2rad(0)];
 Q_5 = diag([1e3, 1e2, 1e3, 1e1, 1e1]);

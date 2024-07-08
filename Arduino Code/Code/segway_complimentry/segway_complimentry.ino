@@ -1,8 +1,6 @@
 /******************************************************************************************************************
-
 Segway Balancing Code
 By: Vishwas Gajera, Tanay Srinivasa
-Last Modified: 29 May 2024 10:28 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void read_imu()                : Reads roll and pitch from MPU6050 Through Wire
