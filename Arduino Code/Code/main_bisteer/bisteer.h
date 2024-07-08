@@ -7,8 +7,6 @@
 #include <Adafruit_BNO055.h>
 #include <KalmanFilter.h> // Repo: https://github.com/jarzebski/Arduino-KalmanFilter/tree/master //
 #include <Adafruit_Sensor.h>
-#include <Wire.h>
-#include <iostream>
 #include "filter_lib.h"
 
 /****************** Declaring GLobal Variables ******************/

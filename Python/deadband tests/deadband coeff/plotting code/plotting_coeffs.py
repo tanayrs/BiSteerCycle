@@ -9,7 +9,7 @@ Run bi_steer_cycle_testing arduino code with deadband_test()
 from matplotlib import pyplot as plt
 import pandas as pd
 
-PLOTTING_CONSTANTS_PATH = './Python/deadband coeff/plot constants/plotting_constants.csv'
+PLOTTING_CONSTANTS_PATH = './Python/deadband tests/deadband coeff/plot constants/plotting_constants.csv'
 
 class MotorCompensation:
     # Constructor to Initialise Variables #

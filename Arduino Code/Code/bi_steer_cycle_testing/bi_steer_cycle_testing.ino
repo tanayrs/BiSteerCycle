@@ -4,26 +4,29 @@ Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
 Last Modified: 1 Jul 2024
 
-Functions Called in Setup and Loop are Defined in func.ino:
+Functions Called in Setup and Loop are Defined in func.ino, imu.ino, and log_feedback.ino. Functions in func.ino:
         - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
-        - void calculate_state()                : Updates Encoder Angle and IMU Angle
         - void updateEncoderData()              : Updating Encoder with Current Number of Ticks/ Also used by deadband and motor calibration testing
-        - float accelero_angle()                : Finds Pitch From Accelerometer -> Returns in Degrees
         - void init_IMU()                       : MPU 6050 Initialisation and Calibration
+        - void writeToMotor()                   : Sets Steer and Drive Speeds to Front and Back Wheels
+        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Sin Input
+        - void motor_calibration_square()       : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Square Input
+        - int sign(double num)                  : Finds the sign of num, returns -1 or 1
+        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheel Motors using Triangle Input
+        - void deadband_test_steer()            : Tests the Deadband of the Front and Rear Steer Motors using Triangle Input
+        - void max_input_speed()                : Finding Maximum Input Value Corresponding to Max Motor Speed
+
+Functions in imu.ino:
+        - void calculate_state()                : Updates Encoder Angle and IMU Angle
+        - float accelero_angle()                : Finds Pitch From Accelerometer -> Returns in Degrees
         - void init_bno()                       : BNO-055 Initialisation and Calibration
         - void calculate_mpu_angle_compfilter() : Calculate Angles from MPU6050 Sensor using a Complimentary Filter
         - void calculate_mpu_angle_kalman()     : Calculate Angles from MPU6050 Sensor using a Kalman Filter
         - void calculate_bno_angle()            : Calculate Angles from BNO-055 Sensor
         - void calculate_bno_angle_compfilter() : Calculate Angles from BNO-055 Sensor using a Complimentary Filter
         - void calculate_bno_angle_kalman()     : Calculate Angles from BNO-055 Sensor using a Kalman Filter
-        - void controller_segway()              : Controller of Wheel Inputs based on Lean Angle
-        - void controller_bicycle()             : Bicycle Controller (To be Implemented)
-        - void holdsteering(double degrees_F, double degrees_R): Sets Front and Rear Steering Angle based on Encoder Readings
-        - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings        
-        - void writeToMotor()                   : Sets Steer and Drive Speeds to Front and Back Wheels
-        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Sin Input
-        - void motor_calibration_square()       : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Square Input
-        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheels using Triangle Input
+        
+Functions in log_feedback.ino:
         - void logFeedback()                    : Print / Plot State Vars
 
 **** Motor Configuration ****
@@ -73,25 +76,14 @@ void setup() {
 
 void loop(){
         digitalWrite(13,HIGH);
-        
-        // Sets Wheel to an Angle //
-        // holdwheel(0*sin(millis()*1e-3), 0*sin(millis()*1e-3));
-        // holdwheel(0, 90);
 
         // Updates Encoder Angle and IMU Angle //
         calculate_state();
         
-        // Calculates Drive Input //
-        // controller_segway();
-        
-        // Calculates Steer Input //
-        // holdsteering(90,90);
-
         // Testing Deadband and Motor Calibration //
         deadband_test();
         // deadband_test_steer();
         // motor_calibration_square();
-        // controller_bicycle(0.1);
         // max_input_speed();
 
         // Writes Inputs to Motor //

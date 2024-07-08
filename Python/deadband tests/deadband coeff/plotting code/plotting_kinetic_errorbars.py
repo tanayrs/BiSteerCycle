@@ -23,7 +23,7 @@ def find_errors(motor):
         x = x_rear
 
     for i in x:
-        path = f'./Python/deadband coeff/plot constants/CombinedConstants/{motor}Slope{i}Constants.csv'
+        path = f'./Python/deadband tests/deadband coeff/plot constants/CombinedConstants/{motor}Slope{i}Constants.csv'
         df = pd.read_csv(path)
         y_inc.append(df['kinetic_coeffs_inc'].mean())
         y_dec.append(df['kinetic_coeffs_dec'].mean())

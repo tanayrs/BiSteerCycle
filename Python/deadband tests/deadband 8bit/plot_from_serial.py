@@ -13,47 +13,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-REAR_PATH = './Python/dead band/RearDeadBandData.csv'
-FRONT_PATH = './Python/dead band/FrontDeadBandData.csv'
-FRONT_SPEED_PATH = './Python/dead band/SourceData/FrontDeadBandDataSpeed.csv'
-REAR_SPEED_PATH = './Python/dead band/SourceData/RearDeadBandDataSpeed.csv'
-TRIANGLE_FRONT_SPEED_PATH = './Python/deadband 8bit/SourceData/TriangleFrontDeadBandDataSpeed.csv'
-TRIANGLE_REAR_SPEED_PATH = './Python/dead band/SourceData/TriangleRearDeadBandDataSpeed.csv'
+TRIANGLE_REAR_SPEED_PATH = './Python/deadband tests/deadband 8bit/SourceData/older_data/TriangleRearDeadBandDataSpeed.csv'
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 115200
 
-REAR_TIME_DEADBAND_START = 16752
-REAR_TIME_DEADBAND_END = 20690
-REAR_SPEED_DEADBAND_START = -8
-REAR_SPEED_DEADBAND_END = 12
-
-FRONT_TIME_DEADBAND_START = 36762
-FRONT_TIME_DEADBAND_END = 41905
-FRONT_SPEED_DEADBAND_START = -10
-FRONT_SPEED_DEADBAND_END = 15
-
-FRONT_SPEED_TIME_DEADBAND_START = 59185
-FRONT_SPEED_TIME_DEADBAND_END = 62884
-FRONT_SPEED_DEADBAND_START = -7
-FRONT_SPEED_DEADBAND_END = 11
-
-REAR_SPEED_TIME_DEADBAND_START = 16747
-REAR_SPEED_TIME_DEADBAND_END = 20879
-REAR_SPEED_DEADBAND_START = -9
-REAR_SPEED_DEADBAND_END = 11
-
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1 = 418599
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1 = 422400
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2 = 439726
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2 = 443302
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3 = 461058
-TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3 = 4.6444e+05
-TRIANGLE_REAR_SPEED_DEADBAND_START = -9
-TRIANGLE_REAR_SPEED_DEADBAND_END = 11
-
-418609, 422406
-439720,443305
-461065, 464438
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_1 = 250727
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_1 = 253569
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_2 = 271125
@@ -64,7 +27,6 @@ TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_UNSCALED_4 = 3.1339e+05
 TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_UNSCALED_4 = 3.1726e+05
 TRIANGLE_REAR_SPEED_DEADBAND_UNSCALED_START = -9
 TRIANGLE_REAR_SPEED_DEADBAND_UNSCALED_END = 11
-# 250727, 253569
 
 
 TRIANGLE_FRONT_SPEED_TIME_DEADBAND_START_UNSCALED_1 = 376882
@@ -78,185 +40,118 @@ TRIANGLE_FRONT_SPEED_TIME_DEADBAND_END_UNSCALED_4 = 443763
 TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_START = -11
 TRIANGLE_FRONT_SPEED_DEADBAND_UNSCALED_END = 11
 
-# (7,-11),(-7,10),(6,-11),
+class Motor:
+    def __init__(self,path,deadband_starts, deadband_ends, deadband_inputs):
+        self.df = pd.read_csv(path)
+        self.deadband_starts = deadband_starts
+        self.deadband_ends = deadband_ends
+        self.deadband_inputs = deadband_inputs
+    
+    def plot(self):
+        # Plotting Angle vs Time #
+        fig, axs = plt.subplots(2, 1)
+        fig.set_figheight(10)
+        fig.set_figwidth(12)
 
-# (-11 to 10)
+        # Plot on the first axis
+        axs[0].plot(self.df['Time'], self.df['Wheel Input'])
+        for start in self.deadband_starts:
+            axs[0].axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+        for input in self.deadband_inputs:
+            axs[0].axhline(y=input, color='k', linestyle='--', linewidth=0.5)
+        for end in self.deadband_ends:
+            axs[0].axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+        axs[0].set_xlabel('Time')
+        axs[0].set_ylabel('Input Speed')
+        axs[0].set_yticks(np.arange(-50,50,step=5))
 
-# Plotting Sensor Value Readings #
+        # Plot on the second axis
+        axs[1].plot(self.df['Time'], self.df['Wheel Speed'])
+        for start in self.deadband_starts:
+            axs[1].axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+        for end in self.deadband_ends:
+            axs[1].axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+        axs[1].set_xlabel('Time')
+        axs[1].set_ylabel('Encoder Speed')
+
+        # Show the plot
+        plt.show()
+    
+    def plot_ticks(self):
+        # Plotting Angle vs Time #
+        fig, axs = plt.subplots(2, 1)
+        fig.set_figheight(10)
+        fig.set_figwidth(12)
+
+        # Plot on the first axis
+        axs[0].plot(self.df['Time'], self.df['Wheel Input'])
+        for start in self.deadband_starts:
+            axs[0].axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+        for input in self.deadband_inputs:
+            axs[0].axhline(y=input, color='k', linestyle='--', linewidth=0.5)
+        for end in self.deadband_ends:
+            axs[0].axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+        axs[0].set_xlabel('Time')
+        axs[0].set_ylabel('Input Speed')
+        axs[0].set_yticks(np.arange(-50,50,step=5))
+
+        # Plot on the second axis
+        axs[1].plot(self.df['Time'], self.df['Wheel Ticks'])
+        for start in self.deadband_starts:
+            axs[1].axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+        for end in self.deadband_ends:
+            axs[1].axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+        axs[1].set_xlabel('Time')
+        axs[1].set_ylabel('Encoder Ticks')
+
+        # Show the plot
+        plt.show()
+
 def plot_from_csv_rear():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(REAR_PATH)
+    path = './Python/deadband tests/deadband 8bit/SourceData/older_data/RearDeadBandData.csv'
+    starts = [16752]
+    ends = [20690]
+    inputs = [-8, 12]
 
-    # Printing Statistics of DataFrame #
-    print(df.describe())
+    obj = Motor(path,starts,ends,inputs)
 
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
+    obj.plot_ticks()
 
-    # Plot on the first axis
-    axs[0].plot(df['Time'], df['Rear Wheel Input'])
-    axs[0].axvline(x=REAR_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_xlabel('Time')
-    axs[0].set_ylabel('Input Speed')
-    axs[0].set_yticks(np.arange(-50,50,step=5))
-
-    # Plot on the second axis
-    axs[1].plot(df['Time'], df['Rear Wheel Ticks'])
-    axs[1].axvline(x=REAR_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_xlabel('Time')
-    axs[1].set_ylabel('Encoder Ticks')
-
-    # Show the plot
-    plt.show()
-
-# Plotting Sensor Value Readings #
 def plot_from_csv_front():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(FRONT_PATH)
+    path = './Python/deadband tests/deadband 8bit/SourceData/older_data/FrontDeadBandData.csv'
 
-    # Printing Statistics of DataFrame #
-    print(df.describe())
+    starts = [36762]
+    ends = [41905]
+    inputs = [-10, 15]
 
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
-
-    # Plot on the first axis
-    axs[0].plot(df['Time'], df['Front Wheel Input'])
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_xlabel('Time')
-    axs[0].set_ylabel('Input Speed')
-    axs[0].set_yticks(np.arange(-50,50,step=5))
-
-    # Plot on the second axis
-    axs[1].plot(df['Time'], df['Front Wheel Ticks'])
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_xlabel('Time')
-    axs[1].set_ylabel('Encoder Ticks')
-
-    # Show the plot
-    plt.show()
+    obj = Motor(path, starts, ends, inputs)
+    obj.plot_ticks()
 
 def plot_from_csv_front_speed():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(FRONT_SPEED_PATH)
-
-    # Printing Statistics of DataFrame #
-    print(df.describe())
-
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
-
-    # Plot on the first axis
-    axs[0].plot(df['Time'], df['Front Wheel Input'])
-    axs[0].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,0,5,10,20,30,40,50])
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[1].plot(df['Time'], df['Front Wheel Speed'])
-    axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
+    path = './Python/deadband tests/deadband 8bit/SourceData/older_data/FrontDeadBandDataSpeed.csv'
+    starts = [59185]
+    ends = [62884]
+    inputs = [-7, 11]
+    
+    obj = Motor(path, starts, ends, inputs)
+    obj.plot()
 
 def plot_from_csv_rear_speed():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(REAR_SPEED_PATH)
+    path = './Python/deadband tests/deadband 8bit/SourceData/older_data/RearDeadBandDataSpeed.csv'
+    starts = [16747]
+    ends = [20879]
+    inputs = [-9, 11]
+    obj = Motor(path,starts,ends,inputs)
+    obj.plot()
 
-    # Printing Statistics of DataFrame #
-    print(df.describe())
-
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
-
-    # Plot on the first axis
-    axs[0].plot(df['Time'], df['Rear Wheel Input'])
-    axs[0].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
-    axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_SPEED_TIME_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-def plot_from_csv_rear_speed_triangle():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(TRIANGLE_REAR_SPEED_PATH)
-
-    # Printing Statistics of DataFrame #
-    print(df.describe())
-
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(10)
-    fig.set_figwidth(12)
-
-    # Plot on the first axis
-    axs[0].plot(df['Time'], df['Rear Wheel Input'])
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_SPEED_DEADBAND_END, color='k', linestyle='--', linewidth=0.5)
-    axs[0].set_ylabel('Input Speed (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-50,-40,-30,-20,-10,-5,5,10,20,30,40,50])
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[1].plot(df['Time'], df['Rear Wheel Speed'])
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=TRIANGLE_REAR_SPEED_TIME_DEADBAND_END_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-# Rear Deadband: -9, 11, -8 #
 def plot_from_csv_rear_speed_triangle_unscaled():
+    path = './Python/deadband tests/deadband 8bit/SourceData/TriangleFrontDeadBandDataSpeed.csv'
+    starts = [418599, 439726, 461058]
+    ends = [422400, 443302, 4.6444e+05]
+    inputs = [-9, 11]
+    obj = Motor(path, starts, ends, inputs)
+    obj.plot()
+    return
     # Reading CSV into pandas DataFrame #
     df = pd.read_csv(TRIANGLE_REAR_SPEED_PATH)
 
@@ -437,10 +332,9 @@ def plot_from_csv_front_speed_triangle_unscaled_corrected():
     plt.tight_layout()
     plt.show()
 
-# Function to Read Accelerometer, Complimentary Filter, Kalman Filter Angles #
-def read_from_serial():
+def read_from_serial(path):
     # Adding Header Row with Columns of CSV #
-    with open(TRIANGLE_FRONT_SPEED_PATH, mode='w') as sensor_file:
+    with open(path, mode='w') as sensor_file:
         sensor_writer = csv.writer(
                 sensor_file, 
                 delimiter=',', 
@@ -458,7 +352,7 @@ def read_from_serial():
         print(data)
         data = str(x.readline().decode('utf-8')).rstrip()
         if data != '':
-            with open(TRIANGLE_FRONT_SPEED_PATH, mode='a') as sensor_file:
+            with open(path, mode='a') as sensor_file:
                 line = data.split(',')
                 sensor_writer = csv.writer(
                         sensor_file, 
@@ -528,51 +422,20 @@ def read_from_serial_rear():
                         )
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
 
-def plot_from_csv_rear_speed_input_triangle():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(TRIANGLE_REAR_SPEED_PATH)
-
-    # Printing Statistics of DataFrame #
-    print(df.describe())
-
-    # Plot on the first axis
-    newdf = df[ (df['Time'] > 5.113e+04) & (df['Time'] < 7.211e+04)]    
-    print(df.size)
-    print(newdf.size)
-    plt.plot(newdf['Rear Wheel Input'], newdf['Rear Wheel Speed'])
-    plt.xlabel('Input PWM',fontsize=14)
-    plt.ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
-    plt.tight_layout()
-    plt.show()
-
-def plot_from_csv_front_speed_input_triangle():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(TRIANGLE_FRONT_SPEED_PATH)
-
-    # Printing Statistics of DataFrame #
-    print(df.describe())
-
-    # Plot on the first axis 
-    newdf = df[ (df['Time'] > 2.4107e+05) & (df['Time'] < 2.6202e+05)]    
-    print(df.size)
-    print(newdf.size)
-    plt.plot(newdf['Front Wheel Input'], newdf['Front Wheel Speed'])
-    plt.xlabel('Input PWM',fontsize=14)
-    plt.ylabel('Encoder Speed (Degrees per Second)',fontsize=14)
-    plt.tight_layout()
-    plt.show()
-
 if __name__ == '__main__':
     # read_from_serial_rear()
-    # plot_from_csv_rear()
     # read_from_serial_front()
+
+    # plot_from_csv_rear()
     # plot_from_csv_front()
+
     # plot_from_csv_front_speed()
     # plot_from_csv_rear_speed()
-    # plot_from_csv_rear_speed_triangle_unscaled()
+
+    plot_from_csv_rear_speed_triangle_unscaled()
     # plot_from_csv_rear_speed_triangle_unscaled_corrected()
-    plot_from_csv_front_speed_triangle_unscaled()
+    
+    # plot_from_csv_front_speed_triangle_unscaled()
     # plot_from_csv_front_speed_triangle_unscaled_corrected()
-    # plot_from_csv_rear_speed_input_triangle()
-    # plot_from_csv_front_speed_input_triangle()
+
     # read_from_serial()

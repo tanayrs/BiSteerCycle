@@ -32,11 +32,6 @@ REAR_DEADBAND_END_4 = 3.1726e+05 - 240536
 REAR_DEADBAND_INPUT_START = -9
 REAR_DEADBAND_INPUT_END = 11
 
-FRONT_COMP_DEADBAND_END_1 = 12840
-FRONT_COMP_DEADBAND_END_2 = 34054
-FRONT_COMP_DEADBAND_END_3 = 55066
-FRONT_COMP_DEADBAND_END_4 = 76309
-
 REAR_COMP_DEADBAND_END_1 = 9464
 REAR_COMP_DEADBAND_END_2 = 30904
 REAR_COMP_DEADBAND_END_3 = 51671
@@ -150,6 +145,12 @@ def plot_rear():
     plt.show()
 
 def plot_front_compensated():
+    path = 'Python/dead band/SourceData/TriangleFrontDeadBandDataSpeedCorrected_5.csv'
+    ends = [12840, 34054, 55066, 76309]
+    FRONT_COMP_DEADBAND_END_1 = 12840
+    FRONT_COMP_DEADBAND_END_2 = 34054
+    FRONT_COMP_DEADBAND_END_3 = 55066
+    FRONT_COMP_DEADBAND_END_4 = 76309
     # Reading CSV into pandas DataFrame #
     df = pd.read_csv(FRONT_COMP_PATH)
     df['Relative Time'] = df['Time']-df['Time'].iloc[0]

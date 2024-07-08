@@ -160,6 +160,7 @@ void motor_calibration_square(){
         rearWheelInput = (motor_calibration_sign > 0)? 150 : -150;
 }
 
+/* Finds the sign of num, returns -1 or 1 */
 int sign(int num){
         return num<0?-1:1;
 }
@@ -221,17 +222,4 @@ void max_input_speed(){
 
         if (frontSteerInput > 2000) frontSteerInput = -2000;
         if (rearSteerInput > 2000) rearSteerInput = -2000;
-}
-
-/* Low Pass Filter for All Motor Inputs */
-void lowpassfilter(){
-        frontWheelInput = (frontWheelInput * (1-alpha)) + (prevFrontWheelInput * alpha);
-        frontSteerInput = (frontSteerInput * (1-alpha)) + (prevFrontSteerInput * alpha);
-        rearWheelInput = (rearWheelInput * (1-alpha)) + (prevRearWheelInput * alpha);
-        rearSteerInput = (rearSteerInput * (1-alpha)) + (prevRearSteerInput * alpha);
-
-        prevFrontSteerInput = frontSteerInput;
-        prevFrontWheelInput = frontWheelInput;
-        prevRearSteerInput = rearSteerInput;
-        prevRearWheelInput = rearWheelInput;
 }
