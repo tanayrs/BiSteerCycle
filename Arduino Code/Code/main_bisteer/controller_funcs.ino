@@ -299,6 +299,7 @@ void writeToMotor() {
         frontWheelInput = lpf_front_wheel.filter(frontWheelInput);
         rearSteerInput = lpf_rear_steer.filter(rearSteerInput);
         rearWheelInput = lpf_rear_wheel.filter(rearWheelInput);
+        
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
         if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
@@ -308,13 +309,21 @@ void writeToMotor() {
         if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
         else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
-        // Rear deadband: positive = 170, negative = -160 //
-        if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
+        if (frontWheelInput == 0){
+                frontWheelMotor.setSpeed(0);
+        } else if (frontWheelData.speed() == 0){
+                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelStaticInc : frontWheelInput+frontWheelStaticDec);
+        } else {
+                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelKineticDec : frontWheelInput+frontWheelKineticInc);
+        }
 
-        // Front deadband: positive = 215, negative = -170 //
-        if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
+        if (rearWheelInput == 0){
+                rearWheelMotor.setSpeed(0);
+        } else if (rearWheelData.speed() == 0) {
+                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelStaticInc : rearWheelInput+rearWheelStaticDec);
+        } else {
+                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelKineticDec : rearWheelInput+rearWheelKineticInc);
+        }
 }
 
 /****************************************************************************************************************************************************************************************************/
