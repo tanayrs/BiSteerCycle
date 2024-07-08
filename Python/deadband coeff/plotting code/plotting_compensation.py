@@ -35,16 +35,16 @@ class MotorCompensation:
 
         ### Command Response Plot for decreasing speed ###
         plt.subplot(2,2,2)
-        # self.__plot_cr_combined()
-        self.__plot_cr_decreasing()
+        self.__plot_cr_combined()
+        # self.__plot_cr_decreasing()
 
         # ### Response vs Time Plot ###
         plt.subplot(2,2,3)
         self.__plot_output()
 
         ### Command Response Plot for Increasing Speed #
-        plt.subplot(2,2,4)
-        self.__plot_cr_increasing()
+        # plt.subplot(2,2,4)
+        # self.__plot_cr_increasing()
         
 
         ### Plotting Final Graph ###

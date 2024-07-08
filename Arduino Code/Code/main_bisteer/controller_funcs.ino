@@ -296,6 +296,10 @@ void holdsteering(double degrees_F, double degrees_R) {
 
 /* Sets Steer and Drive Speeds to Front and Back Wheels */
 void writeToMotor() {
+        frontSteerInput = lpf_front_steer.filter(frontSteerInput);
+        frontWheelInput = lpf_front_wheel.filter(frontWheelInput);
+        rearSteerInput = lpf_rear_steer.filter(rearSteerInput);
+        rearWheelInput = lpf_rear_wheel.filter(rearWheelInput);
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
         if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);

@@ -180,3 +180,9 @@ int deadband_sign, motor_calibration_sign;
 #define Kd_track_wheel 2
 
 double int_track, front_int_track, rear_int_track;
+
+/* Low Pass Filter */
+lowpass_filter lpf_front_steer(2); 
+lowpass_filter lpf_front_wheel(2); 
+lowpass_filter lpf_rear_steer(2); 
+lowpass_filter lpf_rear_wheel(2); 
