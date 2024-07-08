@@ -28,16 +28,10 @@ void startup_routine() {
         frontSteerInput = 0;
         rearSteerInput = 0;
         
-        prev_time = millis();
-        prev_time_millis = millis();
-        
         loopTimeMicros = 0;
         runTimeMillis = 0;
-        
 
-        deadband_sign = 1;
         int_track = 0;
-        motor_calibration_sign = -1;
 }
 
 /* Sets Steering Angle for Front and Rear Wheels */
@@ -74,6 +68,7 @@ float* PWPF(float controlSignal, float Uon, float Uoff, float prev_output) {
         return result;
 }
 
+/* Returns Sign of val: -1 or 1 */
 int sgn(double val){
         return val>0?1:-1;
 }

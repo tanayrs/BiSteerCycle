@@ -2,28 +2,29 @@
 
 Bi-Steer Cycle Code
 By: Vishwas Gajera, Tanay Srinivasa, Jia Bhargava
-Last Modified: 14 Jun 2024 10:29 PM
 
-Functions Called in Setup and Loop are Defined in func.ino:
-        - void startup_routine()                : Setting Encoder Pins to PULLUP and Initialises Ticks
+Functions Called in Setup and Loop are Defined in IMU_encoder.ino, controller_funcs.ino, func.ino, log_feedback.ino. Functions in IMU_encoder.ino:
         - void calculate_state()                : Updates Encoder Angle and IMU Angle
         - void updateEncoderData()              : Updating Encoder with Current Number of Ticks/ Also used by deadband and motor calibration testing
-        - float accelero_angle()                : Finds Pitch From Accelerometer -> Returns in Degrees
-        - void init_IMU()                       : MPU 6050 Initialisation and Calibration
         - void init_bno()                       : BNO-055 Initialisation and Calibration
-        - void calculate_mpu_angle_compfilter() : Calculate Angles from MPU6050 Sensor using a Complimentary Filter
-        - void calculate_mpu_angle_kalman()     : Calculate Angles from MPU6050 Sensor using a Kalman Filter
         - void calculate_bno_angle()            : Calculate Angles from BNO-055 Sensor
-        - void calculate_bno_angle_compfilter() : Calculate Angles from BNO-055 Sensor using a Complimentary Filter
-        - void calculate_bno_angle_kalman()     : Calculate Angles from BNO-055 Sensor using a Kalman Filter
-        - void controller_segway()              : Controller of Wheel Inputs based on Lean Angle
-        - void controller_bicycle()             : Bicycle Controller (To be Implemented)
-        - void holdsteering(double degrees_F, double degrees_R): Sets Front and Rear Steering Angle based on Encoder Readings
-        - void holdwheel(double degrees_F, double degrees_R)   : Sets Front and Rear Wheel Angle based on Encoder Readings        
-        - void writeToMotor()                   : Sets Steer and Drive Speeds to Front and Back Wheels
-        - void motor_calibration()              : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Sin Input
-        - void motor_calibration_square()       : Calibrates the Wheel Motors for different Forward and Reverse Speeds for Square Input
-        - void deadband_test()                  : Tests the Deadband of the Front and Rear Wheels using Triangle Input
+
+Functions in controller_funcs.ino:
+        - void controller_segway()              : PID Acceleration Controller for Front and Rear Wheel Motor in Segway Configuration
+        - void controller_bicycle(double rear_speed)            : Calculation of Front and Rear Wheel Speed and Calling Rear and Front Speed Controller
+        - void controller_rear_speed(double veloctiy_rear)      : Calculation of Rear Wheel Inputs using a Schmitt Trigger
+        - void controller_front_speed(double veloctiy_front)    : Calculation of Front Wheel Inputs using a Schmitt Trigger
+        - void controller_track_stand(double front_angle)       : PID Velocity Controller for Track Stand Mode
+        - void holdwheel(double degrees_F, double degrees_R)    : PID Position Controller for Wheel Rotation of Front and Rear Wheels
+        - void holdsteering(double degrees_F, double degrees_R) : PID Position Controller for Steering Angle of Front and Rear Wheels
+        - void writeToMotor()                                   : Writes Calculated Input into the 4 Motors
+
+Functions in func.ino:
+        - void startup_routine()                                                        : Setting Encoder Pins to PULLUP and Initialises Ticks
+        - float* PWPF(float controlSignal, float Uon, float Uoff, float prev_output)    : Calculates Schmitt Trigger Output
+        - int sgn(double val)                                                           : Finds Sign of Value, returns -1 or 1
+
+Functions in log_feedback.ino:
         - void logFeedback()                    : Print / Plot State Vars
 
 **** Motor Configuration ****
@@ -33,12 +34,10 @@ front Wheel Motor = Right Motor Driver M1 - Dir = 7, PWM = 6, PPR = , RPM = 450,
 front Steer Motor = Right Motor Driver M2 - Dir = 5, PWM = 4, PPR = , RPM = 103, EncA = 9 , EncB = 8
 
 **** IMU Configuration ****
-MPU 6050 - SCL = 19, SDA = 18
-BNO-055  - NA
+BNO-055 - SCL = 19, SDA = 18
 ******************************************************************************************************************/
 
 #include "bisteer.h" 
-#include "filter_lib.h"
 
 /****************** Start of Code ******************/
 
@@ -56,23 +55,20 @@ void loop(){
         // Updates Encoder Angle and IMU Angle //
         calculate_state();
         
-        // Calculates Drive Input //
-        // controller_segway();  // check direction of lean and motor direction cause changed wheel polarity and imu orient check PD direction
-        
-        // Calculates Steer Input //
+        // Calculates Motor Inputs //
         // holdsteering(0,0);     // takes front rear steer in degrees
         
-        // controller_bicycle(1);
-        //controller_rear_speed(0.48);
-        //controller_front_speed(0.48);
         controller_track_stand(-45);
+        // controller_segway();
+        // controller_bicycle(1);
+
+        // controller_rear_speed(0.48);
+        // controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
         writeToMotor(); 
-        // frontWheelMotor.setSpeed(210);  
 
         // logFeedback();
-        // Serial.println(rearSteerEnc.read());
 
         while(loopTimeMicros < loopTimeConstant)
                 delayMicroseconds(10);

@@ -1,12 +1,7 @@
-#define Battery_Voltage 12.0
-#define loopTimeConstant 10000 // In micros // //5000
-#define PWMResolution 4095
-
-
+/* Including Libraries */
 #include <Encoder.h> // Repo: https://github.com/PaulStoffregen/Encoder/blob/master //
 #include <elapsedMillis.h>
 #include <TrivikramEncoder.h>
-#include <TrivikramController.h>
 #include <CytronMotorDriver.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_BNO055.h>
@@ -14,31 +9,27 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 #include <iostream>
+#include "filter_lib.h"
 
 /****************** Declaring GLobal Variables ******************/
 
-#define steerMotorPPR 2262    //8540
-#define wheelMotorPPR 490    //2264
+#define Battery_Voltage 12.0
+#define loopTimeConstant 10000 // In micros
+#define PWMResolution 4095
+#define steerMotorPPR 2262
+#define wheelMotorPPR 490
+
 const double loopTimeConstSec = loopTimeConstant*1e-6f;
 double sampling_time = loopTimeConstSec;
 
-/* Bisteer Cycle Physical Model */
-const float Ip = 2e-2; // MoI of body //
-const float lF = 0.1;  // Distance of FW from COM //
-const float lR = 0.1;  // Distance of RW from COM //
-const float m  = 2.54; // Mass of the vehicle //
-const float r  = 0.03; // Radius of wheels in m //
+/**** Bisteer Cycle Physical Model ****/
+#define Ip 2e-2         // MoI of body //
+#define lF 0.1          // Distance of FW from COM //
+#define lR 0.1          // Distance of RW from COM //
+#define m  2.54         // Mass of the vehicle //
+#define r  0.03         // Radius of wheels in m //
 
-
-/* IMU Definition */
-#define gyroXCorrection -0.0465
-#define gyroYCorrection  0.0201
-#define gyroZCorrection  0.0035
-
-#define accelXCorrection  0.0739
-#define accelYCorrection -0.1106
-#define accelZCorrection -1.6547
-
+/**** IMU Definition ****/
 #define phi_offset 3.9 //2.7>  < 4 Lower Phi Offset in Direction of Teensy
 
 sensors_event_t a, g, temp;
@@ -48,59 +39,56 @@ double previous_roll, elapsedTimeIMU, IMUFilterConstant,gyroAngleX, accelAngle,r
 double IMUTimeConstant = 6.0;
 elapsedMicros IMUTimeMicros;
 
-// MPU-6050 If Used //
 // Pins are implicit in the wire library - SCL - 19, SDA 18 //
-Adafruit_MPU6050 mpu;
-
-// BNO-055 If Used //
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
-// Kalman Filter if Used //
-KalmanFilter kalmanX(0.005, 0.00, 0.1);  //(Q_angle, Q_bais, R) //
-float kalRoll = 0;
-
-/* Motor Driver */
+/**** Motor Driver ****/
 const int rearWheelPWM = 0; const int rearWheelDir = 1;
 const int rearSteerPWM = 2; const int rearSteerDir = 3;
 const int frontWheelPWM = 6;  const int frontWheelDir = 7;
 const int frontSteerPWM = 5;  const int frontSteerDir = 4;
+
 CytronMD rearWheelMotor(PWM_DIR, rearWheelPWM, rearWheelDir);
 CytronMD rearSteerMotor(PWM_DIR, rearSteerPWM, rearSteerDir);
 CytronMD frontWheelMotor(PWM_DIR, frontWheelPWM, frontWheelDir);
 CytronMD frontSteerMotor(PWM_DIR, frontSteerPWM, frontSteerDir);
+
 int rearWheelInput; int frontWheelInput;
 int rearSteerInput; int frontSteerInput;
 
-
-/* Encoder and velocity */
+/**** Encoder and velocity ****/
 double vel_cutoff_freq = 1000;
 
 const int rearWheelEnc1 = 30; const int rearWheelEnc2 = 29;
 const int rearSteerEnc1 = 32; const int rearSteerEnc2 = 31;
 const int frontWheelEnc1 = 11; const int frontWheelEnc2 = 10;
 const int frontSteerEnc1 = 9; const int frontSteerEnc2 = 8;
-Encoder rearWheelEnc(rearWheelEnc1, rearWheelEnc2);      //. Reversed on 14 june on both wheel
-Encoder rearSteerEnc(rearSteerEnc2, rearSteerEnc1);     // Reversed to correct the orientation of the wheel angle //
-Encoder frontWheelEnc(frontWheelEnc1, frontWheelEnc2);
-Encoder frontSteerEnc(frontSteerEnc2, frontSteerEnc1);  // Reversed to correct the orientation of the wheel angle //
 
-// Initilization of Objects of Class Encoder Data Processor //
+// Encoder Objects to Read Encoder Ticks //
+Encoder rearWheelEnc(rearWheelEnc1, rearWheelEnc2);
+Encoder rearSteerEnc(rearSteerEnc2, rearSteerEnc1);
+Encoder frontWheelEnc(frontWheelEnc1, frontWheelEnc2);
+Encoder frontSteerEnc(frontSteerEnc2, frontSteerEnc1);
+
+// Encoder Objects to Store Encoder Ticks and Speed //
 EncoderDataProcessor rearWheelData(wheelMotorPPR, 0, true, false, vel_cutoff_freq, sampling_time); 
 EncoderDataProcessor rearSteerData(steerMotorPPR, 0, false, false, vel_cutoff_freq, sampling_time);
 EncoderDataProcessor frontWheelData(wheelMotorPPR, 0, true, true, vel_cutoff_freq, sampling_time);
 EncoderDataProcessor frontSteerData(steerMotorPPR, 0, false, true, vel_cutoff_freq, sampling_time);
 
+// Hold Steer Error Variables //
 double prev_steer_error_F = 0;
 double prev_steer_error_R = 0;
 double integral_steer_F = 0;
 double integral_steer_R = 0;
 
+// Hold Wheel Error Variables //
 double prev_wheel_error_F = 0;
 double prev_wheel_error_R = 0;
 double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
-/* Segway Controller */
+/**** Segway Controller ****/
 #define Kp_lean 200 //600
 #define Kd_lean 5500 //400
 #define Kd_wheel 0
@@ -109,9 +97,7 @@ double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
 
-/*front segway variable*/
-
-/* cycle controller */
+/**** Cycle Controller Varriables ****/
 double prev_speed_error_rear = 0;
 double prev_speed_error_front = 0;
 double int_speed_error_front = 0;
@@ -120,13 +106,10 @@ double int_speed_error_rear  = 0;
 float prev_PWPF_front = 0; 
 float prev_PWPF_rear  = 0;
 
-
-// PWPF parameters
+// PWPF Parameter //
 const float Um = 1;    
 
-// Initialize previous output state
-
-
+// Initialize Previous Output State //
 const float error_cutoff_freq = 20;
 const float fw_kp = 10*PI/180; const float fw_kd = 0.1*PI/180;  
 const float fs_kp = 1*PI/180; const float fs_kd = 0.1*PI/180;
@@ -141,11 +124,11 @@ double vel_fs_kp = 0.1*PI/180;  double vel_fs_ki = 10*PI/180; double vel_fs_kff 
 double vel_rw_kp = 0.1*PI/180; double vel_rw_ki = 10*PI/180; double vel_rw_kff = 12.0/1350.00;
 double vel_rs_kp = 0.1*PI/180;  double vel_rs_ki = 10*PI/180; double vel_rs_kff = 12.0/650.00;
 
-/* State and control variables */
+/**** State and Control Variables ****/
 double phi, phi_dot;
 int prv_sgn_phi = 0;
 
-/* Trajectory Variables */
+/**** Trajectory Variables ****/
 double delF = 0;        // In degrees //
 double delR = 0;        // In degrees //
 double Vr   = 0;        // (1.0/r)*180.0/PI; // In dps, 1m/s in dps //
@@ -156,24 +139,13 @@ double delR_dot = 0;    // In dps //
 double Vr_dot   = 0;    // In dps2 //
 double Vf_dot   = 0;    // In dps2 //
 
-double rearWheelRefPos;double rearWheelRefVel;
-double rearSteerRefPos;double rearSteerRefVel;
-double frontWheelRefPos;double frontWheelRefVel;
-double frontSteerRefPos;double frontSteerRefVel;
-
-// Give the reference of phi here. For constant delF, delR,Vr or Vf, we can change the gains of the balance controller //
 double phiRefPos = 0;   // 0.1*180.0/PI;
-double phiRefVel;
 
-/* Timing and Code Control */
+/**** Timing and Code Control ****/
 elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
-// For Deadband and Motor Calibration Square //
-int prev_time, prev_time_millis;
-int deadband_sign, motor_calibration_sign;
-
-/* Track Stand Varliables */
+/**** Track Stand Varliables ****/
 #define Kp_track 250
 #define Kd_track 100
 #define Ki_track 80
@@ -181,7 +153,7 @@ int deadband_sign, motor_calibration_sign;
 
 double int_track, front_int_track, rear_int_track;
 
-/* Low Pass Filter */
+/**** Low Pass Filter ****/
 lowpass_filter lpf_front_steer(2); 
 lowpass_filter lpf_front_wheel(2); 
 lowpass_filter lpf_rear_steer(2); 

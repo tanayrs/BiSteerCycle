@@ -43,6 +43,7 @@ void controller_segway() {
         // Serial.println(int_lean);
 }
 /******************************************************************************************************************************************************************************************************/
+/* Calculation of Front and Rear Wheel Speed for Bicycle Mode */
 void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
         double Vr = rear_speed;
 
@@ -70,8 +71,7 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
 }   
 
 /****************************************************************************************************************************************************************************************************/
-
-/* Bicycle Controller for Rear Wheel */
+/* Bicycle Controller for Rear Wheel Speed */
 void controller_rear_speed(double velocity_rear){
         double Vr = velocity_rear;
         long double dt = loopTimeConstant * 1e-6;
@@ -114,7 +114,7 @@ void controller_rear_speed(double velocity_rear){
 }
 
 /****************************************************************************************************************************************************************************************************/
-
+/* Bicycle Controller for Front Wheel Speed */
 void controller_front_speed(double velocity_front){
         double Vf = velocity_front;
 
@@ -147,7 +147,7 @@ void controller_front_speed(double velocity_front){
 }
 
 /****************************************************************************************************************************************************************************************************/
-
+/* PID Velocity Controller for Track Stand Mode */
 void controller_track_stand(double front_angle){
 
         // If front wheel is turned left:
@@ -212,8 +212,7 @@ void controller_track_stand(double front_angle){
 }
 
 /****************************************************************************************************************************************************************************************************/
-
-/* Sets Wheel Angle for Front and Rear Wheels */
+/* PID Position Controller for Wheel Rotation of Front and Rear Wheels */
 void holdwheel(double degrees_F, double degrees_R) {
         long double dt = loopTimeConstant * 1e-6;
 
@@ -248,7 +247,7 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /****************************************************************************************************************************************************************************************************/
-/* Sets Steering Angle for Front and Rear Wheels */
+/* PID Position Controller for Steering Angle of Front and Rear Wheels */
 void holdsteering(double degrees_F, double degrees_R) {
         long double dt = loopTimeConstant * 1e-6;
 
@@ -294,7 +293,7 @@ void holdsteering(double degrees_F, double degrees_R) {
 
 /****************************************************************************************************************************************************************************************************/
 
-/* Sets Steer and Drive Speeds to Front and Back Wheels */
+/* Writes Calculated Input into the 4 Motors */
 void writeToMotor() {
         frontSteerInput = lpf_front_steer.filter(frontSteerInput);
         frontWheelInput = lpf_front_wheel.filter(frontWheelInput);
