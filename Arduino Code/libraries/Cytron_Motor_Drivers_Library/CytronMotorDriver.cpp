@@ -33,12 +33,23 @@ void CytronMD::setSpeed(int16_t speed)
       case PWM_DIR:
             if (speed >= 0)
             {
+#if defined(ARDUINO_ARCH_ESP32)
                   ledcWrite(_pin1, speed);
+#else
+                  analogWrite(_pin1, speed);
+#endif
+
                   digitalWrite(_pin2, LOW);
             }
             else
             {
+
+#if defined(ARDUINO_ARCH_ESP32)
                   ledcWrite(_pin1, -speed);
+#else
+                  analogWrite(_pin1, -speed);
+#endif
+
                   digitalWrite(_pin2, HIGH);
             }
             break;
@@ -46,13 +57,23 @@ void CytronMD::setSpeed(int16_t speed)
       case PWM_PWM:
             if (speed >= 0)
             {
+#if defined(ARDUINO_ARCH_ESP32)
                   ledcWrite(_pin1, speed);
                   ledcWrite(_pin2, 0);
+#else
+                  analogWrite(_pin1, speed);
+                  analogWrite(_pin2, 0);
+#endif
             }
             else
             {
+#if defined(ARDUINO_ARCH_ESP32)
                   ledcWrite(_pin1, 0);
                   ledcWrite(_pin2, -speed);
+#else
+                  analogWrite(_pin1, 0);
+                  analogWrite(_pin2, -speed);
+#endif
             }
             break;
       }
