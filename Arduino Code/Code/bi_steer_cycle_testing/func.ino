@@ -172,9 +172,9 @@ void deadband_test(){
         
                 // Triangle Input //
                 if (zero_deadband_crosses < 21){
-                        if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
+                        if ((frontWheelInput > 500)||(frontWheelInput < -500)) deadband_sign *= -1;
                         
-                        frontWheelInput += (deadband_sign*2);
+                        frontWheelInput += (deadband_sign*20);
                         rearWheelInput = frontWheelInput;
                         
                         if (sign(frontWheelInput) != prev_input_sign){
@@ -223,3 +223,78 @@ void max_input_speed(){
         if (frontSteerInput > 2000) frontSteerInput = -2000;
         if (rearSteerInput > 2000) rearSteerInput = -2000;
 }
+
+/* PID Position Controller for Wheel Rotation of Front and Rear Wheels */
+void holdwheel(double degrees_F, double degrees_R) {
+        long double dt = loopTimeConstant * 1e-6;
+
+        double EncTarget_F = degrees_F * (wheelMotorPPR) / 360; 
+        double EncTarget_R = degrees_R * (wheelMotorPPR) / 360;
+
+        double wheel_error_F = -(EncTarget_F - frontWheelEnc.read());
+        double wheel_error_R = -(EncTarget_R - rearWheelEnc.read());
+        
+        frontWheelInput = 0.5 * (0.8 * (wheel_error_F) + 0.1 * ((wheel_error_F - prev_wheel_error_F)/dt) + 10*(integral_wheel_F)*dt);
+        rearWheelInput = 0.5 * (0.8 * (wheel_error_R) + 0.1 * ((wheel_error_R - prev_wheel_error_R)/dt) + 10*(integral_wheel_R)*dt);
+
+        prev_wheel_error_F = wheel_error_F;
+        prev_wheel_error_R = wheel_error_R;
+
+        // Integral Control is Activated at an Error within 5 degrees //
+        if (wheel_error_F < 5 * wheelMotorPPR/360) integral_wheel_F += wheel_error_F; // 5 is for degrees can change //
+        else integral_wheel_F = 0;
+        if (wheel_error_R < 5 * wheelMotorPPR/360) integral_wheel_R += wheel_error_R;
+        else integral_wheel_R = 0;
+
+        // Setting the Maximum Input to The Wheels //
+        // double acc = 100;
+        // if (frontWheelInput > acc)
+        //         frontWheelInput = acc;
+        // if (frontWheelInput < -acc)
+        //         frontWheelInput = -acc;
+        // if (rearWheelInput > acc)
+        //         rearWheelInput = acc;
+        // if (rearWheelInput < -acc)
+        //         rearWheelInput = -acc;
+}
+
+/* PID Position Controller for Steering Angle of Front and Rear Wheels */
+void holdsteering(double degrees_F, double degrees_R) {
+        long double dt = loopTimeConstant * 1e-6;
+
+        double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
+        double EncTarget_R = degrees_R * (steerMotorPPR) / 90;
+
+        double steer_error_F = EncTarget_F - frontSteerEnc.read();
+        double steer_error_R = EncTarget_R - rearSteerEnc.read();
+
+        frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
+        rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
+
+        integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
+        integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
+        integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
+        integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
+
+        if (steer_error_F < 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
+        else integral_steer_F = 0;
+
+        if (steer_error_R < 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
+
+        if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
+        if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
+
+        prev_steer_error_F = steer_error_F;
+        prev_steer_error_R = steer_error_R;
+
+        double acc = 1600;
+        if (frontSteerInput > acc) frontSteerInput = acc;
+        if (frontSteerInput < -acc) frontSteerInput = -acc;
+        if (rearSteerInput > acc) rearSteerInput = acc;
+        if (rearSteerInput < -acc) rearSteerInput = -acc;
+
+        if (abs(steer_error_F) < 10) frontSteerInput = 0;
+        if (abs(steer_error_R) < 10) rearSteerInput = 0;
+}
+  

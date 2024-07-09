@@ -77,6 +77,8 @@ void setup() {
 void loop(){
         digitalWrite(13,HIGH);
 
+        holdsteering(0,0);
+
         // Updates Encoder Angle and IMU Angle //
         calculate_state();
         

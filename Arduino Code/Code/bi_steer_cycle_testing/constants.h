@@ -88,6 +88,18 @@ EncoderDataProcessor rearSteerData(steerMotorPPR, 0, false, false, vel_cutoff_fr
 EncoderDataProcessor frontWheelData(wheelMotorPPR, 0, true, true, vel_cutoff_freq, sampling_time);
 EncoderDataProcessor frontSteerData(steerMotorPPR, 0, false, true, vel_cutoff_freq, sampling_time);
 
+// Hold Steer Error Variables //
+double prev_steer_error_F = 0;
+double prev_steer_error_R = 0;
+double integral_steer_F = 0;
+double integral_steer_R = 0;
+
+// Hold Wheel Error Variables //
+double prev_wheel_error_F = 0;
+double prev_wheel_error_R = 0;
+double integral_wheel_F = 0;
+double integral_wheel_R = 0;
+
 /**** State and control variables ****/
 double phi, phi_dot;
 double prv_sgn_phi = 0;
