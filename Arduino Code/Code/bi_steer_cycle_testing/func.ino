@@ -98,20 +98,20 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         
-        // // // Directly Writing Input without any Compensation //
-        frontSteerMotor.setSpeed(frontSteerInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // Directly Writing Input without any Compensation //
+        // frontSteerMotor.setSpeed(frontSteerInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
         frontWheelMotor.setSpeed(frontWheelInput);
         rearWheelMotor.setSpeed(rearWheelInput);
         
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
-        // if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
-        // else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
+        if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
+        else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
 
         // Rear Steer deadband: positive = 130, negative = -190 //
-        // if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
-        // else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
+        if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
+        else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
         // Rear deadband: positive = 170, negative = -160 //
         // if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
