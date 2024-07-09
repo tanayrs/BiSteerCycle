@@ -1,7 +1,6 @@
 '''
 Experiment: Dead Band Testing
 By: Jia Bhargava, Tanay Srinivasa
-Last Modified: 24 June 2024
 
 Run bi_steer_cycle_testing arduino code with deadband_testing()
 '''

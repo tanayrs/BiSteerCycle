@@ -98,20 +98,20 @@ void writeToMotor() {
         // frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput:(146.91/142.32)*frontWheelInput);
         // rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput:(146.91/142.32)*rearWheelInput);
         
-        // // // Directly Writing Input without any Compensation //
-        frontSteerMotor.setSpeed(frontSteerInput);
-        rearSteerMotor.setSpeed(rearSteerInput);
+        // Directly Writing Input without any Compensation //
+        // frontSteerMotor.setSpeed(frontSteerInput);
+        // rearSteerMotor.setSpeed(rearSteerInput);
         frontWheelMotor.setSpeed(frontWheelInput);
         rearWheelMotor.setSpeed(rearWheelInput);
         
         // Deadband Compensation for all Motors //
         // Front Steer deadband: positive = 260, negative = -250 //
-        // if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
-        // else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
+        if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
+        else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
 
         // Rear Steer deadband: positive = 130, negative = -190 //
-        // if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
-        // else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
+        if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
+        else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
         // Rear deadband: positive = 170, negative = -160 //
         // if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
@@ -172,9 +172,9 @@ void deadband_test(){
         
                 // Triangle Input //
                 if (zero_deadband_crosses < 21){
-                        if ((frontWheelInput > 800)||(frontWheelInput < -800)) deadband_sign *= -1;
+                        if ((frontWheelInput > 450)||(frontWheelInput < -450)) deadband_sign *= -1;
                         
-                        frontWheelInput += (deadband_sign*2);
+                        frontWheelInput += (deadband_sign*5);
                         rearWheelInput = frontWheelInput;
                         
                         if (sign(frontWheelInput) != prev_input_sign){
@@ -222,4 +222,48 @@ void max_input_speed(){
 
         if (frontSteerInput > 2000) frontSteerInput = -2000;
         if (rearSteerInput > 2000) rearSteerInput = -2000;
+}
+
+/* PID Position Controller for Steering Angle of Front and Rear Wheels */
+void holdsteering(double degrees_F, double degrees_R) {
+        long double dt = loopTimeConstant * 1e-6;
+
+        double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
+        double EncTarget_R = degrees_R * (steerMotorPPR) / 90;
+
+        double steer_error_F = EncTarget_F - frontSteerEnc.read();
+        double steer_error_R = EncTarget_R - rearSteerEnc.read();
+
+        frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
+        rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
+
+        integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
+        integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
+        integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
+        integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
+
+        if (steer_error_F < 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
+        else integral_steer_F = 0;
+
+        if (steer_error_R < 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
+
+        if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
+        if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
+
+        prev_steer_error_F = steer_error_F;
+        prev_steer_error_R = steer_error_R;
+
+        double acc = 1600;
+        if (frontSteerInput > acc) frontSteerInput = acc;
+        if (frontSteerInput < -acc) frontSteerInput = -acc;
+        if (rearSteerInput > acc) rearSteerInput = acc;
+        if (rearSteerInput < -acc) rearSteerInput = -acc;
+
+        if (abs(steer_error_F) < 10) frontSteerInput = 0;
+        if (abs(steer_error_R) < 10) rearSteerInput = 0;
+        
+        // Serial.print(EncTarget_F); Serial.print(" ");
+        // Serial.print(steer_error_F); Serial.print(" ");
+        // Serial.print(frontSteerEnc.read()); Serial.println("");
 }

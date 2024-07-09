@@ -81,6 +81,7 @@ void loop(){
         calculate_state();
         
         // Testing Deadband and Motor Calibration //
+        holdsteering(0,0);
         deadband_test();
         // deadband_test_steer();
         // motor_calibration_square();
