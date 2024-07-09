@@ -106,9 +106,9 @@ def plot_raw(path):
     plt.show()
 
 if __name__ == '__main__':
-    front_path = './Python/deadband tests/deadband loaded/SourceData/FrontSlope5Data_rotate.csv'
-    rear_path = './Python/deadband tests/deadband loaded/SourceData/RearSlope5Data_rotate.csv'
-    read_front_and_rear(front_path,rear_path)
+    front_path = './Python/deadband tests/deadband loaded/SourceData/FrontSlope5Data.csv'
+    rear_path = './Python/deadband tests/deadband loaded/SourceData/RearSlope5Data.csv'
+    read_front_and_rear(front_path,rear_path, overwrite=True)
     plot_raw(front_path)
     plot_raw(rear_path)
     

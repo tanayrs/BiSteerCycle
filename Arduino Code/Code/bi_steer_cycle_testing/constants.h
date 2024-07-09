@@ -133,11 +133,6 @@ int prev_time, prev_time_millis;
 int deadband_sign, motor_calibration_sign;
 int zero_deadband_crosses, prev_input_sign;
 
-// Hold Steer Error Variables //
-double prev_steer_error_F = 0;
-double prev_steer_error_R = 0;
-double integral_steer_F = 0;
-double integral_steer_R = 0;
 
 /**** Motor Compensation ****/
 #define frontWheelStaticDec -170
