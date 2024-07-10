@@ -135,12 +135,12 @@ int zero_deadband_crosses, prev_input_sign;
 
 
 /**** Motor Compensation ****/
-#define frontWheelStaticDec -390
-#define frontWheelStaticInc 300
-#define frontWheelKineticDec 266
-#define frontWheelKineticInc -257
+#define frontWheelStaticDec -275
+#define frontWheelStaticInc 280
+#define frontWheelKineticDec 277
+#define frontWheelKineticInc -280
 
-#define rearWheelStaticDec -390
-#define rearWheelStaticInc 300
-#define rearWheelKineticDec 270
-#define rearWheelKineticInc -254
+#define rearWheelStaticDec -280
+#define rearWheelStaticInc 284
+#define rearWheelKineticDec 280
+#define rearWheelKineticInc -277
