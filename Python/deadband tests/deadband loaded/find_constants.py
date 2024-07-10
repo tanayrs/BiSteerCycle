@@ -14,8 +14,8 @@ def sign(num):
 def remove_noise(df):
     a = []
     for index,row in df.iterrows():
-        if row['Wheel Speed'] == 0 and (df['Wheel Speed'].iloc[index-10] == 0):
-            for i in range(1,10):
+        if row['Wheel Speed'] == 0 and (df['Wheel Speed'].iloc[index-9] == 0):
+            for i in range(1,8):
                 # print(f'{a=},{i=},{index=}')
                 a[index-i] = 0
             a.append(0)
@@ -156,26 +156,33 @@ def plot_raw_with_measured_constants(path,constants_path):
     plt.subplot(2,1,1)
     plt.plot(df['Relative Time'],df['Wheel Input'])
     for _,row in deadbands_df.iterrows():
-        plt.axvline(x=row['deadband_starts_dec'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_ends_dec'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_starts_inc'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_ends_inc'],color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_starts_dec'],ymin=-550,ymax=row['kinetic_coeffs_dec'],color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_ends_dec'],ymin=-550,ymax=row['static_coeffs_dec'],color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_starts_inc'],ymin=-550,ymax=row['kinetic_coeffs_inc'],color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_ends_inc'],ymin=-550,ymax=row['static_coeffs_inc'],color='k',linestyle='--',linewidth=1)
 
         plt.plot(row['deadband_starts_dec'],row['kinetic_coeffs_dec'],'o')
         plt.plot(row['deadband_starts_inc'],row['kinetic_coeffs_inc'],'o')
         plt.plot(row['deadband_ends_dec'],row['static_coeffs_dec'],'o')
         plt.plot(row['deadband_ends_inc'],row['static_coeffs_inc'],'o')
     plt.title(path)
-    
+    plt.ylim([-550,550])
+
     plt.subplot(2,1,2)
     plt.plot(df['Relative Time'],df['Wheel Speed'])
     # plt.plot(df['Relative Time'],df['Wheel Speed LPF'], color='gray', linestyle=':')
     for _,row in deadbands_df.iterrows():
         pass
-        plt.axvline(x=row['deadband_starts_dec'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_ends_dec'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_starts_inc'],color='k',linestyle='--',linewidth=1)
-        plt.axvline(x=row['deadband_ends_inc'],color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_starts_dec'],ymin=0,ymax=600,color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_ends_dec'],ymin=0,ymax=600,color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_starts_inc'],ymin=0,ymax=600,color='k',linestyle='--',linewidth=1)
+        plt.vlines(x=row['deadband_ends_inc'],ymin=0,ymax=600,color='k',linestyle='--',linewidth=1)
+
+        plt.plot(row['deadband_starts_dec'],0,'o')
+        plt.plot(row['deadband_starts_inc'],0,'o')
+        plt.plot(row['deadband_ends_dec'],0,'o')
+        plt.plot(row['deadband_ends_inc'],0,'o')
+    plt.ylim([-300,300])
 
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
@@ -183,16 +190,17 @@ def plot_raw_with_measured_constants(path,constants_path):
 
 if __name__ == '__main__':
     ## Use to Plot a Particular File ##
-    motor = 'Rear'
-    speed = 35
-    path = f'./Python/deadband tests/deadband loaded/SourceData/{motor}Slope{speed}Data.csv' 
-    constants_path = f'./Python/deadband tests/deadband loaded/CombinedConstants/{motor}Slope{speed}Constants.csv'
+    # motor = 'Rear'
+    # speed = 35
+    # path = f'./Python/deadband tests/deadband loaded/SourceData/{motor}Slope{speed}Data.csv' 
+    # constants_path = f'./Python/deadband tests/deadband loaded/CombinedConstants/{motor}Slope{speed}Constants.csv'
+    
     slope_ends_path = './Python/deadband tests/deadband loaded/SlopeEnds.csv'
     # plot_raw_with_measured_constants(path,constants_path)
     
     ## Use To Create Slope Constants CSV ##
-    with open(slope_ends_path, "w", newline="\n") as f:
-        csv.writer(f, delimiter=',').writerow(['speed', 'motor', 'positive', 'negative'])
+    # with open(slope_ends_path, "w", newline="\n") as f:
+    #     csv.writer(f, delimiter=',').writerow(['speed', 'motor', 'positive', 'negative'])
 
     data_path = './Python/deadband tests/deadband loaded/SourceData'
     files = os.listdir(data_path)
@@ -207,11 +215,11 @@ if __name__ == '__main__':
             path = f'./Python/deadband tests/deadband loaded/SourceData/{motor}Slope{speed}Data.csv' 
             constants_path = f'./Python/deadband tests/deadband loaded/PlottingConstants/{motor}Slope{speed}Constants.csv'
 
-            slope_ends = find_constants(path, constants_path)
+            # slope_ends = find_constants(path, constants_path)
             plot_raw_with_measured_constants(path,constants_path)
 
-            with open(slope_ends_path, "a", newline="\n") as f:
-                csv.writer(f, delimiter=',').writerow([speed, motor, slope_ends['positive'], slope_ends['negative']])
+            # with open(slope_ends_path, "a", newline="\n") as f:
+            #     csv.writer(f, delimiter=',').writerow([speed, motor, slope_ends['positive'], slope_ends['negative']])
 
     ## Use to Plot Data of Particular Speeds-Motors Combination ##
     # speeds = [1,5,6,15,25,30,35,40,3,20,25,30,35]
