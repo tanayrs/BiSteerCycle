@@ -112,7 +112,7 @@ void writeToMotor() {
                 frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelKineticDec : frontWheelInput+frontWheelKineticInc);
         }
 
-        if (rearWheelInput == 0){
+        if (rearWheelInput == 0)
                 rearWheelMotor.setSpeed(0);
         else if (rearWheelData.speed() == 0) {
                 rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelStaticInc : rearWheelInput+rearWheelStaticDec);

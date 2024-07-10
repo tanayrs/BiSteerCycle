@@ -156,3 +156,14 @@ lowpass_filter lpf_front_steer(2);
 lowpass_filter lpf_front_wheel(2); 
 lowpass_filter lpf_rear_steer(2); 
 lowpass_filter lpf_rear_wheel(2); 
+
+/**** Motor Compensation ****/
+#define frontWheelStaticDec -390
+#define frontWheelStaticInc 300
+#define frontWheelKineticDec 266
+#define frontWheelKineticInc -257
+
+#define rearWheelStaticDec -390
+#define rearWheelStaticInc 300
+#define rearWheelKineticDec 270
+#define rearWheelKineticInc -254
