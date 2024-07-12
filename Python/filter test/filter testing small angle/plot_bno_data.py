@@ -179,10 +179,10 @@ if __name__ == '__main__':
     # except:
     #     pass
 
-    small_angle_plots()
+    # small_angle_plots()
     
-    # DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
-    # plot_comparison(DATA_PATH)
+    DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
+    plot_comparison(DATA_PATH)
 
     # plot_from_csv(path)
     # plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=18)
