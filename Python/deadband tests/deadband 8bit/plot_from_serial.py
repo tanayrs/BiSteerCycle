@@ -166,7 +166,7 @@ def read_from_serial(path):
                 quotechar='"', 
                 quoting=csv.QUOTE_MINIMAL
                 )
-        sensor_writer.writerow(['Time','Rear Wheel Input','Rear Wheel Ticks','Rear Wheel Speed'])
+        sensor_writer.writerow(['Time','Wheel Input','Wheel Ticks','Wheel Speed'])
     
     # Creating Serial Object for COM Port and Selected Baud Rate #
     x = serial.Serial(COM, BAUD, timeout=0.1)
