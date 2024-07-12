@@ -20,11 +20,11 @@ void controller_segway() {
         double front_acc, rear_acc;
 
         if (abs(phi) < 7.5) {
-                front_acc = (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
-                rear_acc =  (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
+                front_acc = (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed()));
         } else {
-                front_acc = 4*(Kp_lean * (phi) + 5000 * (phi_dot) + 2*int_lean + 0 * (frontWheelData.speed()));
-                rear_acc =  4*(Kp_lean * (phi) + 5000 * (phi_dot) + 2*int_lean + 0 * (rearWheelData.speed())); 
+                front_acc = 4*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel *(frontWheelData.speed()));
+                rear_acc =  4*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel *(rearWheelData.speed())); 
         }
 
         prv_sgn_phi = sgn1;
@@ -36,11 +36,18 @@ void controller_segway() {
                 Uf = 0;
                 Ur = 0;
                 rear_acc = 0;
+                front_acc = 0;
         }
 
-        frontWheelInput = round(Uf);
-        rearWheelInput  = round(Ur);
-        // Serial.println(int_lean);
+        // acceleration control
+        // frontWheelInput = round(Uf);
+        // rearWheelInput  = round(Ur);
+
+        // velocity control
+        frontWheelInput = front_acc;
+        rearWheelInput = rear_acc;
+
+        Serial.println(phi);
 }
 /******************************************************************************************************************************************************************************************************/
 /* Calculation of Front and Rear Wheel Speed for Bicycle Mode */
