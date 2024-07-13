@@ -10,456 +10,257 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
-# Paths to Files for Front and Rear Deadband Measurements #
-FRONT_10_PATH = './Python/dead band slope/SourceData4095/FrontSlope10Data.csv'
-REAR_10_PATH = './Python/dead band slope/SourceData4095/RearSlope10Data.csv'
-FRONT_20_PATH = './Python/dead band slope/SourceData4095/FrontSlope20Data.csv'
-REAR_20_PATH = './Python/dead band slope/SourceData4095/RearSlope20Data.csv'
-FRONT_40_PATH = './Python/dead band slope/SourceData4095/FrontSlope40Data_1.csv'
-REAR_40_PATH = './Python/dead band slope/SourceData4095/RearSlope40Data.csv'
+class Motor:
+    def __init__(self,path,deadband_starts, deadband_ends, deadband_inputs, slope_ends=None):
+        self.df = pd.read_csv(path)
+        self.df['Relative Time'] = self.df['Time']-self.df['Time'].iloc[0]
+        
+        # Correcting Bevel Gear Inaccuracy #
+        try:
+            self.df['Wheel Speed'] = 8*self.df['Wheel Speed']
+        except:
+            pass
+        
+        self.df['Expected Response'] = self.df['Wheel Input'].apply(self.__calculate_expected_output)
+        self.deadband_starts = deadband_starts
+        self.deadband_ends = deadband_ends
+        self.deadband_inputs = deadband_inputs
+        if slope_ends == None:
+            self.slope_ends = {'negative':self.df['Relative Time'].iloc[-1],
+                          'positive':self.df['Relative Time'].iloc[-1]}
+        else:
+            self.slope_ends = slope_ends
+    
+    # Main Plotting Function to Handle Subplots #
+    def plot_compensation(self):
+        plt.figure(figsize=(14,8.5))
+        
+        ### Command vs Time Plot ###
+        plt.subplot(2,2,1)
+        self.__plot_input()
 
-# Time at Which Front Motor Enters Deadband at Slope 10 per 100ms #
-FRONT_10_DEADBAND_START_1 = 5049
-FRONT_10_DEADBAND_START_2 = 22484
-FRONT_10_DEADBAND_START_3 = 40155
-FRONT_10_DEADBAND_START_4 = 57766
+        ### Command Response Plot for decreasing speed ###
+        plt.subplot(2,2,2)
+        # self.__plot_cr_decreasing()
+        # self.__plot_cr_increasing()
+        self.__plot_cr_combined()
 
-# Input Value Corresponding to Deadband #
-FRONT_10_DEADBAND_INPUT_START = -135
-FRONT_10_DEADBAND_INPUT_END = 130
+        # ### Response vs Time Plot ###
+        plt.subplot(2,2,3)
+        self.__plot_output()
 
-# Time at Which Rear Motor Enters Deadband at Slope 10 per 100ms #
-REAR_10_DEADBAND_START_1 = 7341
-REAR_10_DEADBAND_START_2 = 24766
-REAR_10_DEADBAND_START_3 = 42319
-REAR_10_DEADBAND_START_4 = 59875
+        ### Command Response Plot for Increasing Speed #
+        # plt.subplot(2,2,4)
+        # self.__plot_cr_increasing()
 
-# Input Value Corresponding to Deadband #
-REAR_10_DEADBAND_INPUT_START = -120
-REAR_10_DEADBAND_INPUT_END = 115
 
-# Time at Which Front Motor Enters Deadband at Slope 20 per 100ms #
-FRONT_20_DEADBAND_START_1 = 3668
-FRONT_20_DEADBAND_START_2 = 12502
-FRONT_20_DEADBAND_START_3 = 21278
-FRONT_20_DEADBAND_START_4 = 30115
+        ### Plotting Final Graph ###
+        plt.tight_layout(pad=1.08, w_pad=0.1, h_pad=0.1)
+        manager = plt.get_current_fig_manager()
+        manager.full_screen_toggle()
+        plt.show()
 
-# Input Value Corresponding to Deadband #
-FRONT_20_DEADBAND_INPUT_START = -110
-FRONT_20_DEADBAND_INPUT_END = 120
+    def __plot_input(self):
+        plt.plot(self.df['Relative Time'], self.df['Wheel Input'])
+        
+        # Plotting Vertical Lines at Times where deadband is entered and exitted #
+        for end in self.deadband_ends:
+            plt.axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+        for start in self.deadband_starts:
+            plt.axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+        
+        # Plotting Horizontal lines with Input Corresponding to Static and Kinetic Coefficients #
+        colors = ['tab:orange','tab:green']
+        for index, input in enumerate(self.deadband_inputs):
+            plt.axhline(y=input, color='k', linestyle='--', linewidth=0.5)
+            plt.plot(self.deadband_starts[index],input,'o', color=colors[index], label='Deadband Exit for Decreasing Speed', ms=7.5)
+            plt.plot(self.deadband_starts[index+2],input,'o', color=colors[index], label='Deadband Exit for Decreasing Speed', ms=7.5)
 
-# Time at Which Rear Motor Enters Deadband at Slope 20 per 100ms #
-REAR_20_DEADBAND_START_1 = 3846
-REAR_20_DEADBAND_START_2 = 12743
-REAR_20_DEADBAND_START_3 = 21642
-REAR_20_DEADBAND_START_4 = 30476
+        # Calculating Ticks #
+        yticks = []
+        set_continue = False
+        step = (self.df['Wheel Input'].max()-self.df['Wheel Input'].min())/7
+        for i in range(int(self.df['Wheel Input'].min()),int(self.df['Wheel Input'].max()),int(step)):
+            for input in self.deadband_inputs:
+                if abs(i-input) < (self.df['Wheel Input'].max()-self.df['Wheel Input'].min())/7:
+                    set_continue = True
+            if set_continue == True:
+                set_continue = False
+                continue
+            else:
+                yticks.append(i)
+        yticks[-1] = self.df['Wheel Input'].max()
+        yticks.extend(self.deadband_inputs)
+        
+        # Adding Axis Labels, y-ticks and sub-plot title #
+        plt.ylabel('Commanded Input (PWM Value)',fontsize=14)
+        plt.xlabel('Time (ms)', fontsize=14)
+        plt.yticks(yticks)
+        plt.ylim([self.df['Wheel Input'].min(),self.df['Wheel Input'].max()])
+        # plt.legend(loc='upper right', fontsize=14)
+        plt.title('Input', fontsize=18)
 
-# Input Value Corresponding to Deadband #
-REAR_20_DEADBAND_INPUT_START = -100
-REAR_20_DEADBAND_INPUT_END = 100
+    def __plot_output(self):
+        ### Command vs Time Plot ###
+        plt.plot(self.df['Relative Time'], self.df['Wheel Speed'], label='Measured Response')
+        plt.plot(self.df['Relative Time'], self.df['Expected Response'], label='Ideal Response', color='gray')
 
-# For FrontSlope40Data.csv #
-# Time at Which Front Motor Enters Deadband at Slope 40 per 100ms #
-FRONT_40_DEADBAND_START_1 = 1983
-FRONT_40_DEADBAND_START_2 = 6312
-FRONT_40_DEADBAND_START_3 = 10880
-FRONT_40_DEADBAND_START_4 = 15268
+        # Plotting Vertical Dotted Lines for Start and End of Deadband #
+        colors = ['tab:orange','tab:green']
+        for index,end in enumerate(self.deadband_ends):
+            plt.axvline(x=end, color='k', linestyle='--', linewidth=0.5)
+            plt.plot(end,0,'o',color=colors[index%2],ms=7.5)
+        for index,start in enumerate(self.deadband_starts):
+            plt.axvline(x=start, color='k', linestyle='--', linewidth=0.5)
+            plt.plot(start,0,'o',color=colors[index%2],ms=7.5)
+        
+        # Plotting Axis Labels and Sub-Plot Title #
+        plt.xlabel('Time (ms)',fontsize=14)
+        plt.ylabel('Response (Degrees per Second)',fontsize=14)
+        plt.legend(loc='upper right', fontsize=14)
+        plt.title('Measured and Ideal Response', fontsize=18)
 
-# Input Value Corresponding to Deadband #
-FRONT_40_DEADBAND_INPUT_START = -90
-FRONT_40_DEADBAND_INPUT_END = 70
+    def __plot_cr_combined(self):
+        subset = self.df[self.df['Relative Time']>=self.slope_ends['negative']]
+        subset = subset[subset['Relative Time']<=self.slope_ends['positive']]
 
-# For FrontSlope40Data_1.csv #
-# Time at Which Front Motor Enters Deadband at Slope 40 per 100ms #
-# FRONT_40_DEADBAND_START_1 = 2045
-# FRONT_40_DEADBAND_START_2 = 6432
-# FRONT_40_DEADBAND_START_3 = 10941
-# FRONT_40_DEADBAND_START_4 = 15328
+        # Only plot if slope_ends are specified #
+        if len(subset) > 1:
+            plt.scatter(
+                subset['Wheel Input'],
+                subset['Wheel Speed'], 
+                label='Measured Response', 
+                marker='^',
+                color='tab:green',
+                s=25,
+                linewidths=1.75
+                )
+        
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
+            label = 'Measured Response',
+            color='tab:purple',
+            s=50,
+            marker='o',
+            facecolors='none',
+            linewidths=2
+            )
+        
+        plt.scatter(
+            self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
+            self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Expected Response'],
+            color = 'gray',
+            s=10,
+            label = 'Ideal Response'
+        )
+        
+        # Plotting Vertical Lines Corresponding to Static and Kinetic Coefficients #
+        colors = ['tab:orange','tab:green']
+        for input, color in zip(self.deadband_inputs,colors):
+            plt.plot(input,0,'o',color=color,ms=10)
+            plt.axvline(x=input, color='k', linestyle='--',linewidth=0.75)
+        
+        # Plotting Horizontal Line to Demarkate Line for No Response Speed #
+        plt.axhline(y=0, color='k',linestyle='--',linewidth=0.75)
+        
+        # Calculating Ticks #
+        xticks = []
+        set_continue = False
+        step = (self.df['Wheel Input'].max()-self.df['Wheel Input'].min())/7
+        for i in range(int(self.df['Wheel Input'].min()),int(self.df['Wheel Input'].max()),int(step)):
+            for input in self.deadband_inputs:
+                if abs(i-input) < (self.df['Wheel Input'].max()-self.df['Wheel Input'].min())/14:
+                    set_continue = True
+            if set_continue == True:
+                set_continue = False
+                continue
+            else:
+                xticks.append(i)
+        xticks[-1] = self.df['Wheel Input'].max()
+        xticks.extend(self.deadband_inputs)
 
-# Input Value Corresponding to Deadband #
-# FRONT_40_DEADBAND_INPUT_START = -90
-# FRONT_40_DEADBAND_INPUT_END = 70
+        # Setting x-ticks, axese limits, axese labels and sub-plot title #
+        plt.xticks(xticks)
+        plt.xlim(self.df['Wheel Input'].min()/2,self.df['Wheel Input'].max()/2)
+        plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
+        plt.ylabel('Response (Degrees Per Second)', fontsize=14)
+        plt.xlabel('Commanded Input (PWM Value)', fontsize=14)
+        plt.legend(fontsize=14)
+        plt.legend(loc='upper left',fontsize=14)
+        plt.title('Commanded Input vs Response', fontsize=18)
 
-# Time at Which Rear Motor Enters Deadband at Slope 40 per 100ms #
-REAR_40_DEADBAND_START_1 = 1924
-REAR_40_DEADBAND_START_2 = 6552
-REAR_40_DEADBAND_START_3 = 11065
-REAR_40_DEADBAND_START_4 = 15685
-
-# Input Value Corresponding to Deadband #
-REAR_40_DEADBAND_INPUT_START = -80
-REAR_40_DEADBAND_INPUT_END = 90
+    def __calculate_expected_output(self,pwm):
+        PWM_RESOLUTION = 4095
+        MOTOR_RPM = 587
+        ratio = pwm/PWM_RESOLUTION
+        expected_speed = (MOTOR_RPM/60)* ratio * 360
+        return expected_speed
 
 def plot_front10():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(FRONT_10_PATH)
+    path = './Python/deadband tests/deadband entry/SourceData/FrontSlope10Data.csv'
+    starts = [5049, 22484, 40155, 57766]
+    inputs = [130, -135]
+    slope_ends = {'negative': 15242, 'positive': 32782}
 
-    # Creating Column with Time Relative to First Entry #
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
-
-    # Creating Subplots and Setting Figure Dimensions #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-
-    # Plotting Input vs Time #
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-    
-    # Plotting Vertical Dashed Lines Corresponding to Deadband Start #
-    axs[0].axvline(x=FRONT_10_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_10_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_10_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_10_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    # Plotting Horizontal Dashed Lines Corresponding to Deadband Start #
-    axs[0].axhline(y=FRONT_10_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_10_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-    
-    # Plotting Dots Corresponding to Deadband Start #
-    axs[0].plot(FRONT_10_DEADBAND_START_1,FRONT_10_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_10_DEADBAND_START_2,FRONT_10_DEADBAND_INPUT_START,'o')
-    axs[0].plot(FRONT_10_DEADBAND_START_3,FRONT_10_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_10_DEADBAND_START_4,FRONT_10_DEADBAND_INPUT_START,'o')
-    
-    # Plot Formatting #
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-135,0,130,200,400,600,800])
-    axs[0].set_xticks([])
-
-    # Plotting Response vs Time #
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-
-    # Plotting Vertical Dashed Lines Corresponding to Deadband Start #
-    axs[1].axvline(x=FRONT_10_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_10_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_10_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_10_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    # Plotting Dots Corresponding to Deadband Start #
-    axs[1].plot(FRONT_10_DEADBAND_START_1,0,'o')
-    axs[1].plot(FRONT_10_DEADBAND_START_2,0,'o')
-    axs[1].plot(FRONT_10_DEADBAND_START_3,0,'o')
-    axs[1].plot(FRONT_10_DEADBAND_START_4,0,'o')
-
-    # Plot Formatting #
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    # Plotting Command vs Response #
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
-    plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs, slope_ends)
+    obj.plot_compensation()
 
 def plot_rear10():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(REAR_10_PATH)
+    path = './Python/deadband tests/deadband entry/SourceData/RearSlope10Data.csv'
+    starts = [7341, 24766, 42319, 59875]
+    inputs = [115, -120]
+    slope_ends = {'negative': 17286, 'positive': 34847}
 
-    # Creating Column with Time Relative to First Entry #
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
-
-    # Creating Subplots and Setting Figure Dimensions #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-
-    # Plotting Input vs Time #
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-
-    # Plotting Vertical Dashed Lines Corresponding to Deadband Start #
-    axs[0].axvline(x=REAR_10_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_10_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_10_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_10_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-
-    # Plotting Horizontal Dashed Lines Corresponding to Deadband Start #
-    axs[0].axhline(y=REAR_10_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_10_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-
-    # Plotting Dots Corresponding to Deadband Start #
-    axs[0].plot(REAR_10_DEADBAND_START_1,REAR_10_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_10_DEADBAND_START_2,REAR_10_DEADBAND_INPUT_START,'o')
-    axs[0].plot(REAR_10_DEADBAND_START_3,REAR_10_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_10_DEADBAND_START_4,REAR_10_DEADBAND_INPUT_START,'o')
-
-    # Plot Formatting #
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-120,0,115,200,400,600,800])
-    axs[0].set_xticks([])
-
-    # Plotting Response vs Time #
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-
-    # Plotting Vertical Dashed Lines Corresponding to Deadband Start #
-    axs[1].axvline(x=REAR_10_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_10_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_10_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_10_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-
-    # Plotting Dots Corresponding to Deadband Start #
-    axs[1].plot(REAR_10_DEADBAND_START_1,0,'o')
-    axs[1].plot(REAR_10_DEADBAND_START_2,0,'o')
-    axs[1].plot(REAR_10_DEADBAND_START_3,0,'o')
-    axs[1].plot(REAR_10_DEADBAND_START_4,0,'o')
-
-    # Plot Formatting #
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    # Plotting Command vs Response #
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs,slope_ends)
+    obj.plot_compensation()
 
 def plot_front20():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(FRONT_20_PATH)
+    path = './Python/deadband tests/deadband entry/SourceData/FrontSlope20Data.csv'
+    starts = [3668, 12502, 21278, 30115]
+    inputs = [120, -110]
+    slope_ends = {'negative': 8677, 'positive': 17514}
 
-    # Creating Column with Time Relative to First Entry #
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
-
-    # Creating Subplots and Setting Figure Dimensions #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-
-    # Plotting Input vs Time #
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-
-    # Plotting Vertical Dashed Lines Corresponding to Deadband Start #
-    axs[0].axvline(x=FRONT_20_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_20_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_20_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_20_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].axhline(y=FRONT_20_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_20_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].plot(FRONT_20_DEADBAND_START_1,FRONT_20_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_20_DEADBAND_START_2,FRONT_20_DEADBAND_INPUT_START,'o')
-    axs[0].plot(FRONT_20_DEADBAND_START_3,FRONT_20_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_20_DEADBAND_START_4,FRONT_20_DEADBAND_INPUT_START,'o')
-    
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-110,0,120,200,400,600,800])
-    axs[0].set_xticks([])
-    # axs[0].set_title('Commanded Input vs Time')
-
-    # Plot on the second axis
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-    axs[1].axvline(x=FRONT_20_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_20_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_20_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_20_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[1].plot(FRONT_20_DEADBAND_START_1,0,'o')
-    axs[1].plot(FRONT_20_DEADBAND_START_2,0,'o')
-    axs[1].plot(FRONT_20_DEADBAND_START_3,0,'o')
-    axs[1].plot(FRONT_20_DEADBAND_START_4,0,'o')
-    
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs,slope_ends)
+    obj.plot_compensation()
 
 def plot_rear20():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(REAR_20_PATH)
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
+    path = './Python/deadband tests/deadband entry/SourceData/RearSlope20Data.csv'
+    starts = [3846, 12743, 21642, 30476]
+    inputs = [100, -100]
+    slope_ends = {'negative': 8862, 'positive': 17735}
 
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-
-    # Plot on the first axis
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-    
-    axs[0].axvline(x=REAR_20_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_20_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_20_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_20_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].axhline(y=REAR_20_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_20_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].plot(REAR_20_DEADBAND_START_1,REAR_20_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_20_DEADBAND_START_2,REAR_20_DEADBAND_INPUT_START,'o')
-    axs[0].plot(REAR_20_DEADBAND_START_3,REAR_20_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_20_DEADBAND_START_4,REAR_20_DEADBAND_INPUT_START,'o')
-    
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-100,0,100,200,400,600,800])
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-    axs[1].axvline(x=REAR_20_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_20_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_20_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_20_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[1].plot(REAR_20_DEADBAND_START_1,0,'o')
-    axs[1].plot(REAR_20_DEADBAND_START_2,0,'o')
-    axs[1].plot(REAR_20_DEADBAND_START_3,0,'o')
-    axs[1].plot(REAR_20_DEADBAND_START_4,0,'o')
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs,slope_ends)
+    obj.plot_compensation()
 
 def plot_front40():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(FRONT_40_PATH)
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
+    path = './Python/deadband tests/deadband entry/SourceData/FrontSlope40Data_1.csv'
 
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
+    # For FrontSlope40Data.csv #
+    # starts = [1983, 6312, 10880, 15268]
 
-    # Plot on the first axis
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-    axs[0].axvline(x=FRONT_40_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_40_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_40_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=FRONT_40_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].axhline(y=FRONT_40_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=FRONT_40_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].plot(FRONT_40_DEADBAND_START_1,FRONT_40_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_40_DEADBAND_START_2,FRONT_40_DEADBAND_INPUT_START,'o')
-    axs[0].plot(FRONT_40_DEADBAND_START_3,FRONT_40_DEADBAND_INPUT_END,'o')
-    axs[0].plot(FRONT_40_DEADBAND_START_4,FRONT_40_DEADBAND_INPUT_START,'o')
-    
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-90,0,70,200,400,600,800])
-    axs[0].set_xticks([])
-    # axs[0].set_title('Commanded Input vs Time')
+    # For FrontSlope40Data_1.csv #
+    starts = [2045, 6432, 10941, 15328]
+    slope_ends = {'negative': 4478, 'positive': 8923}
 
-    # Plot on the second axis
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-    axs[1].axvline(x=FRONT_40_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_40_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_40_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=FRONT_40_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[1].plot(FRONT_40_DEADBAND_START_1,0,'o')
-    axs[1].plot(FRONT_40_DEADBAND_START_2,0,'o')
-    axs[1].plot(FRONT_40_DEADBAND_START_3,0,'o')
-    axs[1].plot(FRONT_40_DEADBAND_START_4,0,'o')
-    
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
+    inputs = [70, -90]
 
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs,slope_ends)
+    obj.plot_compensation()
 
 def plot_rear40():
-    # Reading CSV into pandas DataFrame #
-    df = pd.read_csv(REAR_40_PATH)
-    df['Relative Time'] = df['Time']-df['Time'].iloc[0]
-    print(df['Time'].iloc[0])
+    path = './Python/deadband tests/deadband entry/SourceData/RearSlope40Data.csv'
+    starts = 1924, 6552, 11065, 15685
+    inputs = [90, -80]
+    slope_ends = {'negative': 4507, 'positive': 9040}
 
-    # Plotting Angle vs Time #
-    fig, axs = plt.subplots(2, 1)
-    fig.set_figheight(8.5)
-    fig.set_figwidth(14)
-
-    # Plot on the first axis
-    axs[0].plot(df['Relative Time'], df['Wheel Input'])
-    
-    axs[0].axvline(x=REAR_40_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_40_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_40_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axvline(x=REAR_40_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].axhline(y=REAR_40_DEADBAND_INPUT_START, color='k', linestyle='--', linewidth=0.5)
-    axs[0].axhline(y=REAR_40_DEADBAND_INPUT_END, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[0].plot(REAR_40_DEADBAND_START_1,REAR_40_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_40_DEADBAND_START_2,REAR_40_DEADBAND_INPUT_START,'o')
-    axs[0].plot(REAR_40_DEADBAND_START_3,REAR_40_DEADBAND_INPUT_END,'o')
-    axs[0].plot(REAR_40_DEADBAND_START_4,REAR_40_DEADBAND_INPUT_START,'o')
-    
-    axs[0].set_ylabel('Commanded Input (PWM Value)',fontsize=14)
-    axs[0].set_yticks([-800,-600,-400,-200,-80,0,90,200,400,600,800])
-    axs[0].set_xticks([])
-
-    # Plot on the second axis
-    axs[1].plot(df['Relative Time'], df['Wheel Speed'])
-    axs[1].axvline(x=REAR_40_DEADBAND_START_1, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_40_DEADBAND_START_2, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_40_DEADBAND_START_3, color='k', linestyle='--', linewidth=0.5)
-    axs[1].axvline(x=REAR_40_DEADBAND_START_4, color='k', linestyle='--', linewidth=0.5)
-    
-    axs[1].plot(REAR_40_DEADBAND_START_1,0,'o')
-    axs[1].plot(REAR_40_DEADBAND_START_2,0,'o')
-    axs[1].plot(REAR_40_DEADBAND_START_3,0,'o')
-    axs[1].plot(REAR_40_DEADBAND_START_4,0,'o')
-    axs[1].set_xlabel('Time (ms)',fontsize=14)
-    axs[1].set_ylabel('Response (Degrees per Second)',fontsize=14)
-
-    # Show the plot
-    plt.tight_layout()
-    plt.show()
-
-    sorted_df = df.sort_values('Wheel Input')
-    plt.scatter(sorted_df['Wheel Input'],sorted_df['Wheel Speed'])
-    plt.xlabel('Commanded Value (PWM Input)')
-    plt.ylabel('Response (Degrees Per Second)')
-    plt.title('Commanded Value vs Response')
-    plt.show()
+    obj = Motor(path,starts,[],inputs, slope_ends)
+    obj.plot_compensation()
 
 if __name__ == '__main__':
     # plot_front10()
     # plot_rear10()
     # plot_front20()
     # plot_rear20()
-    plot_front40()
+    # plot_front40()
     # plot_rear40()

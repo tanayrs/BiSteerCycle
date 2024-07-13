@@ -368,10 +368,10 @@ def read_from_serial(path):
 if __name__ == '__main__':
     # read_from_serial()
     
-    # plot_from_csv_front()
-    # plot_from_csv_rear()
+    plot_from_csv_front()
+    plot_from_csv_rear()
 
-    # plot_from_csv_front_speed()
+    plot_from_csv_front_speed()
     plot_from_csv_rear_speed()
 
     plot_from_csv_front_speed_triangle_unscaled()

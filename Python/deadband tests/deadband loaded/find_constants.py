@@ -35,6 +35,11 @@ def find_constants(path, constants_path):
     df['Wheel Speed LPF'] = lfilter(b,a,df['Wheel Speed'])
     df = remove_noise(df)
 
+    plt.plot(df['Relative Time'], df['Wheel Speed'], color='gray')
+    plt.plot(df['Relative Time'], df['Wheel Speed Zeroed'])
+    plt.show()
+    return
+
     # Calculating Slope Ends where the Wheel Input takes Maximum Value and finding Corresponing Time #
     slope_ends = {'positive':df.iloc[df['Wheel Input'].idxmax()]['Relative Time'],
                 'negative':df.iloc[df['Wheel Input'].idxmin()]['Relative Time']}               
@@ -191,19 +196,20 @@ def plot_raw_with_measured_constants(path,constants_path):
 if __name__ == '__main__':
     ## Use to Plot a Particular File ##
     # motor = 'Rear'
-    # speed = 35
+    # speed = 5
     # path = f'./Python/deadband tests/deadband loaded/SourceData/{motor}Slope{speed}Data.csv' 
     # constants_path = f'./Python/deadband tests/deadband loaded/CombinedConstants/{motor}Slope{speed}Constants.csv'
     
-    slope_ends_path = './Python/deadband tests/deadband loaded/SlopeEnds.csv'
+    # find_constants(path, constants_path)
+    # slope_ends_path = './Python/deadband tests/deadband loaded/SlopeEnds.csv'
     # plot_raw_with_measured_constants(path,constants_path)
     
     ## Use To Create Slope Constants CSV ##
     # with open(slope_ends_path, "w", newline="\n") as f:
     #     csv.writer(f, delimiter=',').writerow(['speed', 'motor', 'positive', 'negative'])
 
-    data_path = './Python/deadband tests/deadband loaded/SourceData'
-    files = os.listdir(data_path)
+    # data_path = './Python/deadband tests/deadband loaded/SourceData'
+    # files = os.listdir(data_path)
     
     ## Use to Plot Data of Particular Speeds for Both Motors ##
     speeds = [5,10,20]

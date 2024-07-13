@@ -288,7 +288,7 @@ class MotorCompensation:
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        plt.legend(fontsize=14)
+        # plt.legend(fontsize=14)
         plt.title('Commanded Input vs Response', fontsize=18)
 
     def __calculate_expected_output(self,pwm):

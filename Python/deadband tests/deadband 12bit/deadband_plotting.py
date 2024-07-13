@@ -234,7 +234,7 @@ def plot_rear_compensated():
     obj.plot_compensation()
 
 if __name__ == '__main__':
-    plot_front()
-    plot_rear()
-    plot_front_compensated()
+    # plot_front()
+    # plot_rear()
+    # plot_front_compensated()
     plot_rear_compensated()
