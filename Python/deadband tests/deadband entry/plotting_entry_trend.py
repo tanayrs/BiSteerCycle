@@ -18,11 +18,11 @@ front_dec = {'10': np.array([130,130]),
 
 rear_inc = {'10': np.array([-120,-120]),
              '20': np.array([-100,-100]),
-             '40': [-80,-80]}
+             '40': np.array([-80,-80])}
 
-rear_dec = {'10': [110,120],
-             '20': [100,100],
-             '40': [120,80]}
+rear_dec = {'10': np.array([110,120]),
+             '20': np.array([100,100]),
+             '40': np.array([120,80])}
 
 x_front = [10,20,40]
 x_rear = [10,20,40]
@@ -53,7 +53,7 @@ def plot_subplot(x, y, err, label):
     plt.scatter(x, y)
     plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
     plt.ylabel('Deadband Value (PWM)',fontsize=14)
-    plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
+    plt.xticks([10,20,40])
     plt.grid()
     plt.title(label,fontsize=18)
     
