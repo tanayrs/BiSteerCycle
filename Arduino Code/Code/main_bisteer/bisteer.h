@@ -87,10 +87,10 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /**** Segway Controller ****/
-#define Kp_lean 200 //600
-#define Kd_lean 5500 //400
+#define Kp_lean 300 //600
+#define Kd_lean 0 //400
 #define Kd_wheel 0
-#define Ki_lean 500
+#define Ki_lean 0
 double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
