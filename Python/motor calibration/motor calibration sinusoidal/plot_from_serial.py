@@ -5,6 +5,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 PATH = './Python/motor calibration/motor calibration sinusoidal/SourceData/SpeedData.csv'
+REAR_PATH = './Python/motor calibration/motor calibration sinusoidal/SourceData/RearSpeedData.csv' 
+FRONT_PATH = './Python/motor calibration/motor calibration sinusoidal/SourceData/FrontSpeedData.csv' 
 COM = '/dev/cu.usbmodem160464801'
 BAUD = 9600
 
@@ -69,6 +71,49 @@ def plot_from_csv():
     # Plotting Graph #
     plt.show()
 
+# Plotting Sensor Value Readings #
+def plot_rear():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(REAR_PATH)
+    df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Rear Speed vs Time #
+    plt.plot(df['Relative Time'],df['Rear Speed'])
+    plt.axhline(y=df['Rear Speed'].max(),linestyle='--',color='k',linewidth=1)
+    plt.axhline(y=df['Rear Speed'].min(),linestyle='--',color='k',linewidth=1)
+    plt.yticks([df['Rear Speed'].min(),-100,-50,0,50,100,df['Rear Speed'].max()])
+    plt.xlabel('Time (ms)', fontsize=14)
+    plt.ylabel('Speed ($^{o}/s$)',fontsize=14)
+    plt.title("Rear Wheel Speed with a sinusoidal input", fontsize=16)
+
+    # Plotting Graph #
+    plt.show()
+
+def plot_front():
+    # Reading CSV into pandas DataFrame #
+    df = pd.read_csv(FRONT_PATH)
+    df['Relative Time'] = df['Time'] - df['Time'].iloc[0]
+
+    # Printing Statistics of DataFrame #
+    print(df.describe())
+
+    # Plotting Rear Speed vs Time #
+    plt.plot(df['Relative Time'],df['Front Speed'])
+    plt.axhline(y=df['Front Speed'].max(),linestyle='--',color='k',linewidth=1)
+    plt.axhline(y=df['Front Speed'].min(),linestyle='--',color='k',linewidth=1)
+    plt.yticks([df['Front Speed'].min(),-100,-50,0,50,100,df['Front Speed'].max()])
+    plt.xlabel('Time (ms)', fontsize=14)
+    plt.ylabel('Speed ($^{o}/s$)',fontsize=14)
+    plt.title("Front Wheel Speed with a sinusoidal input", fontsize=16)
+
+    # Plotting Graph #
+    plt.show()
+
 if __name__ == '__main__':
     # read_from_serial()
-    plot_from_csv()
+    # plot_from_csv()
+    # plot_rear()
+    plot_front()
