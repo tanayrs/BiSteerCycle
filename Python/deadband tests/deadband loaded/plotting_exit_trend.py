@@ -89,7 +89,7 @@ def plot_subplot(x, y, err, label):
     plt.scatter(x, y)
     plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
     plt.ylabel('Deadband Value (PWM)',fontsize=14)
-    plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
+    plt.xticks([5,10,20])
     plt.grid()
     plt.title(label,fontsize=18)
     

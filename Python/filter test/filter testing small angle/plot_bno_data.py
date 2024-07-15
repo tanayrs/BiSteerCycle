@@ -56,14 +56,14 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # Plotting Angle vs Time #
     df['Relative Time'] = df['Time'] - df['Time'][0]
     plt.plot(df['Relative Time'],df['SFA'], label='SFA')
-    plt.plot(df['Relative Time'],df['Kalman'], label='Kalman')
+    # plt.plot(df['Relative Time'],df['Kalman'], label='Kalman')
     # plt.plot(df['Relative Time'], df['Acceleration'])
-    plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
-    plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
-    xticks = [i for i in range(0,df['Relative Time'].iloc[-1],500) if np.abs(i-settle_time_kal-step_time) > 400 and np.abs(i-settle_time_sfa-step_time) > 400]
+    # plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
+    # plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
+    # xticks = [i for i in range(0,df['Relative Time'].iloc[-1],500) if np.abs(i-settle_time_kal-step_time) > 400 and np.abs(i-settle_time_sfa-step_time) > 400]
     # xticks = list(range(0,df['Relative Time'].iloc[-1],200))
-    xticks.extend([settle_time_kal+step_time, settle_time_sfa+step_time])
-    plt.xticks(xticks)
+    # xticks.extend([settle_time_kal+step_time, settle_time_sfa+step_time])
+    # plt.xticks(xticks)
     # plt.axvline(x=step_time, color='black', linestyle='--', linewidth=1)
     # plt.text(settle_time_kal+step_time,0,'Settling Time For Kalman Filter')
     # plt.text(settle_time_sfa+step_time,0,'Settling Time For SFA')
@@ -86,7 +86,7 @@ def small_angle_plots():
         manager = plt.get_current_fig_manager()
         manager.full_screen_toggle()
         # plt.grid()
-        plt.show()
+    plt.show()
 
 def find_overshoot(path):
     # First Task: Find Range of Motion, First Value in DataFrame, Subtract From Last Value In DataFrame
@@ -199,14 +199,14 @@ if __name__ == '__main__':
     # except:
     #     pass
 
-    # small_angle_plots()
+    small_angle_plots()
 
-    all_plots()
-    plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
-    manager = plt.get_current_fig_manager()
-    manager.full_screen_toggle()
-    plt.show()
+    # all_plots()
+    # plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
+    # manager = plt.get_current_fig_manager()
+    # manager.full_screen_toggle()
+    # plt.show()
     
-    DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
-    plot_comparison(DATA_PATH)
+    # DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
+    # plot_comparison(DATA_PATH)
 

@@ -50,7 +50,7 @@ def plot_trend_avg(df_front, df_rear):
     plt.ylabel('Deadband Value (PWM)',fontsize=14)
     plt.legend(['Front Deadband for Decreasing Speed', 'Front Deadband for Increasing Speed', 'Rear Deadband for Decreasing Speed', 'Rear Deadband for Increasing Speed'], loc='center right', fontsize=14)
     plt.title('Deadband Entry for Different Slopes of Input Triangle Wave', fontsize=14)
-    plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
+    plt.xticks([5,10,20])
     plt.yticks(range(-175,176,25))
     plt.grid()
     manager = plt.get_current_fig_manager()
@@ -97,7 +97,7 @@ def plot_subplot(x, y, err, label):
     plt.scatter(x, y)
     plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
     plt.ylabel('Deadband Value (PWM)',fontsize=14)
-    plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
+    plt.xticks([5,10,20])
     plt.grid()
     plt.title(label,fontsize=18)
     

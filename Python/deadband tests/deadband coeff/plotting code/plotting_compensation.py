@@ -91,7 +91,7 @@ class MotorCompensation:
         plt.xlabel('Time (ms)', fontsize=14)
         plt.yticks([-800,-600,-400,self.static_coeffs['decreasing'],0,self.kinetic_coeffs['decreasing'],self.static_coeffs['increasing'],400,600,800])
         plt.ylim([-820,820])
-        plt.legend(loc='upper right', fontsize=14)
+        plt.legend(loc='upper right', fontsize=12)
         plt.title('Input', fontsize=18)
 
     def __plot_output(self):
@@ -244,7 +244,7 @@ class MotorCompensation:
             uncomp_subset['Wheel Speed'], 
             color='gray', 
             marker='^', 
-            label='Uncompensated Points For Increasing Speed', 
+            label='Uncompensated Increasing Speed', 
             s=20
         )
         plt.scatter(
@@ -253,7 +253,7 @@ class MotorCompensation:
             color='gray',
             marker='o',
             facecolor='none',
-            label='Uncompensated Points for Decreasing Speed',
+            label='Uncompensated Decreasing Speed',
             s=40,
             linewidths=1.5
         )
@@ -265,7 +265,7 @@ class MotorCompensation:
             marker = '^',
             color='tab:green',
             linewidths=1.75,
-            label='Compensated Points for Increasing Speed', 
+            label='Compensated Increasing Speed', 
             s=50
         )
 
@@ -277,10 +277,8 @@ class MotorCompensation:
             facecolors='none',
             linewidths=2,
             s=100,
-            label='Compensated Points for Decreasing Speed'
+            label='Compensated Decreasing Speed'
         )
-        
-
 
         # Plotting ticks, setting plot limits and adding axis labels with sub-plot title #
         plt.xticks([-800,-600,-400,self.static_coeffs['decreasing'],self.kinetic_coeffs['increasing'], 0, self.static_coeffs['increasing'], self.kinetic_coeffs['decreasing'], 400, 600, 800])
@@ -288,7 +286,7 @@ class MotorCompensation:
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.xlabel('Commanded Value (PWM Input)', fontsize=14)
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
-        # plt.legend(fontsize=14)
+        plt.legend(loc='upper left',fontsize=12)
         plt.title('Commanded Input vs Response', fontsize=18)
 
     def __calculate_expected_output(self,pwm):
