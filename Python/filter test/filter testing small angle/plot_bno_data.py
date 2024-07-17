@@ -45,7 +45,7 @@ def read_from_serial(path,overwrite=False):
                         )
                 sensor_writer.writerow([line[0],line[1],line[2],line[3]])
 
-# Plotting Sensor Value Readings #
+# Plots Sensor Value Readings #
 def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # Reading CSV into pandas DataFrame #
     df = pd.read_csv(path)
@@ -69,6 +69,7 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # plt.text(settle_time_sfa+step_time,0,'Settling Time For SFA')
     # plt.text(step_time,0,'Point of Step Input')
 
+# Plots all the Sensor reading plots individually
 def small_angle_plots():
     DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
     files = [f for f in os.listdir(DATA_PATH) if os.path.isfile(os.path.join(DATA_PATH,f))]
@@ -88,6 +89,7 @@ def small_angle_plots():
         # plt.grid()
     plt.show()
 
+# Finds overshoot and settling time for the Kalman filter and SFA
 def find_overshoot(path):
     # First Task: Find Range of Motion, First Value in DataFrame, Subtract From Last Value In DataFrame
     # Find min value of dataframe, compare with final settled value, difference is overshoot #
@@ -135,6 +137,7 @@ def find_overshoot(path):
     # print(f'{os_per_kal=}, {os_per_sfa=}')
     return settle_time_kal,os_per_kal,settle_time_sfa,os_per_sfa, step_time, max_angle_sfa, settle_angle_sfa
 
+# Scatterplot of settling time and overshoot for all sensor value reading instances
 def plot_comparison(DATA_PATH):
     files = [f for f in os.listdir(DATA_PATH) if os.path.isfile(os.path.join(DATA_PATH,f))]
     print(files)
@@ -176,6 +179,7 @@ def plot_comparison(DATA_PATH):
     plt.grid()
     plt.show()
 
+# Plots all the Sensor readings in a single figure
 def all_plots():
     loop_path = './Python/filter test/filter testing small angle/SensorData/BNO_Test_Step_'
     for i in range(1,11):
@@ -190,6 +194,11 @@ def all_plots():
         if i == 5:
             plt.legend(fontsize=10, loc='upper right')
 
+    plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+    plt.show()
+
 
 if __name__ == '__main__':
     path = './Python/filter test/filter testing small angle/SensorData/BNO_Test_Step_10.csv'
@@ -200,12 +209,7 @@ if __name__ == '__main__':
     #     pass
 
     small_angle_plots()
-
-    # all_plots()
-    # plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
-    # manager = plt.get_current_fig_manager()
-    # manager.full_screen_toggle()
-    # plt.show()
+    # all_plots()  
     
     # DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
     # plot_comparison(DATA_PATH)

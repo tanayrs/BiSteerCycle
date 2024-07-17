@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Defining Path to CSV File, Com Port and Baud Rate #
-PATH = './Python/filter testing/SensorData/BNO_Test_Step_17.csv'
+PATH = './Python/filter test/filter testing 90/SensorData/BNO_Test_Step_17.csv'
 COM = '/dev/cu.usbmodem160229201'
 BAUD = 9600
 
@@ -56,7 +56,7 @@ def plot_from_csv(path=PATH):
     # plt.axhline(y=0,linestyle='--', color='k',linewidth=0.75)
 
 def chosen_plots():
-    loop_path = './Python/filter testing/SensorData/BNO_Test_Step_'
+    loop_path = './Python/filter test/filter testing 90/SensorData/BNO_Test_Step_'
     plot_nums = [7,13,17]
     plot_max = [77, 74, 75]
     plot_end_time = [6978, 4292, 3840]
@@ -74,24 +74,26 @@ def chosen_plots():
         plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=14)
         plt.show()
 
+def all_plots():
+    loop_path = './Python/filter test/filter testing 90/SensorData/BNO_Test_Step_'
+    for i in range(1,21):
+        plt.subplot(4,5,i)
+        temp_path = loop_path + str(i) + '.csv'
+        print(temp_path)
+        plot_from_csv(temp_path)
+        if i % 5 == 1:
+            plt.ylabel('Angle (degrees)', fontsize=14)
+        if i > 15:
+            plt.xlabel('Time (ms)', fontsize=14)
+        if i == 5:
+            plt.legend(['SFA', 'Kalman'])
+
+    plt.suptitle('Step Response of Bosch Sensor Fusion Algorithm and Kalman Filters',fontsize=18)
+    plt.show()
 
 if __name__ == '__main__':
     # read_from_serial()
-    chosen_plots()
-    # loop_path = './Python/filter testing/SensorData/BNO_Test_Step_'
-    # # plot_from_csv()
-    # for i in range(1,21):
-    #     plt.subplot(4,5,i)
-    #     temp_path = loop_path + str(i) + '.csv'
-    #     print(temp_path)
-    #     plot_from_csv(temp_path)
-    #     if i % 5 == 1:
-    #         plt.ylabel('Angle (degrees)', fontsize=14)
-    #     if i > 15:
-    #         plt.xlabel('Time (ms)', fontsize=14)
-    #     if i == 5:
-    #         plt.legend(['SFA', 'Kalman'])
-
-    # plt.suptitle('Step Response of Bosch Sensor Fusion Algorithm and Kalman Filters',fontsize=18)
+    # chosen_plots()
+    all_plots()
+    # plot_from_csv(PATH)
     # plt.show()
-    # # plot_from_csv(PATH)
