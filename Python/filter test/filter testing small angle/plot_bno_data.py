@@ -63,7 +63,7 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # plt.axvline(x=step_time, color='black', linestyle='--', linewidth=1, label='Step time')
 
     xticks = [i for i in range(0,df['Relative Time'].iloc[-1],200) if np.abs(i-settle_time_kal-step_time) > 100 and np.abs(i-settle_time_sfa-step_time) > 100]
-    xticks.extend([settle_time_kal+step_time, settle_time_sfa+step_time])
+    xticks.extend([0,settle_time_kal+step_time, settle_time_sfa+step_time])
     plt.xticks(xticks)
 
 # Plots all the Sensor reading plots individually
@@ -187,7 +187,7 @@ def all_plots():
         if i == 5:
             plt.legend(fontsize=10, loc='upper right')
 
-    plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
+    plt.suptitle('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)    
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
     plt.show()
