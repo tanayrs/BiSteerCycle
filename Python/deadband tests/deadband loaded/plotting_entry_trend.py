@@ -8,120 +8,116 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-x_front = [5,10,20]
-x_rear = [5,10,20]
+class ErrorTrend:
+    def __init__(self, x_loaded, x_unloaded):
+        self.x_loaded =x_loaded
+        self.x_unloaded =x_unloaded
 
-# plotting kinetic coefficients with speed (front and rear, increasing and decreasing)
-def plot_trend_avg(df_front, df_rear):
-    # Speed to be plotted on x axis 
-    speeds_front = list(df_front['speed'])
-    speeds_rear = list(df_rear['speed']) 
+        front_unloaded_tuple = self.__find_errors_unloaded("Front")
+        self.front_unloaded = {'y_inc': front_unloaded_tuple[0], 'y_dec': front_unloaded_tuple[1], 'y_min': front_unloaded_tuple[2], 'y_max': front_unloaded_tuple[3], 'err_inc': front_unloaded_tuple[4], 'err_dec': front_unloaded_tuple[5]}
+        
+        rear_unloaded_tuple = self.__find_errors_unloaded("Rear")
+        self.rear_unloaded = {'y_inc': rear_unloaded_tuple[0], 'y_dec': rear_unloaded_tuple[1], 'y_min': rear_unloaded_tuple[2], 'y_max': rear_unloaded_tuple[3], 'err_inc': rear_unloaded_tuple[4], 'err_dec': rear_unloaded_tuple[5]}
+        
+        front_loaded_tuple = self.__find_errors_loaded("Front")
+        self.front_loaded = {'y_inc': front_loaded_tuple[0], 'y_dec': front_loaded_tuple[1], 'y_min': front_loaded_tuple[2], 'y_max': front_loaded_tuple[3], 'err_inc': front_loaded_tuple[4], 'err_dec': front_loaded_tuple[5]}
+        
+        rear_loaded_tuple = self.__find_errors_loaded("Rear")
+        self.rear_loaded = {'y_inc': rear_loaded_tuple[0], 'y_dec': rear_loaded_tuple[1], 'y_min': rear_loaded_tuple[2], 'y_max': rear_loaded_tuple[3], 'err_inc': rear_loaded_tuple[4], 'err_dec': rear_loaded_tuple[5]}
 
-    # Kinetic coefficients for increasing speed
-    coeffs_inc_front = list(df_front['kinetic_coeff_inc'])
-    coeffs_inc_rear = list(df_rear['kinetic_coeff_inc'])
-
-    # Kinetic coefficients for increasing speed
-    coeffs_dec_front = list(df_front['kinetic_coeff_dec'])
-    coeffs_dec_rear = list(df_rear['kinetic_coeff_dec'])
-
-    plt.figure(figsize=(14,8.5))
-    plt.plot(speeds_front, coeffs_dec_front)
-    plt.plot(speeds_front, coeffs_inc_front)
-    plt.plot(speeds_rear, coeffs_dec_rear)
-    plt.plot(speeds_rear, coeffs_inc_rear)
-
-    plt.scatter(speeds_front, coeffs_dec_front)
-    plt.scatter(speeds_front, coeffs_inc_front)
-    plt.scatter(speeds_rear, coeffs_dec_rear)
-    plt.scatter(speeds_rear, coeffs_inc_rear)
-
-    # plt.axhline(max(coeffs_dec_front), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(max(coeffs_inc_front), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(min(coeffs_dec_front), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(min(coeffs_inc_front), color='k', linestyle='--', linewidth=1)
-
-    # plt.axhline(max(coeffs_dec_rear), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(max(coeffs_inc_rear), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(min(coeffs_dec_rear), color='k', linestyle='--', linewidth=1)
-    # plt.axhline(min(coeffs_inc_rear), color='k', linestyle='--', linewidth=1)
-
-    plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
-    plt.ylabel('Deadband Value (PWM)',fontsize=14)
-    plt.legend(['Front Deadband for Decreasing Speed', 'Front Deadband for Increasing Speed', 'Rear Deadband for Decreasing Speed', 'Rear Deadband for Increasing Speed'], loc='center right', fontsize=14)
-    plt.title('Deadband Entry for Different Slopes of Input Triangle Wave', fontsize=14)
-    plt.xticks([5,10,20])
-    plt.yticks(range(-175,176,25))
-    plt.grid()
-    manager = plt.get_current_fig_manager()
-    manager.full_screen_toggle()
-    plt.show()
-
-def plot_kinetic_avg():
-    PLOTTING_CONSTANTS_PATH = './Python/deadband tests/deadband coeff/plot constants/plotting_constants.csv'
-    df = pd.read_csv(PLOTTING_CONSTANTS_PATH)
-
-    df_front = df.where(df['motor'] == 'front')
-    df_rear = df.where(df['motor'] == 'rear')
-    df_front.dropna(inplace=True)
-    df_rear.dropna(inplace=True)
-
-    print(df_front[['kinetic_coeff_inc', 'kinetic_coeff_dec']].describe())
-    print(df_rear[['kinetic_coeff_inc', 'kinetic_coeff_dec']].describe())
-
-    plot_trend_avg(df_front, df_rear)
-
-def find_errors(motor):
-    y_inc = []
-    y_dec = []
-    err_inc = []
-    err_dec = []
-
-    if motor == "Front":
-        x = x_front
-    else:
-        x = x_rear
-
-    for i in x:
-        path = f'./Python/deadband tests/deadband loaded/PlottingConstants/{motor}Slope{i}Constants.csv'
-        df = pd.read_csv(path)
-        y_inc.append(df['kinetic_coeffs_inc'].mean())
-        y_dec.append(df['kinetic_coeffs_dec'].mean())
-        err_inc.append(abs(df['kinetic_coeffs_inc'].std()))
-        err_dec.append(abs(df['kinetic_coeffs_dec'].std()))
-
-    return (y_inc, y_dec, err_inc, err_dec)
-
-def plot_subplot(x, y, err, label):
-    plt.errorbar(x, y, err, label=label, capsize=5)
-    plt.scatter(x, y)
-    plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
-    plt.ylabel('Deadband Value (PWM)',fontsize=14)
-    plt.xticks([5,10,20])
-    plt.grid()
-    plt.title(label,fontsize=18)
     
-def plot_errors():
-    y_front_inc, y_front_dec, err_front_inc, err_front_dec = find_errors("Front")
-    y_rear_inc, y_rear_dec, err_rear_inc, err_rear_dec = find_errors("Rear")
+    def __find_errors_loaded(self,motor):
+        y_inc = []
+        y_dec = []
+        y_min = []
+        y_max = []
+        err_inc = []
+        err_dec = []
 
-    plt.subplot(2,2,1)
-    plot_subplot(x_front,y_front_inc,err_front_inc,'Front Deadband for Increasing Speed')
+        for i in x_loaded:
+            path = f'./Python/deadband tests/deadband loaded/PlottingConstants/{motor}Slope{i}Constants.csv'
+            df = pd.read_csv(path)
+            y_inc.append(df['kinetic_coeffs_inc'].mean())
+            y_dec.append(df['kinetic_coeffs_dec'].mean())
+            y_min.append(df['kinetic_coeffs_inc'].min())
+            y_max.append(df['kinetic_coeffs_dec'].max())
+            err_inc.append(abs(df['kinetic_coeffs_inc'].std()))
+            err_dec.append(abs(df['kinetic_coeffs_dec'].std()))
 
-    plt.subplot(2,2,2)
-    plot_subplot(x_front,y_front_dec,err_front_dec,'Front Deadband for Decreasing Speed')
+        return (y_inc, y_dec, y_min, y_max, err_inc, err_dec)
 
-    plt.subplot(2,2,3)
-    plot_subplot(x_rear,y_rear_inc,err_rear_inc,'Rear Deadband for Increasing Speed')
+    def __find_errors_unloaded(self, motor):
+        y_inc = []
+        y_dec = []
+        y_min = []
+        y_max = []
+        err_inc = []
+        err_dec = []
 
-    plt.subplot(2,2,4)
-    plot_subplot(x_rear,y_rear_dec,err_rear_dec,'Rear Deadband for Decreasing Speed')
+        for i in x_unloaded:
+            path = f'./Python/deadband tests/deadband coeff/plot constants/CombinedConstants/{motor}Slope{i}Constants.csv'
+            df = pd.read_csv(path)
+            y_inc.append(df['kinetic_coeffs_inc'].mean())
+            y_dec.append(df['kinetic_coeffs_dec'].mean())
+            y_min.append(df['kinetic_coeffs_inc'].min())
+            y_max.append(df['kinetic_coeffs_dec'].max())
+            err_inc.append(abs(df['kinetic_coeffs_inc'].std()))
+            err_dec.append(abs(df['kinetic_coeffs_dec'].std()))
 
-    manager = plt.get_current_fig_manager()
-    manager.full_screen_toggle()
-    plt.tight_layout()
-    plt.show()
+        return (y_inc, y_dec, y_min, y_max, err_inc, err_dec)
+
+    def plot_subplot(self, loaded_dict, unloaded_dict, type, label):
+        if type == 'Inc':
+            plt.errorbar(self.x_loaded, loaded_dict['y_inc'], loaded_dict['err_inc'], label='Loaded Measurement', capsize=5)
+            plt.scatter(self.x_loaded, loaded_dict['y_inc'])
+            
+            plt.errorbar(self.x_unloaded, unloaded_dict['y_inc'], unloaded_dict['err_inc'], label='Unloaded Measurement', capsize=5, color = 'gray')
+            plt.scatter(self.x_unloaded, unloaded_dict['y_inc'], color = 'gray')
+            
+            if max(loaded_dict['y_min']) > 0:
+                plt.ylim([0, max(loaded_dict['y_min'])])
+            else:
+                plt.ylim([min(loaded_dict['y_min']),0])
+        else:
+            plt.errorbar(self.x_loaded, loaded_dict['y_dec'], loaded_dict['err_dec'], label='Loaded Measurement', capsize=5)
+            plt.scatter(self.x_loaded, loaded_dict['y_dec'])
+            
+            plt.errorbar(self.x_unloaded, unloaded_dict['y_dec'], unloaded_dict['err_dec'], label='Unloaded Measurement', capsize=5, color = 'gray')
+            plt.scatter(self.x_unloaded, unloaded_dict['y_dec'], color = 'gray')
+            
+            if max(loaded_dict['y_max']) > 0:
+                plt.ylim([0, max(loaded_dict['y_max'])])
+            else:
+                plt.ylim([min(loaded_dict['y_max']),0])
+            
+        plt.xticks(x_unloaded)
+        plt.grid()
+        plt.legend(fontsize=14)
+        plt.title(label,fontsize=18)
+        plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
+        plt.ylabel('Deadband Value (PWM)',fontsize=14)
+    
+    def plot_errors(self):
+        plt.subplot(2,2,1)
+        self.plot_subplot(self.front_loaded,self.front_unloaded,'Inc','Front Deadband for Increasing Speed')
+
+        plt.subplot(2,2,2)
+        self.plot_subplot(self.front_loaded,self.front_unloaded,'Dec','Front Deadband for Decreasing Speed')
+
+        plt.subplot(2,2,3)
+        self.plot_subplot(self.rear_loaded,self.rear_unloaded,'Inc','Rear Deadband for Increasing Speed')
+
+        plt.subplot(2,2,4)
+        self.plot_subplot(self.rear_loaded,self.rear_unloaded,'Dec','Rear Deadband for Decreasing Speed')
+
+        manager = plt.get_current_fig_manager()
+        manager.full_screen_toggle()
+        plt.tight_layout()
+        plt.show()
 
 if __name__ == '__main__':
     # plot_trend_avg
-    plot_errors()
+    x_loaded = [5,10,20]
+    x_unloaded = [2,3,4,5,6,7,8,9,10,15,20,25,30,35,40]
+    obj = ErrorTrend(x_loaded, x_unloaded)
+    obj.plot_errors()
