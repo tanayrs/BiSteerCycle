@@ -74,6 +74,8 @@ def plot_kinetic_avg():
 def find_errors(motor):
     y_inc = []
     y_dec = []
+    y_min = []
+    y_max = []
     err_inc = []
     err_dec = []
 
@@ -87,35 +89,41 @@ def find_errors(motor):
         df = pd.read_csv(path)
         y_inc.append(df['kinetic_coeffs_inc'].mean())
         y_dec.append(df['kinetic_coeffs_dec'].mean())
+        y_min.append(df['kinetic_coeffs_inc'].min())
+        y_max.append(df['kinetic_coeffs_dec'].max())
         err_inc.append(abs(df['kinetic_coeffs_inc'].std()))
         err_dec.append(abs(df['kinetic_coeffs_dec'].std()))
 
-    return (y_inc, y_dec, err_inc, err_dec)
+    return (y_inc, y_dec, y_min, y_max, err_inc, err_dec)
 
-def plot_subplot(x, y, err, label):
+def plot_subplot(x, y, ylim, err, label):
     plt.errorbar(x, y, err, label=label, capsize=5)
     plt.scatter(x, y)
     plt.xlabel('Slope of Input Speed (PWM per 100ms)',fontsize=14)
     plt.ylabel('Deadband Value (PWM)',fontsize=14)
     plt.xticks([1,2,3,4,5,6,7,8,9,10,15,20,25,30,35])
+    if max(ylim) > 0:
+        plt.ylim([0, max(ylim)])
+    else:
+        plt.ylim([min(ylim),0])
     plt.grid()
     plt.title(label,fontsize=18)
     
 def plot_errors():
-    y_front_inc, y_front_dec, err_front_inc, err_front_dec = find_errors("Front")
-    y_rear_inc, y_rear_dec, err_rear_inc, err_rear_dec = find_errors("Rear")
+    y_front_inc, y_front_dec, y_min_front, y_max_front, err_front_inc, err_front_dec = find_errors("Front")
+    y_rear_inc, y_rear_dec, y_min_rear, y_max_rear, err_rear_inc, err_rear_dec = find_errors("Rear")
 
     plt.subplot(2,2,1)
-    plot_subplot(x_front,y_front_inc,err_front_inc,'Front Deadband for Increasing Speed')
+    plot_subplot(x_front,y_front_inc,y_min_front,err_front_inc,'Front Deadband for Increasing Speed')
 
     plt.subplot(2,2,2)
-    plot_subplot(x_front,y_front_dec,err_front_dec,'Front Deadband for Decreasing Speed')
+    plot_subplot(x_front,y_front_dec,y_max_front,err_front_dec,'Front Deadband for Decreasing Speed')
 
     plt.subplot(2,2,3)
-    plot_subplot(x_rear,y_rear_inc,err_rear_inc,'Rear Deadband for Increasing Speed')
+    plot_subplot(x_rear,y_rear_inc,y_min_rear,err_rear_inc,'Rear Deadband for Increasing Speed')
 
     plt.subplot(2,2,4)
-    plot_subplot(x_rear,y_rear_dec,err_rear_dec,'Rear Deadband for Decreasing Speed')
+    plot_subplot(x_rear,y_rear_dec,y_max_rear,err_rear_dec,'Rear Deadband for Decreasing Speed')
 
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
