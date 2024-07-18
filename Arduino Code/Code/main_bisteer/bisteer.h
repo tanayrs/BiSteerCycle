@@ -28,7 +28,7 @@ double sampling_time = loopTimeConstSec;
 #define r  0.03         // Radius of wheels in m //
 
 /**** IMU Definition ****/
-#define phi_offset 3.9 //2.7>  < 4 Lower Phi Offset in Direction of Teensy
+#define phi_offset 4.9 //2.7>  < 4 Lower Phi Offset in Direction of Teensy
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -87,10 +87,10 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /**** Segway Controller ****/
-#define Kp_lean 300 //600
-#define Kd_lean 0 //400
-#define Kd_wheel 0
-#define Ki_lean 0
+#define Kp_lean 125 //600
+#define Kd_lean 20 //400
+#define Kd_wheel 1
+#define Ki_lean 30
 double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
@@ -158,12 +158,12 @@ lowpass_filter lpf_rear_steer(2);
 lowpass_filter lpf_rear_wheel(2); 
 
 /**** Motor Compensation ****/
-#define frontWheelStaticDec -390
-#define frontWheelStaticInc 300
-#define frontWheelKineticDec 266
-#define frontWheelKineticInc -257
+#define frontWheelStaticDec -184
+#define frontWheelStaticInc 221
+#define frontWheelKineticDec 142
+#define frontWheelKineticInc -133
 
-#define rearWheelStaticDec -390
-#define rearWheelStaticInc 300
-#define rearWheelKineticDec 270
-#define rearWheelKineticInc -254
+#define rearWheelStaticDec -195
+#define rearWheelStaticInc 186
+#define rearWheelKineticDec 129
+#define rearWheelKineticInc -133

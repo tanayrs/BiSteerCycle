@@ -20,12 +20,12 @@ void controller_segway() {
         double front_acc, rear_acc;
 
         if (abs(phi) < 7.5) {
-                front_acc = (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
-                rear_acc =  (Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed()));
+                front_acc = (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
         } else {
-                front_acc = 4*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel *(frontWheelData.speed()));
-                rear_acc =  4*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel *(rearWheelData.speed())); 
-        }
+                front_acc = 1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed())); 
+        } 
 
         prv_sgn_phi = sgn1;
 
@@ -33,6 +33,7 @@ void controller_segway() {
         Ur += rear_acc*dt;
         
         if (abs(phi) > 20) {
+                int_lean = 0;
                 Uf = 0;
                 Ur = 0;
                 rear_acc = 0;
@@ -47,7 +48,8 @@ void controller_segway() {
         frontWheelInput = front_acc;
         rearWheelInput = rear_acc;
 
-        Serial.println(phi);
+        Serial.print(phi); Serial.print("  ");
+        Serial.println(frontWheelInput);
 }
 /******************************************************************************************************************************************************************************************************/
 /* Calculation of Front and Rear Wheel Speed for Bicycle Mode */
@@ -188,7 +190,7 @@ void controller_track_stand(double front_angle){
         long double dt = loopTimeConstant * 1e-6;
 
         // Fixing the front and rear steering at an angle and 0 for track stand
-        holdsteering(-90, 0);
+        holdsteering(front_angle, 0);
         // holdsteering(front_angle, 0);
 
         // based on phi (target = 0), PID loop will change rear velocity 
@@ -210,12 +212,12 @@ void controller_track_stand(double front_angle){
         frontWheelInput = abs(phi)>20?0:front_int_track;
         rearWheelInput = abs(phi)>20?0:rear_int_track;
 
-        Serial.print(phi); Serial.print(" ");
-        Serial.print(Kp_track*(phi)); Serial.print(" ");
-        Serial.print(Ki_track * int_track); Serial.print(" ");
-        Serial.print(Kd_track * (phi_dot)); Serial.print(" ");
-        Serial.print(rearWheelInput); Serial.print(" ");
-        Serial.println(frontWheelInput);
+        // Serial.print(phi); Serial.print(" ");
+        // Serial.print(Kp_track*(phi)); Serial.print(" ");
+        // Serial.print(Ki_track * int_track); Serial.print(" ");
+        // Serial.print(Kd_track * (phi_dot)); Serial.print(" ");
+        // Serial.print(rearWheelInput); Serial.print(" ");
+        // Serial.println(frontWheelInput);
 }
 
 /****************************************************************************************************************************************************************************************************/
@@ -290,11 +292,13 @@ void holdsteering(double degrees_F, double degrees_R) {
         if (rearSteerInput > acc) rearSteerInput = acc;
         if (rearSteerInput < -acc) rearSteerInput = -acc;
 
-        if (abs(steer_error_F) < 10) frontSteerInput = 0;
-        if (abs(steer_error_R) < 10) rearSteerInput = 0;
+        if (abs(steer_error_F * 90 / steerMotorPPR) < 2) frontSteerInput = 0;
+        if (abs(steer_error_R  * 90 / steerMotorPPR) < 1) rearSteerInput = 0;
         
         // Serial.print(EncTarget_F); Serial.print(" ");
-        // Serial.print(steer_error_F); Serial.print(" ");
+        Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
+        Serial.println(steer_error_R * 90/steerMotorPPR); 
+
         // Serial.print(frontSteerEnc.read()); Serial.println("");
 }
 

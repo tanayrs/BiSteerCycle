@@ -56,27 +56,21 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     # Plotting Angle vs Time #
     df['Relative Time'] = df['Time'] - df['Time'][0]
     plt.plot(df['Relative Time'],df['SFA'], label='SFA')
-    # plt.plot(df['Relative Time'],df['Kalman'], label='Kalman')
-    # plt.plot(df['Relative Time'], df['Acceleration'])
-    # plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
-    # plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
-    # xticks = [i for i in range(0,df['Relative Time'].iloc[-1],500) if np.abs(i-settle_time_kal-step_time) > 400 and np.abs(i-settle_time_sfa-step_time) > 400]
-    # xticks = list(range(0,df['Relative Time'].iloc[-1],200))
-    # xticks.extend([settle_time_kal+step_time, settle_time_sfa+step_time])
-    # plt.xticks(xticks)
-    # plt.axvline(x=step_time, color='black', linestyle='--', linewidth=1)
-    # plt.text(settle_time_kal+step_time,0,'Settling Time For Kalman Filter')
-    # plt.text(settle_time_sfa+step_time,0,'Settling Time For SFA')
-    # plt.text(step_time,0,'Point of Step Input')
+    plt.plot(df['Relative Time'],df['Kalman'], label='Kalman')
+
+    plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
+    plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
+    # plt.axvline(x=step_time, color='black', linestyle='--', linewidth=1, label='Step time')
+
+    xticks = [i for i in range(0,df['Relative Time'].iloc[-1],200) if np.abs(i-settle_time_kal-step_time) > 100 and np.abs(i-settle_time_sfa-step_time) > 100]
+    xticks.extend([settle_time_kal+step_time, settle_time_sfa+step_time])
+    plt.xticks(xticks)
 
 # Plots all the Sensor reading plots individually
 def small_angle_plots():
     DATA_PATH = './Python/filter test/filter testing small angle/SensorData'
     files = [f for f in os.listdir(DATA_PATH) if os.path.isfile(os.path.join(DATA_PATH,f))]
     for path in files:
-        # plt.hlines(y=plot_max[i],xmin=0,xmax=plot_step_time[i], color='tab:gray', linestyle='--',linewidth=1, label='_nolegend_')
-        # plt.vlines(x=plot_step_time[i],ymin=angle_offsets[i],ymax=plot_max[i], color='tab:gray', linestyle='--',linewidth=1,label='_nolegend_')
-        # plt.hlines(y=angle_offsets[i],xmin=plot_step_time[i],xmax=plot_end_time[i], color='tab:gray', linestyle='--',linewidth=1, label='Step Input')
         path = os.path.join(DATA_PATH,path)
         settle_time_kal,_,settle_time_sfa,_,step_time,_,_ = find_overshoot(path)
         plot_from_csv(path, settle_time_kal, settle_time_sfa, step_time)
@@ -86,8 +80,7 @@ def small_angle_plots():
         plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
         manager = plt.get_current_fig_manager()
         manager.full_screen_toggle()
-        # plt.grid()
-    plt.show()
+        plt.show()
 
 # Finds overshoot and settling time for the Kalman filter and SFA
 def find_overshoot(path):
