@@ -75,10 +75,10 @@ def chosen_plots():
         plot_from_csv(path, settle_time_kal, settle_time_sfa, step_time)
         plt.xlabel('Time (ms)', fontsize=14)
         plt.ylabel('Angle (degrees)', fontsize=14)
-        plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=14)
+        plt.title('Comparison of Step Response of SFA and Kalman Filter', fontsize=16)
         plt.legend(fontsize=14)
-        manager = plt.get_current_fig_manager()
-        manager.full_screen_toggle()
+        # manager = plt.get_current_fig_manager()
+        # manager.full_screen_toggle()
         plt.show()
 
 # Finds overshoot and settling time for the Kalman filter and SFA
