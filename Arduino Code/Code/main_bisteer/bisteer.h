@@ -28,7 +28,8 @@ double sampling_time = loopTimeConstSec;
 #define r  0.03         // Radius of wheels in m //
 
 /**** IMU Definition ****/
-#define phi_offset 4.9 //2.7>  < 4 Lower Phi Offset in Direction of Teensy
+// #define phi_offset 4.9 // Segway
+#define phi_offset 3.4 // Track-Stand
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -144,12 +145,14 @@ elapsedMicros loopTimeMicros;
 elapsedMillis runTimeMillis;
 
 /**** Track Stand Varliables ****/
-#define Kp_track 250
-#define Kd_track 100
-#define Ki_track 80
-#define Kd_track_wheel 2
+#define Kp_track 140
+#define Kd_track 40
+#define Ki_track 10
+#define Kd_track_wheel 1
 
 double int_track, front_int_track, rear_int_track;
+int prev_state = 1;
+float gains_trackstand[4];
 
 /**** Low Pass Filter ****/
 lowpass_filter lpf_front_steer(2); 

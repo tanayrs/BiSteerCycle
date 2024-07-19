@@ -190,34 +190,40 @@ void controller_track_stand(double front_angle){
         long double dt = loopTimeConstant * 1e-6;
 
         // Fixing the front and rear steering at an angle and 0 for track stand
-        holdsteering(front_angle, 0);
+        holdsteering(0, 0);
         // holdsteering(front_angle, 0);
 
         // based on phi (target = 0), PID loop will change rear velocity 
-        double rear_acc = (Kp_track*(phi)) + (Kd_track * (phi_dot)) + (Ki_track * int_track) + (Kd_track_wheel * frontWheelData.speed());
-        rear_acc *= sgn(front_angle);
+        gain_scheduler_track();
+        
+        double rear_vel = (gains_trackstand[0]*(phi)) + (gains_trackstand[1]* (phi_dot)) + (gains_trackstand[2]* int_track) + (gains_trackstand[3] * frontWheelData.speed());
+        
+        rear_vel *= sgn(front_angle);
 
         // Calculating front velocity based on rear velocity
         int_track += phi*dt;
-        constrain(int_track,-300,300);
+        constrain(int_track,-75,75);
 
         double phi_rad = phi*(PI/180);
         double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
         double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
-        double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+        double front_vel = rear_vel * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
 
-        front_int_track = front_acc;
-        rear_int_track = rear_acc;
+        if (abs(phi) < 20){
+                frontWheelInput = front_vel;
+                rearWheelInput = rear_vel;
+        } else {
+                frontWheelInput = 0;
+                rearWheelInput = 0;
+                int_track = 0;
+        }
 
-        frontWheelInput = abs(phi)>20?0:front_int_track;
-        rearWheelInput = abs(phi)>20?0:rear_int_track;
-
-        // Serial.print(phi); Serial.print(" ");
+        Serial.print(phi); Serial.print(" ");
         // Serial.print(Kp_track*(phi)); Serial.print(" ");
         // Serial.print(Ki_track * int_track); Serial.print(" ");
         // Serial.print(Kd_track * (phi_dot)); Serial.print(" ");
-        // Serial.print(rearWheelInput); Serial.print(" ");
-        // Serial.println(frontWheelInput);
+        Serial.print(rearWheelInput); Serial.print(" ");
+        Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/
@@ -296,8 +302,8 @@ void holdsteering(double degrees_F, double degrees_R) {
         if (abs(steer_error_R  * 90 / steerMotorPPR) < 1) rearSteerInput = 0;
         
         // Serial.print(EncTarget_F); Serial.print(" ");
-        Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
-        Serial.println(steer_error_R * 90/steerMotorPPR); 
+        // Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
+        // Serial.println(steer_error_R * 90/steerMotorPPR); 
 
         // Serial.print(frontSteerEnc.read()); Serial.println("");
 }
