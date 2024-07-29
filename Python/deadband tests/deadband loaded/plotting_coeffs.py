@@ -339,7 +339,13 @@ def plot_motor_data(motor,speed):
     
     slope_ends = {'positive':ser['positive'].values[0],'negative':ser['negative'].values[0]}
     
-    print(f'{file_path=}\n{starts=}\n{ends=}\n{kinetic=}\n{static=}\n{slope_ends=}',end='\n\n')
+    # print(f'{file_path=}\n{starts=}\n{ends=}\n{kinetic=}\n{static=}\n{slope_ends=}',end='\n\n')
+
+    inc_voltage = [kinetic['increasing'] * (11.1/4095), static['increasing'] * (11.1/4095)]
+    dec_voltage = [kinetic['decreasing'] * (11.1/4095), static['decreasing'] * (11.1/4095)]
+    print(f'Deadband Voltage Ranges: ')
+    print(f'Increasing: {inc_voltage}')
+    print(f'Decreasing: {dec_voltage}')
 
     motor_obj = MotorCompensation(file_path,starts,ends,kinetic,static,slope_ends)
     motor_obj.plot_compensation()
@@ -370,8 +376,8 @@ if __name__ == '__main__':
     # find_constants('./Python/deadband tests/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
     # plot_raw('./deadband tests/Python/deadband coeff/SourceData/RearSlope35Data.csv')
 
-    # plot_motor_data('Rear',10)
-    plot_compensation('Front',5)
+    plot_motor_data('Rear',10)
+    # plot_compensation('Front',5)
     
     # plot_motor_data(5,'rear')
     # for i in range(1,11,1):

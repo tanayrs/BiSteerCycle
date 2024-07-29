@@ -76,13 +76,13 @@ class MotorCompensation:
         plt.axhline(y=self.kinetic_coeffs['increasing'], color='k', linestyle='--', linewidth=0.5)
         
         # Plotting Individual Points Corresponding to Static and Kinetic Coefficients for Increasing and Reducing Speed #
-        plt.plot(self.deadband_ends[0],self.static_coeffs['decreasing'],'o', color='tab:orange', label='Deadband Exit for Decreasing Speed', ms=7.5)
-        plt.plot(self.deadband_ends[1],self.static_coeffs['increasing'],'o', color='tab:pink', label='Deadband Exit for Increasing Speed', ms=7.5)
+        plt.plot(self.deadband_ends[0],self.static_coeffs['decreasing'],'o', color='tab:orange', label='Deadband Exit for Dec Speed', ms=7.5)
+        plt.plot(self.deadband_ends[1],self.static_coeffs['increasing'],'o', color='tab:pink', label='Deadband Exit for Inc Speed', ms=7.5)
         plt.plot(self.deadband_ends[2],self.static_coeffs['decreasing'],'o', color='tab:orange', ms=7.5)
         plt.plot(self.deadband_ends[3],self.static_coeffs['increasing'],'o', color='tab:pink', ms=7.5)
 
-        plt.plot(self.deadband_starts[0],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', label='Deadband Entry for Decreasing Speed', ms=7.5)
-        plt.plot(self.deadband_starts[1],self.kinetic_coeffs['increasing'],'o', color='tab:olive', label='Deadband Entry for Increasing Speed', ms=7.5)
+        plt.plot(self.deadband_starts[0],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', label='Deadband Entry for Dec Speed', ms=7.5)
+        plt.plot(self.deadband_starts[1],self.kinetic_coeffs['increasing'],'o', color='tab:olive', label='Deadband Entry for Inc Speed', ms=7.5)
         plt.plot(self.deadband_starts[2],self.kinetic_coeffs['decreasing'],'o', color='tab:cyan', ms=7.5)
         plt.plot(self.deadband_starts[3],self.kinetic_coeffs['increasing'],'o', color='tab:olive', ms=7.5)
         
@@ -91,7 +91,7 @@ class MotorCompensation:
         plt.xlabel('Time (ms)', fontsize=14)
         plt.yticks([-800,-600,-400,self.static_coeffs['decreasing'],0,self.kinetic_coeffs['decreasing'],self.static_coeffs['increasing'],400,600,800])
         plt.ylim([-820,820])
-        plt.legend(loc='upper right', fontsize=14)
+        plt.legend(loc='upper right', fontsize=13)
         plt.title('Input', fontsize=18)
 
     def __plot_output(self):
@@ -122,7 +122,7 @@ class MotorCompensation:
         # Plotting Axis Labels and Sub-Plot Title #
         plt.xlabel('Time (ms)',fontsize=14)
         plt.ylabel('Response (Degrees per Second)',fontsize=14)
-        plt.legend(loc='upper right', fontsize=14)
+        plt.legend(loc='upper right', fontsize=13)
         plt.title('Measured and Ideal Response', fontsize=18)
 
         # plt.show()
@@ -196,7 +196,7 @@ class MotorCompensation:
         plt.scatter(
             subset['Wheel Input'],
             subset['Wheel Speed'], 
-            label='Measured Response', 
+            label='Measured Response Inc Speed', 
             marker='^',
             color='tab:green',
             s=25,
@@ -206,7 +206,7 @@ class MotorCompensation:
         plt.scatter(
             self.df[self.df['Relative Time']<= self.slope_ends['negative']]['Wheel Input'],
             self.df[self.df['Relative Time']<=self.slope_ends['negative']]['Wheel Speed'],
-            label = 'Measured Response',
+            label = 'Measured Response Dec Speed',
             color='tab:purple',
             s=50,
             marker='o',
@@ -243,7 +243,7 @@ class MotorCompensation:
         plt.ylim([-self.df['Wheel Speed'].max()/3,self.df['Wheel Speed'].max()/3])
         plt.ylabel('Response (Degrees Per Second)', fontsize=14)
         plt.legend(fontsize=14)
-        plt.legend(loc='upper left',fontsize=14)
+        plt.legend(loc='upper left',fontsize=13)
         plt.title('Commanded Input vs Response', fontsize=18)
 
     def __calculate_expected_output(self,pwm):
@@ -279,6 +279,12 @@ def plot_motor_data(speed,motor):
     
     # Finding Time where the slope ends in negative and positive direction #
     slope_ends = {'positive':ser['slope_end_pos'].values[0],'negative':ser['slope_end_neg'].values[0]}
+    
+    inc_voltage = [kinetic_coeffs['increasing'] * (11.1/4095), static_coeffs['increasing'] * (11.1/4095)]
+    dec_voltage = [kinetic_coeffs['decreasing'] * (11.1/4095), static_coeffs['decreasing'] * (11.1/4095)]
+    print(f'Deadband Voltage Ranges: ')
+    print(f'Increasing: {inc_voltage}')
+    print(f'Decreasing: {dec_voltage}')
 
     # Creating a motor object and plotting #
     motor_obj = MotorCompensation(file_path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
@@ -363,7 +369,7 @@ def find_constants(path,motor,speed):
 
     # Print Statment in format of CSV File #
     print(f"{speed},{motor},{path},{deadband_starts[0]},{deadband_starts[1]},{deadband_starts[2]},{deadband_starts[3]},{deadband_ends[0]},{deadband_ends[1]},{deadband_ends[2]},{deadband_ends[3]},{kinetic_coeffs['increasing']},{kinetic_coeffs['decreasing']},{static_coeffs['increasing']},{static_coeffs['decreasing']},{slope_ends['positive']},{slope_ends['negative']}")
-    
+
     # Calling Motor Object and Plotting #
     motor_obj = MotorCompensation(path,deadband_starts,deadband_ends,kinetic_coeffs,static_coeffs,slope_ends)
     motor_obj.plot_compensation()
@@ -394,7 +400,7 @@ if __name__ == '__main__':
     # find_constants('./Python/deadband tests/deadband coeff/SourceData/RearSlope35Data.csv','rear',35)
     # plot_raw('./deadband tests/Python/deadband coeff/SourceData/RearSlope35Data.csv')
 
-    plot_motor_data(10,'front')
+    plot_motor_data(10,'rear')
     
     # plot_motor_data(5,'rear')
     # for i in range(1,11,1):

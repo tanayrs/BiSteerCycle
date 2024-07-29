@@ -46,9 +46,13 @@ class MotorCompensation:
         # plt.subplot(2,2,4)
         # self.__plot_cr_increasing()
         
-
         ### Plotting Final Graph ###
         plt.tight_layout(pad=1.08, w_pad=0.1, h_pad=0.1)
+        manager = plt.get_current_fig_manager()
+        manager.full_screen_toggle()
+        plt.show()
+
+        self.__plot_cr_combined()
         manager = plt.get_current_fig_manager()
         manager.full_screen_toggle()
         plt.show()
@@ -331,4 +335,4 @@ def plot_motor_data(speed,motor):
     motor_obj.plot_compensation()
 
 if __name__ == '__main__':
-    plot_motor_data(20,'front')
+    plot_motor_data(10,'front')

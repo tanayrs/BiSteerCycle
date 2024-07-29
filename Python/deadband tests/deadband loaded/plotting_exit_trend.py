@@ -74,10 +74,10 @@ class ErrorTrend:
             plt.errorbar(self.x_unloaded, unloaded_dict['y_inc'], unloaded_dict['err_inc'], label='Unloaded Measurement', capsize=5, color = 'gray')
             plt.scatter(self.x_unloaded, unloaded_dict['y_inc'], color = 'gray')
             
-            if max(unloaded_dict['y_min']) > 0:
-                plt.ylim([0, max(unloaded_dict['y_min'])])
+            if max(unloaded_dict['y_max']) > 0:
+                plt.ylim([0, max(unloaded_dict['y_max'])])
             else:
-                plt.ylim([min(unloaded_dict['y_min']),0])
+                plt.ylim([min(unloaded_dict['y_max']),0])
         else:
             plt.errorbar(self.x_loaded, loaded_dict['y_dec'], loaded_dict['err_dec'], label='Loaded Measurement', capsize=5)
             plt.scatter(self.x_loaded, loaded_dict['y_dec'])
@@ -85,8 +85,8 @@ class ErrorTrend:
             plt.errorbar(self.x_unloaded, unloaded_dict['y_dec'], unloaded_dict['err_dec'], label='Unloaded Measurement', capsize=5, color = 'gray')
             plt.scatter(self.x_unloaded, unloaded_dict['y_dec'], color = 'gray')
             
-            if max(unloaded_dict['y_max']) > 0:
-                plt.ylim([0, max([max(unloaded_dict['y_max']),max(loaded_dict['y_max'])])])
+            if max(unloaded_dict['y_min']) > 0:
+                plt.ylim([0, max([max(unloaded_dict['y_min']),max(loaded_dict['y_min'])])])
             else:
                 plt.ylim([min([min(unloaded_dict['y_min']),min(loaded_dict['y_min'])]),0])
             
