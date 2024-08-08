@@ -54,8 +54,8 @@ def plot_from_csv(path,settle_time_kal, settle_time_sfa, step_time):
     plt.plot(df['Relative Time'],df['SFA'], label='SFA')
     plt.plot(df['Relative Time'],df['Kalman'], label='Kalman')
 
-    plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
-    plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
+    # plt.axvline(x=settle_time_kal+step_time, color='tab:orange', linestyle='--', linewidth=1,label='Settling Time Kal')
+    # plt.axvline(x=settle_time_sfa+step_time, color='tab:blue', linestyle='--', linewidth=1,label='Settling Time SFA')
     # plt.axvline(x=step_time, color='black', linestyle='--', linewidth=1, label='Step time')
 
     xticks = [i for i in range(0,df['Relative Time'].iloc[-1],500) if np.abs(i-settle_time_kal-step_time) > 400 and np.abs(i-settle_time_sfa-step_time) > 400]
