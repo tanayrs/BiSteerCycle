@@ -1,6 +1,8 @@
 /******************************************************************************************************************
+
 Segway Balancing Code
 By: Vishwas Gajera, Tanay Srinivasa
+Last Modified: 29 May 2024 10:28 AM
 
 Functions Called in Setup and Loop are Defined in func.ino:
         - void read_imu()                : Reads roll and pitch from MPU6050 Through Wire
@@ -22,6 +24,7 @@ SDA - A5
 #include <Wire.h>
 #include <Encoder.h>
 #include <TrivikramEncoder.h>
+#include <CytronMotorDriver.h>
 
 /* MPU Initialization*/
 const int MPU = 0x68; // MPU6050 I2C address
@@ -46,6 +49,7 @@ float LoopTimer;
 #define encoderPin1 2
 #define encoderPin2 3
 Encoder wheelEnc(encoderPin1, encoderPin2);
+CytronMD wheelMotor(PWM_DIR, 6, 8);
 
 volatile int lastEncoded = 0;
 volatile long encoderValue = 0;
@@ -97,7 +101,7 @@ float pwm=0;
 int sgnRoll, sgnPrevRoll;
 
 /* Motor Pin Definition */
-#define dir_pin 7
+#define dir_pin 8
 #define pwm_pin 6
 
 void setup() {
@@ -161,16 +165,10 @@ void loop() {
         if (fabs(roll)>20) pwm=0;
 
         // Printing Individual Controllers //
-        Serial.print(u1); Serial.print(" ");
-        Serial.print(u2); Serial.print(" ");
-        Serial.print(u3); Serial.print(" ");
-        Serial.print(u4); Serial.print(" ");
-        Serial.print(u5); Serial.print(" ");
-        Serial.println("");
+        Serial.println(roll);
 
         if (micros() - LoopTimer > 3000){
-                digitalWrite(dir_pin, u <= 0.0 ? LOW : HIGH);
-                analogWrite(pwm_pin,pwm);
+                wheelMotor.setSpeed(sgnRoll*pwm);
 
                 LoopTimer=micros();
         }
