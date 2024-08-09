@@ -21,88 +21,7 @@ SCL - A4
 SDA - A5
 ******************************************************************************************************************/
 
-#include <Wire.h>
-#include <Encoder.h>
-#include <TrivikramEncoder.h>
-#include <CytronMotorDriver.h>
-
-/* MPU Initialization*/
-const int MPU = 0x68; // MPU6050 I2C address
-float AccX, AccY, AccZ;
-float GyroX, GyroY, GyroZ;
-float accAngleX, accAngleY, gyroAngleX, gyroAngleY, gyroAngleZ;
-float roll, pitch, yaw;
-float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY, GyroErrorZ;
-float elapsedTime, currentTime, previousTime;
-float t,lastt,dt;
-float looptime_print;
-int c = 0;   //counter for imu error calculation
-
-/* Loop Time Definition */
-float LoopTimer;
-
-/* Encoder Parameters */
-#define wheelMotorPPR 2264/4
-#define pi 3.141592
-
-//these pins can not be changed 2/3 are special pins (Interrupt Capable)
-#define encoderPin1 2
-#define encoderPin2 3
-Encoder wheelEnc(encoderPin1, encoderPin2);
-CytronMD wheelMotor(PWM_DIR, 6, 8);
-
-volatile int lastEncoded = 0;
-volatile long encoderValue = 0;
-volatile long encoder_x=0;
-
-long lastencoderValue = 0;
-
-int lastMSB = 0;
-int lastLSB = 0;
-
-// Deadband for Motor Inputs //
-float deadzone=0;
-
-/* PID Setup */
-
-// Offsets For Balance Position //
-float target_roll=+2;
-float target_enc=0;
-
-// Error Initialisation //
-float error_roll=0;
-float last_error_roll=0;
-float error_enc=0;
-float last_error_enc=0;
-
-/* PID Setup */
-
-// Gains for Roll //
-float Kp=14;//5;//16;           // theta gain
-float Kd=0.1;//1.2;//1.5;      // theta dot gain
-float Ki=100;
-
-// Gains for Encoder //
-float Kp2=0;                  // x gain
-float Kd2=3;//4.5;            // x_dot gain
-
-// Error Function Initialisation //
-float u=0;
-float u1=0;
-float u2=0;
-float u3=0;
-float u4=0;
-float u5=0;
-
-// PWM Value Initialisation //
-float pwm=0;
-
-// Sign of Roll and Previous Roll for Integral Wind-Up //
-int sgnRoll, sgnPrevRoll;
-
-/* Motor Pin Definition */
-#define dir_pin 8
-#define pwm_pin 6
+#include "constants.h"
 
 void setup() {
         Serial.begin(19200);
@@ -126,55 +45,14 @@ void setup() {
 
 void loop() {
         read_imu();
-        sgnRoll = (roll > 0)? 1 : -1;
+        encoderValue = wheelEnc.read();
         
-        // Serial.print("Roll: "); 
-        // Serial.println(roll,5);
         lastt=t;
         t=micros();
         dt=(t-lastt)/1000000;
-        //Serial.println(dt,6);
 
-        encoderValue = wheelEnc.read();
-        // Serial.print("encoderValue: "); Serial.println(encoderValue);
+        segway_controller();
+        writeToMotor();
 
-        error_roll = target_roll-roll;
-        error_enc = (target_enc - (encoderValue/8530.0))*2*pi;   //8530 encoder constant 8530 interupts per round //
-        // Serial.print("error_enc: "); Serial.println(error_enc);
-
-        if (fabs(error_roll) < deadzone ){
-                u=0;
-                pwm=fabs(u);
-        } else {
-                // Error Function Calculation //
-                u1 = Kp*error_roll;
-                u2=-Kd*GyroX;
-                u3 += Ki*(error_roll)*dt;
-                u3 = constrain(u3,-20,20);
-                u4 = Kp2*error_enc;
-                u5 = Kd2*(error_enc-last_error_enc)/dt;
-
-                last_error_roll=error_roll;
-                last_error_enc=error_enc;
-
-                u=u1+u2+u3+u4+u5;
-                pwm=fabs(u);
-                if (pwm > 255) pwm=255;
-        }
-
-        if (fabs(roll)>20) pwm=0;
-
-        // Printing Individual Controllers //
         Serial.println(roll);
-
-        if (micros() - LoopTimer > 3000){
-                wheelMotor.setSpeed(sgnRoll*pwm);
-
-                LoopTimer=micros();
-        }
-
-        // Integral Wind-Up //
-        if (sgnRoll != sgnPrevRoll)
-                u3 = 0;
-        sgnPrevRoll = sgnRoll;
 }
