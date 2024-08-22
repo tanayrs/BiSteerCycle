@@ -151,7 +151,7 @@ void logFeedback() {
         //Serial.println(loopTimeMicros);
         //Serial.print("\n");
 
-        Serial.println(loopTimeMicros);
+        // Serial.println(loopTimeMicros);
         if (loopTimeMicros > 5 * loopTimeConstant)
                 Serial.println("ERROR - LOOP TIME EXCEEDED");
 }

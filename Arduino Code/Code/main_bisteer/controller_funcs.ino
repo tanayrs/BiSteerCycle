@@ -17,27 +17,42 @@ void controller_segway() {
 
         int_lean = constrain(int_lean,-300,300);
 
+        double front_acc, rear_acc;
 
-        double front_acc = (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
-        double rear_acc =  (1*Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
- 
+        if (abs(phi) < 7.5) {
+                front_acc = (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
+        } else {
+                front_acc = 1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed())); 
+        } 
+
         prv_sgn_phi = sgn1;
 
         Uf += front_acc*dt;
         Ur += rear_acc*dt;
         
         if (abs(phi) > 20) {
+                int_lean = 0;
                 Uf = 0;
                 Ur = 0;
                 rear_acc = 0;
+                front_acc = 0;
         }
 
-        frontWheelInput = round(Uf);
-        rearWheelInput  = round(Ur);
-        // Serial.println(int_lean);
-}
+        // acceleration control
+        // frontWheelInput = round(Uf);
+        // rearWheelInput  = round(Ur);
 
+        // velocity control
+        frontWheelInput = front_acc;
+        rearWheelInput = rear_acc;
+
+        Serial.print(phi); Serial.print("  ");
+        Serial.println(frontWheelInput);
+}
 /******************************************************************************************************************************************************************************************************/
+/* Calculation of Front and Rear Wheel Speed for Bicycle Mode */
 void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
         double Vr = rear_speed;
 
@@ -65,8 +80,7 @@ void controller_bicycle(double rear_speed){     // designed for 0.48 m/s
 }   
 
 /****************************************************************************************************************************************************************************************************/
-
-/* Bicycle Controller for Rear Wheel */
+/* Bicycle Controller for Rear Wheel Speed */
 void controller_rear_speed(double velocity_rear){
         double Vr = velocity_rear;
         long double dt = loopTimeConstant * 1e-6;
@@ -86,9 +100,9 @@ void controller_rear_speed(double velocity_rear){
         double rear_wheel_inp = 0;
 
         if (U == 0) 
-                rear_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+                rear_wheel_inp = 0.1*(speed_error) + 0*0.002*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
         else 
-                rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
+                rear_wheel_inp = 7*(speed_error) + 0*0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
         //double rear_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_rear)/dt + 100*(int_speed_error_rear)*dt;
 
@@ -109,7 +123,7 @@ void controller_rear_speed(double velocity_rear){
 }
 
 /****************************************************************************************************************************************************************************************************/
-
+/* Bicycle Controller for Front Wheel Speed */
 void controller_front_speed(double velocity_front){
         double Vf = velocity_front;
 
@@ -128,9 +142,9 @@ void controller_front_speed(double velocity_front){
 
         double front_wheel_inp = 0;
         if (U == 0) 
-                front_wheel_inp = 0.1*(speed_error) + 0.002*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+                front_wheel_inp = 0.1*(speed_error) + 0*0.002*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
         else
-                front_wheel_inp = 7*(speed_error) + 0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
+                front_wheel_inp = 7*(speed_error) + 0*0.02*(speed_error - prev_speed_error_front)/dt + 100*(int_speed_error_front)*dt ;    //PD loop for controling speed. //Kp 0.07
 
         prev_speed_error_front = speed_error;
 
@@ -142,29 +156,78 @@ void controller_front_speed(double velocity_front){
 }
 
 /****************************************************************************************************************************************************************************************************/
-
+/* PID Velocity Controller for Track Stand Mode */
 void controller_track_stand(double front_angle){
+
+        // If front wheel is turned left:
+        //      If leaning left:
+        //              Accelerate Forwards
+        //      If leaning right:
+        //              Accelerate Backwards
+        // If front wheel is turned right:
+        //      If leaning left:
+        //              Accelerate Backwards
+        //      If leaning right:
+        //              Accelerate Forwards
+
+        // now back calculate Vr to maintain rigid body constraint
+
+        // lean towards left = +ve
+        // lean towards right = -ve
+
+        // steer towards left = +ve
+        // steer towards right = -ve
+
+        // Vf -> positive for if sign(psi) == sign(phi)
+        // Vf -> negative for if sign(psi) != sign(phi)
+
+        // Idea: Multiple control output with sign(psi)
+
+        // Control Must be dependent on phi, phidot and phi_int
+
+        // Finally integrate to get PID with respect to acceleation control
+
         long double dt = loopTimeConstant * 1e-6;
 
         // Fixing the front and rear steering at an angle and 0 for track stand
-        holdsteering(front_angle, 0);
+        holdsteering(0, 0);
+        // holdsteering(front_angle, 0);
 
         // based on phi (target = 0), PID loop will change rear velocity 
-        double rear_acc = Kp_track*(phi) + Kd_track * (phi_dot) + Ki_track * phi * dt + Kd_track_wheel * frontWheelData.speed();
+        gain_scheduler_track();
+        
+        double rear_vel = (gains_trackstand[0]*(phi)) + (gains_trackstand[1]* (phi_dot)) + (gains_trackstand[2]* int_track) + (gains_trackstand[3] * frontWheelData.speed());
+        
+        rear_vel *= sgn(front_angle);
 
-        // Calculating front velocity based on rear velocity 
+        // Calculating front velocity based on rear velocity
+        int_track += phi*dt;
+        constrain(int_track,-75,75);
+
         double phi_rad = phi*(PI/180);
         double theta_F = frontSteerData.adjustedDegreesPosition()*(PI/180);
         double theta_R = rearSteerData.adjustedDegreesPosition()*(PI/180);
-        double front_acc = rear_acc * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
+        double front_vel = rear_vel * (sqrt( ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_F)*tan(theta_F))) / ((cos(phi_rad)*cos(phi_rad)) + (tan(theta_R)*tan(theta_R))) ));
 
-        frontWheelInput = front_acc;
-        rearWheelInput = rear_acc;
+        if (abs(phi) < 20){
+                frontWheelInput = front_vel;
+                rearWheelInput = rear_vel;
+        } else {
+                frontWheelInput = 0;
+                rearWheelInput = 0;
+                int_track = 0;
+        }
+
+        Serial.print(phi); Serial.print(" ");
+        // Serial.print(Kp_track*(phi)); Serial.print(" ");
+        // Serial.print(Ki_track * int_track); Serial.print(" ");
+        // Serial.print(Kd_track * (phi_dot)); Serial.print(" ");
+        Serial.print(rearWheelInput); Serial.print(" ");
+        Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/
-
-/* Sets Wheel Angle for Front and Rear Wheels */
+/* PID Position Controller for Wheel Rotation of Front and Rear Wheels */
 void holdwheel(double degrees_F, double degrees_R) {
         long double dt = loopTimeConstant * 1e-6;
 
@@ -199,61 +262,85 @@ void holdwheel(double degrees_F, double degrees_R) {
 }
 
 /****************************************************************************************************************************************************************************************************/
+/* PID Position Controller for Steering Angle of Front and Rear Wheels */
 void holdsteering(double degrees_F, double degrees_R) {
-        int sgnF = constrain(degrees_F, -1, 1);
-
         long double dt = loopTimeConstant * 1e-6;
 
-        double EncTarget_F = (degrees_F + 0*sgnF) * (steerMotorPPR) / 360; // Add 3 in deadband //
-        double EncTarget_R = degrees_R * (steerMotorPPR) / 360;
+        double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
+        double EncTarget_R = degrees_R * (steerMotorPPR) / 90;
 
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
 
-        Serial.print(steer_error_F); Serial.print(" ");
-        Serial.print(steer_error_R); Serial.print(" ");
-        // Serial.print((steer_error_F - prev_steer_error_F)/dt); Serial.print(" ");
-        // Serial.print((steer_error_R - prev_steer_error_R)/dt); Serial.print(" ");
-        Serial.print(integral_steer_F); Serial.print(" ");
-        Serial.print(integral_steer_R); Serial.println(" ");
-        
+        frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
+        rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
 
-        frontSteerInput = 40 * (steer_error_F) + 40*0.005 * ((steer_error_F - prev_steer_error_F)/dt) + 300*(integral_steer_F)*dt;
-        rearSteerInput =  40 * (steer_error_R) + 40*0.005 * ((steer_error_R - prev_steer_error_R)/dt) + 300*(integral_steer_R)*dt;
+        integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
+        integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
+        integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
+        integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
+
+        if (steer_error_F < 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
+        else integral_steer_F = 0;
+
+        if (steer_error_R < 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
+
+        if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
+        if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
 
         prev_steer_error_F = steer_error_F;
         prev_steer_error_R = steer_error_R;
 
-        if (steer_error_F < 5*steerMotorPPR/360) integral_steer_F += steer_error_F; // 5 is for degrees can change // 
-        else integral_steer_F = 0;
-         
-        if(steer_error_R < 5*steerMotorPPR/360) integral_steer_R += steer_error_R;
-        else integral_steer_R = 0;
-        
-        double acc = 3000;
-        
-        if (frontSteerInput > acc)  frontSteerInput = acc;
+        double acc = 1600;
+        if (frontSteerInput > acc) frontSteerInput = acc;
         if (frontSteerInput < -acc) frontSteerInput = -acc;
-        if (rearSteerInput > acc)   rearSteerInput = acc;
-        if (rearSteerInput < -acc)  rearSteerInput = -acc;
+        if (rearSteerInput > acc) rearSteerInput = acc;
+        if (rearSteerInput < -acc) rearSteerInput = -acc;
+
+        if (abs(steer_error_F * 90 / steerMotorPPR) < 2) frontSteerInput = 0;
+        if (abs(steer_error_R  * 90 / steerMotorPPR) < 1) rearSteerInput = 0;
+        
+        // Serial.print(EncTarget_F); Serial.print(" ");
+        // Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
+        // Serial.println(steer_error_R * 90/steerMotorPPR); 
+
+        // Serial.print(frontSteerEnc.read()); Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/
 
-/* Sets Steer and Drive Speeds to Front and Back Wheels */
+/* Writes Calculated Input into the 4 Motors */
 void writeToMotor() {
-        // Scaled Motor Speed Due to Different Speeds Observed In Forward and Reverse Directions //
-        frontSteerMotor.setSpeed(frontSteerInput);
-        // rearSteerMotor.setSpeed(rearSteerInput);
+        frontSteerInput = lpf_front_steer.filter(frontSteerInput);
+        frontWheelInput = lpf_front_wheel.filter(frontWheelInput);
+        rearSteerInput = lpf_rear_steer.filter(rearSteerInput);
+        rearWheelInput = lpf_rear_wheel.filter(rearWheelInput);
+        
+        // Deadband Compensation for all Motors //
+        // Front Steer deadband: positive = 260, negative = -250 //
+        if (frontSteerInput == 0) frontSteerMotor.setSpeed(0);
+        else frontSteerMotor.setSpeed(frontSteerInput<0?frontSteerInput-250:frontSteerInput+260); 
 
-        // Rear deadband: positive = 170, negative = -160 //
-        if (rearWheelInput == 0) rearWheelMotor.setSpeed(0);
-        else rearWheelMotor.setSpeed(rearWheelInput<0?rearWheelInput-105:rearWheelInput+115); 
+        // Rear Steer deadband: positive = 130, negative = -190 //
+        if (rearSteerInput == 0) rearSteerMotor.setSpeed(0);
+        else rearSteerMotor.setSpeed(rearSteerInput<0?rearSteerInput-360:rearSteerInput+230); 
 
-        // Front deadband: positive = 215, negative = -170 //
-        if (frontWheelInput == 0) frontWheelMotor.setSpeed(0);
-        else frontWheelMotor.setSpeed(frontWheelInput<0?frontWheelInput-125:frontWheelInput+155); 
+        if (frontWheelInput == 0){
+                frontWheelMotor.setSpeed(0);
+        } else if (frontWheelData.speed() == 0){
+                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelStaticInc : frontWheelInput+frontWheelStaticDec);
+        } else {
+                frontWheelMotor.setSpeed(frontWheelInput > 0? frontWheelInput+frontWheelKineticDec : frontWheelInput+frontWheelKineticInc);
+        }
 
+        if (rearWheelInput == 0){
+                rearWheelMotor.setSpeed(0);
+        } else if (rearWheelData.speed() == 0) {
+                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelStaticInc : rearWheelInput+rearWheelStaticDec);
+        } else {
+                rearWheelMotor.setSpeed(rearWheelInput > 0? rearWheelInput+rearWheelKineticDec : rearWheelInput+rearWheelKineticInc);
+        }
 }
 
 /****************************************************************************************************************************************************************************************************/

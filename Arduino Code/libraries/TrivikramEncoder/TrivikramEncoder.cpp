@@ -42,7 +42,7 @@ void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double
 //steerTicksOffset is the number of encoder ticks of the steering motor immediately following the initial routine
 double EncoderDataProcessor::_computeCoupledWheelRotation(double steerAccumulatedTicks, double steerTicksOffset){
   //Converting wheel and encoder ticks to rotations in degrees
-	double bevelGearRatio = 2.0;
+	double bevelGearRatio = 1.0;
 	double sprocketRatio = 1.0;//40.0/26.0;
 	double steerPPR = 8540/4;
 	double wheelTicksToDegrees = degreesAccumulated()/bevelGearRatio;

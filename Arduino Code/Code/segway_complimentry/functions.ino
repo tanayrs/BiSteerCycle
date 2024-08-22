@@ -102,3 +102,42 @@ void calculate_IMU_error() {
         Serial.print("GyroErrorZ: ");
         Serial.println(GyroErrorZ);
 }
+
+void segway_controller() {
+        sgnRoll = (roll > 0)? 1 : -1;
+
+        error_roll = target_roll-roll;
+        error_enc = (target_enc - (encoderValue/8530.0))*2*pi;   //8530 encoder constant 8530 interupts per round //
+
+        if (fabs(error_roll) < deadzone ){
+                u=0;
+                pwm=fabs(u);
+        } else {
+                // Error Function Calculation //
+                int_lean += (error_roll)*dt;
+                int_lean = constrain(int_lean,-20,20);
+
+                last_error_roll=error_roll;
+                last_error_enc=error_enc;
+
+                u=(Kp*error_roll)+(-Kd*GyroX)+(Ki*int_lean)+(Kd_wheel*(error_enc-last_error_enc)/dt);
+                
+                pwm=fabs(u);
+                if (pwm > 255) pwm=255;
+        }
+
+        // If Lean > 20 Degrees, stop moving //
+        if (fabs(roll)>20) pwm=0;
+
+        // Integral Wind-Up //
+        if (sgnRoll != sgnPrevRoll)
+                int_lean = 0;
+        sgnPrevRoll = sgnRoll;
+}
+
+void writeToMotor(){
+        if (micros() - LoopTimer > 3000){
+                wheelMotor.setSpeed(sgnRoll*pwm);
+                LoopTimer=micros();
+        }
+}

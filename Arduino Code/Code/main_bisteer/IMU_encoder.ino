@@ -11,8 +11,7 @@ MPU 6050 - SCL = 19, SDA = 18
 BNO-055  - NA
 ******************************************************************************************************************/
 
-
-
+/* Updating IMU and Encoder Values */
 void calculate_state() {
         updateEncoderData();
         calculate_bno_angle();
