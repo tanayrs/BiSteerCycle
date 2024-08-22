@@ -69,7 +69,8 @@ end
 
 %
 if t > 25 && t <=41
-    state_ref = [1,0.2*sin(1*(t-40)),0];
+    %state_ref = [1,0.2*sin(1*(t-40)),0];
+    state_ref = [1,deg2rad(25),0];
     K = p.K_4;
     %[K,~,~] = my_lqr(t,z,p,state_ref,Q,R);
 
@@ -81,7 +82,7 @@ if t >41 && t <=45 && theta_F <= deg2rad(1)
     K = p.K_phi;
     %K = p.K_4;
 end
-
+%} 
 if t >41 && t <=45 && theta_F > deg2rad(1)
      state_ref = [1,0.2*sin(1*(t-40)),0];
      K = p.K_4;

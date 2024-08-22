@@ -328,7 +328,7 @@ phiddot = simplify(phiddot,'IgnoreAnalyticConstraints',true,Steps=1000);
 
 
 %% front rear acc vdot stuff
-%
+%{
 
 
 EQN6 = dot(V*r_track,a1) - dot(Vf*f_track,a1);
@@ -347,7 +347,7 @@ Vfdot = simplify(Vfdot,'IgnoreAnalyticConstraints',true,Steps=1000);
 %}
 
 
-%
+%{
 
 
 zdot = [xdot,ydot,psidot,phiddot]';

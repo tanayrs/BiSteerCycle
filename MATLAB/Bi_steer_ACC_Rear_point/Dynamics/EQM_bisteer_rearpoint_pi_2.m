@@ -258,7 +258,7 @@ alpha   = jacobian(omega,state)*statedot';  % omega cross omega =0
 %}
 
 %linear momentum balance about cg 
-%
+%{
 
 LMB_CG = Tf*f_track + Nf*f_constr + Tr*r_track + Nr*r_constr + Nfg*k + Nrg*k -m*g*k - m*aG;
 
@@ -360,7 +360,7 @@ zdot = [xdot,ydot,psidot,phiddot]';
 
 
 
-%
+%{
 dynamics_lin = [phidot, Vdot, phiddot, theta_Fdot, theta_Rdot]';
 state_lin    = [   phi,    V,  phidot,    theta_F,    theta_R];
 U            = [ Vdot, theta_Fdot, theta_Rdot];

@@ -5,7 +5,7 @@ close all;
 clc;
 
 restoredefaultpath
-addpath("Controller","Dynamics","Graphics");
+addpath("Controller","Dynamics","Graphics","equb_point_finder");
 
 
 
@@ -32,12 +32,12 @@ x0 = 0;
 y0 = 0;
 V0 = 1;
 
-psi0 = deg2rad(150);  %heading
-phi0 = deg2rad(-10);  %lean angle  -30
+psi0 = deg2rad(60);  %heading
+phi0 = deg2rad(0);  %lean angle  -30
 phidot0 = 0; %lean rate
 
-theta_F0 = deg2rad(90);  %30
-theta_R0 = deg2rad(90); %60
+theta_F0 = deg2rad(0);  %30
+theta_R0 = deg2rad(0); %60
  
 
 z0 = [x0, y0, V0, psi0, phi0, phidot0, theta_F0, theta_R0]';
@@ -75,7 +75,7 @@ ref_3 = [0.0,deg2rad(10),deg2rad(0)];
 Q_3 = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
 R_3 = diag([1e2, 1e1, 1e1]);
 
-ref_4 = [1,deg2rad(0),deg2rad(0)];
+ref_4 = [1,deg2rad(1),deg2rad(0)];
 Q_4 = diag([1e3, 1e2, 1e3, 1e1, 1e1]);
 R_4 = diag([1e2, 1e1, 1e10]);
 
@@ -97,6 +97,11 @@ ref_8 = [0,deg2rad(89),deg2rad(0)];
 Q_8 = diag([1e4, 1e2, 1e4, 1e1, 1e1]);
 R_8 = diag([1e2, 1e1, 1e1]); 
 
+ref_test = [1,deg2rad(20),deg2rad(0)];
+Q_test   = diag([1e5, 1e5, 1e5, 2e2, 1e1]);
+R_test   = diag([1e3,3e2, 1e10]);
+
+
 
 
 p.ref_phi = ref_phi;
@@ -109,6 +114,8 @@ p.ref_5 = ref_5;
 p.ref_6 = ref_6;
 p.ref_7 = ref_7;
 p.ref_8 = ref_8;
+p.ref_test = ref_test;
+
 Q = diag([1e4, 1e3, 1e4, 1e1, 1e1]);
 R = diag([1e0, 1e1, 1e1]);
 
@@ -117,7 +124,7 @@ p.R = R;
 %
 [K_phi,~,~] = my_lqr(0,z0,p,ref_phi,Q_phi,R_phi);   %z0 not used
 [K_V,~,~]  = my_lqr(0,z0,p,ref_V,Q_V,R_V);
-[K_1,~,~] = my_lqr(0,z0,p,ref_1,Q_F,R_F)
+[K_1,~,~] = my_lqr(0,z0,p,ref_1,Q_F,R_F);
 [K_2,~,~] = my_lqr(0,z0,p,ref_2,Q_R,R_R);
 [K_3,~,~] = my_lqr(0,z0,p,ref_3,Q_3,R_3);
 [K_4,A,B] = my_lqr(0,z0,p,ref_4,Q_4,R_4);
@@ -127,7 +134,7 @@ p.R = R;
 [K_6,~,~] = my_lqr(0,z0,p,ref_6,Q_R,R_R);
 [K_7,~,~] = my_lqr(0,z0,p,ref_7,Q_R,R_R);
 [K_8,~,~] = my_lqr(0,z0,p,ref_8,Q_8,R_8);
-
+[K_test,~,~] = my_lqr(0,z0,p,ref_test,Q_test,R_test);
 %rank_5 = rank(ctrb(A5,B5))
 
 
@@ -144,6 +151,8 @@ p.K_5 = K_5;
 p.K_6 = K_6;
 p.K_7 = K_7;
 p.K_8 = K_8;
+p.K_test = K_test;
+
 
 %%
 
@@ -165,13 +174,13 @@ soln    = ode45(therhs,t, z0,options);
 %%
 %plotting
 %
-%plot_soln(soln,start,stop,p)
+plot_soln(soln,start,stop,p)
 
 %
 tstart = 0;
 tend  = stop;
 save = 0;
-speed = 0.05;
+speed = 1;
 animate_bisteer(soln,tstart,tend,p,speed,save)
 
 %}

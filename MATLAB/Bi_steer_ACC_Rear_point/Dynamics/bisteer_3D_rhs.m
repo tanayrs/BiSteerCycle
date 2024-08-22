@@ -17,7 +17,7 @@ h = p.h; df = p.df; dr = p.dr;
 
 
 
-[~, Vdot, theta_Fdot, theta_Rdot] = controller_cyclemode(t,z,p);
+[~, Vdot, theta_Fdot, theta_Rdot] = controller_test(t,z,p);
 
 theta_F = z(7);
 theta_R = z(8);
