@@ -4,10 +4,7 @@ void controller_segway() {
         int sgn1 = sgn(phi);
         double dt = loopTimeConstant*1e-6;
 
-        
         int_lean += Ki_lean*phi*dt;
-        
-        
 
         if (prv_sgn_phi != sgn1) {
                 int_lean = 0;
@@ -19,9 +16,9 @@ void controller_segway() {
 
         double front_acc, rear_acc;
 
-        if (abs(phi) < 7.5) {
-                front_acc = (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
-                rear_acc =  (Kp_lean * (phi) + 1.1*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
+        if (abs(phi) < 5) {
+                front_acc = (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + 0*Kd_wheel * (rearWheelData.speed()));
         } else {
                 front_acc = 1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
                 rear_acc =  1.2*(Kp_lean * (phi) + Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed())); 
@@ -45,8 +42,9 @@ void controller_segway() {
         // rearWheelInput  = round(Ur);
 
         // velocity control
-        frontWheelInput = front_acc;
+        // frontWheelInput = front_acc;
         rearWheelInput = rear_acc;
+        frontWheelInput = rearWheelInput;
 
         Serial.print(phi); Serial.print("  ");
         Serial.println(frontWheelInput);

@@ -28,8 +28,8 @@ double sampling_time = loopTimeConstSec;
 #define r  0.03         // Radius of wheels in m //
 
 /**** IMU Definition ****/
-// #define phi_offset 4.9 // Segway
-#define phi_offset 3.4 // Track-Stand
+#define phi_offset 3.7 // Segway 4.9
+// #define phi_offset 2.4 // Track-Stand 2.4
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -88,10 +88,10 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /**** Segway Controller ****/
-#define Kp_lean 125 //600
-#define Kd_lean 20 //400
-#define Kd_wheel 1
-#define Ki_lean 30
+#define Kp_lean 150 //600
+#define Kd_lean 400 //400
+#define Kd_wheel 20
+#define Ki_lean 200
 double int_lean = 0;
 double Uf = 0;
 double Ur = 0;
