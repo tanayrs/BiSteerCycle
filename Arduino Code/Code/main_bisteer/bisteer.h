@@ -28,8 +28,8 @@ double sampling_time = loopTimeConstSec;
 #define r  0.03         // Radius of wheels in m //
 
 /**** IMU Definition ****/
-#define phi_offset 3.7 // Segway 4.9
-// #define phi_offset 2.4 // Track-Stand 2.4
+// #define phi_offset 4.1 // Segway 4.9
+#define phi_offset 2.4 // Track-Stand 2.4
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -43,9 +43,9 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 /**** Motor Driver ****/
 const int rearWheelPWM = 0; const int rearWheelDir = 1;
-const int rearSteerPWM = 2; const int rearSteerDir = 3;
+const int rearSteerPWM = 3; const int rearSteerDir = 2;
 const int frontWheelPWM = 6;  const int frontWheelDir = 7;
-const int frontSteerPWM = 5;  const int frontSteerDir = 4;
+const int frontSteerPWM = 4;  const int frontSteerDir = 5;
 
 CytronMD rearWheelMotor(PWM_DIR, rearWheelPWM, rearWheelDir);
 CytronMD rearSteerMotor(PWM_DIR, rearSteerPWM, rearSteerDir);
@@ -90,7 +90,7 @@ double integral_wheel_R = 0;
 /**** Segway Controller ****/
 #define Kp_lean 150 //600
 #define Kd_lean 400 //400
-#define Kd_wheel 20
+#define Kd_wheel 0.4
 #define Ki_lean 200
 double int_lean = 0;
 double Uf = 0;
