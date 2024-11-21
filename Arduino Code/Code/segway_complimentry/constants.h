@@ -43,8 +43,9 @@ float deadzone=0;
 /* PID Setup */
 
 // Offsets For Balance Position //
-float target_roll=+1;
+float target_roll=0;
 float target_enc=0;
+float roll_offset=4.4;
 
 // Error Initialisation //
 float error_roll=0;
@@ -55,12 +56,12 @@ float last_error_enc=0;
 /* PID Setup */
 
 // Gains for Roll //
-float Kp=15;//5;//16;           // theta gain
-float Kd=0.1;//1.2;//1.5;      // theta dot gain
-float Ki=30;
+float Kp=25;//5;//16;           // theta gain
+float Kd=0;//1.2;//1.5;      // theta dot gain
+float Ki=5;
 
 // Gains for Encoder //
-float Kd_wheel=6;//4.5;            // x_dot gain
+float Kd_wheel=0;//4.5;            // x_dot gain
 
 // Error Function Initialisation //
 float u=0;

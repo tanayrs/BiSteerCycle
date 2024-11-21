@@ -42,6 +42,8 @@ void read_imu(){
         gyroAngleX=roll;     //corrects the gyroAngleX and y else senser reading gyroAnglex and y starts to drift
         gyroAngleY=pitch;
 
+        roll -= roll_offset;
+
         // Print the values on the serial monitor
         // Serial.print(roll); Serial.print(" ");
         //Serial.print("/");

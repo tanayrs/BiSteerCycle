@@ -24,7 +24,7 @@ SDA - A5
 #include "constants.h"
 
 void setup() {
-        Serial.begin(19200);
+        Serial.begin(9600);
 
         pinMode(13, OUTPUT);
         digitalWrite(13, HIGH);
