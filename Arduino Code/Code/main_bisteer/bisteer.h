@@ -28,8 +28,8 @@ double sampling_time = loopTimeConstSec;
 #define r  0.03         // Radius of wheels in m //
 
 /**** IMU Definition ****/
-// #define phi_offset 4.1 // Segway 4.9
-#define phi_offset 2.4 // Track-Stand 2.4
+#define phi_offset 4.4 // Segway 4.9 / 4.6
+// #define phi_offset 2.4 // Track-Stand 2.4
 
 sensors_event_t a, g, temp;
 float ax1, ay1, az1;
@@ -45,7 +45,7 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55);
 const int rearWheelPWM = 0; const int rearWheelDir = 1;
 const int rearSteerPWM = 3; const int rearSteerDir = 2;
 const int frontWheelPWM = 6;  const int frontWheelDir = 7;
-const int frontSteerPWM = 4;  const int frontSteerDir = 5;
+const int frontSteerPWM = 5;  const int frontSteerDir = 4;
 
 CytronMD rearWheelMotor(PWM_DIR, rearWheelPWM, rearWheelDir);
 CytronMD rearSteerMotor(PWM_DIR, rearSteerPWM, rearSteerDir);
@@ -58,10 +58,10 @@ int rearSteerInput; int frontSteerInput;
 /**** Encoder and velocity ****/
 double vel_cutoff_freq = 1000;
 
-const int rearWheelEnc1 = 30; const int rearWheelEnc2 = 29;
-const int rearSteerEnc1 = 32; const int rearSteerEnc2 = 31;
-const int frontWheelEnc1 = 11; const int frontWheelEnc2 = 10;
-const int frontSteerEnc1 = 9; const int frontSteerEnc2 = 8;
+const int frontWheelEnc1 = 30; const int frontWheelEnc2 = 29;
+const int frontSteerEnc1 = 31; const int frontSteerEnc2 = 32;
+const int rearWheelEnc1 = 11; const int rearWheelEnc2 = 10;
+const int rearSteerEnc1 = 8; const int rearSteerEnc2 = 9;
 
 // Encoder Objects to Read Encoder Ticks //
 Encoder rearWheelEnc(rearWheelEnc1, rearWheelEnc2);
@@ -88,10 +88,10 @@ double integral_wheel_F = 0;
 double integral_wheel_R = 0;
 
 /**** Segway Controller ****/
-#define Kp_lean 150 //600
-#define Kd_lean 400 //400
-#define Kd_wheel 0.4
-#define Ki_lean 200
+#define Kp_lean 120 //600
+#define Kd_lean 300 //400
+#define Kd_wheel 0.3
+#define Ki_lean 100
 double int_lean = 0;
 double Uf = 0;
 double Ur = 0;

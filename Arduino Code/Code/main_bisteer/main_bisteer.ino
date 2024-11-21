@@ -55,19 +55,25 @@ void loop(){
         // Updates Encoder Angle and IMU Angle //
         calculate_state();
 
-        holdsteering(90,90);
+        // holdsteering(90,90);
         
         // Calculates Motor Inputs //
-        // holdsteering(0,0);     // takes front rear steer in degrees
+        // holdsteering(45,45);     // takes front rear steer in degrees
+        // holdsteering(90,90);
+        // holdwheel(90,90);
         
         // controller_track_stand(-45);
-        // controller_segway();
+        controller_segway();
         // controller_bicycle(1);
 
         // controller_rear_speed(0.48);
         // controller_front_speed(0.48);
 
         // Writes Inputs to Motor //
+        // frontWheelInput = 1000;
+        // rearWheelInput = 1000;
+        // frontSteerInput = 1000;
+        // rearSteerInput = 1000;
         writeToMotor(); 
 
         // logFeedback();
@@ -78,5 +84,8 @@ void loop(){
         loopTimeMicros = 0;
         digitalWrite(13,LOW);
 
-        // Serial.println(phi);
+        Serial.print(phi); Serial.print(" ");
+        // Serial.print(frontWheelInput); Serial.print(" ");
+        // Serial.print(rearWheelInput);
+        Serial.println("");
 }

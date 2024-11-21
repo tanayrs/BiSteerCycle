@@ -25,6 +25,11 @@ void updateEncoderData() {
         long rearWheelTicks = rearWheelEnc.read();
         long rearSteerTicks = rearSteerEnc.read();
 
+        // Serial.print(frontSteerTicks); Serial.print(" ");
+        // Serial.print(rearSteerTicks); Serial.print(" ");
+        // Serial.print(frontWheelTicks); Serial.print(" ");
+        // Serial.print(rearWheelTicks); Serial.print(" ");
+
         // Updating Encoder Data Processor Objects //
         // Reference: void EncoderDataProcessor::update(long ticks,double steerAccumulatedTicks,double steerTicksOffset) //
         frontWheelData.update(frontWheelTicks, frontSteerTicks, 0);

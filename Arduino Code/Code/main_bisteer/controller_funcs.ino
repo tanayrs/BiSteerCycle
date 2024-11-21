@@ -17,8 +17,8 @@ void controller_segway() {
         double front_acc, rear_acc;
 
         if (abs(phi) < 2) {
-                front_acc = (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + 0.5*Kd_wheel * (frontWheelData.speed()));
-                rear_acc =  (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + 0.5*Kd_wheel * (rearWheelData.speed()));
+                front_acc = (Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0.5*Kd_wheel * (frontWheelData.speed()));
+                rear_acc =  (Kp_lean * (phi) + 1*Kd_lean * (phi_dot) + int_lean + 0.5*Kd_wheel * (rearWheelData.speed()));
         } else if (abs(phi) < 5 ){
                 front_acc = (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + Kd_wheel * (frontWheelData.speed()));
                 rear_acc =  (Kp_lean * (phi) + 1.2*Kd_lean * (phi_dot) + int_lean + Kd_wheel * (rearWheelData.speed()));
@@ -49,8 +49,8 @@ void controller_segway() {
         rearWheelInput = rear_acc;
         frontWheelInput = rearWheelInput;
 
-        Serial.print(phi); Serial.print("  ");
-        Serial.println(frontWheelInput);
+        // Serial.println(phi);
+        // Serial.println(frontWheelInput);
 }
 /******************************************************************************************************************************************************************************************************/
 /* Calculation of Front and Rear Wheel Speed for Bicycle Mode */
@@ -232,8 +232,8 @@ void controller_track_stand(double front_angle){
 void holdwheel(double degrees_F, double degrees_R) {
         long double dt = loopTimeConstant * 1e-6;
 
-        double EncTarget_F = degrees_F * (wheelMotorPPR) / 360; 
-        double EncTarget_R = degrees_R * (wheelMotorPPR) / 360;
+        double EncTarget_F = degrees_F * (wheelMotorPPR) / 90; 
+        double EncTarget_R = degrees_R * (wheelMotorPPR) / 90;
 
         double wheel_error_F = -(EncTarget_F - frontWheelEnc.read());
         double wheel_error_R = -(EncTarget_R - rearWheelEnc.read());
@@ -265,49 +265,6 @@ void holdwheel(double degrees_F, double degrees_R) {
 /****************************************************************************************************************************************************************************************************/
 /* PID Position Controller for Steering Angle of Front and Rear Wheels */
 void holdsteering(double degrees_F, double degrees_R) {
-        // long double dt = loopTimeConstant * 1e-6;
-
-        // double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
-        // double EncTarget_R = degrees_R * (steerMotorPPR) / 90;
-
-        // double steer_error_F = EncTarget_F - frontSteerEnc.read();
-        // double steer_error_R = EncTarget_R - rearSteerEnc.read();
-
-        // frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
-        // rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
-
-        // integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
-        // integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
-        // integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
-        // integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
-
-        // if (steer_error_F > 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
-        // else integral_steer_F = 0;
-
-        // if (steer_error_R > 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
-        // else integral_steer_R = 0;
-
-        // if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
-        // if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
-
-        // prev_steer_error_F = steer_error_F;
-        // prev_steer_error_R = steer_error_R;
-
-        // double acc = 1600;
-        // if (frontSteerInput > acc) frontSteerInput = acc;
-        // if (frontSteerInput < -acc) frontSteerInput = -acc;
-        // if (rearSteerInput > acc) rearSteerInput = acc;
-        // if (rearSteerInput < -acc) rearSteerInput = -acc;
-
-        // if (abs(steer_error_F * 90 / steerMotorPPR) < 2) frontSteerInput = 0;
-        // if (abs(steer_error_R  * 90 / steerMotorPPR) < 1) rearSteerInput = 0;
-        
-        // Serial.print(EncTarget_F * 90 / steerMotorPPR); Serial.print(" ");
-        // Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
-        // Serial.print(steer_error_R * 90/steerMotorPPR); Serial.print(" ");
-        // Serial.print(frontSteerInput); Serial.print(" ");
-        // Serial.println(rearSteerInput); Serial.print(" ");
-
         long double dt = loopTimeConstant * 1e-6;
 
         double EncTarget_F = degrees_F * (steerMotorPPR) / 90;  // 90 Due to Quad Encoders //
@@ -316,32 +273,42 @@ void holdsteering(double degrees_F, double degrees_R) {
         double steer_error_F = EncTarget_F - frontSteerEnc.read();
         double steer_error_R = EncTarget_R - rearSteerEnc.read();
 
-        double deg_error_F = steer_error_F * (90/steerMotorPPR);
-        double deg_error_R = steer_error_R * (90/steerMotorPPR);
-        while (abs(steer_error_F * (90/steerMotorPPR)) < 180 && abs(steer_error_R * (90/steerMotorPPR)) < 180){
-                if(deg < -180) deg = 180 - (deg + 180);
-                if(deg > 181) deg = -179 + (deg - 17)
-        }
-
-        frontSteerInput = ((1*steer_error_F) + (1*(steer_error_F - prev_steer_error_F)/dt) + (1*integral_steer_F*dt));
-        rearSteerInput = ((1*steer_error_R) + (1*(steer_error_R - prev_steer_error_R)/dt) + (1*integral_steer_R*dt));
-
-        integral_steer_F += steer_error_F;
-        integral_steer_R += steer_error_R;
+        frontSteerInput = 0.7 * (12 * steer_error_F + ((steer_error_F - prev_steer_error_F) / dt) + 20 * (integral_steer_F)*dt);
+        rearSteerInput = 0.7 * (12 * steer_error_R + ((steer_error_R - prev_steer_error_R) / dt) + 20 * (integral_steer_R)*dt);
 
         integral_steer_F = integral_steer_F > 600? 600 : integral_steer_F;
         integral_steer_F = integral_steer_F < -600? -600 : integral_steer_F;
         integral_steer_R = integral_steer_R > 600? 600 : integral_steer_R;
         integral_steer_R = integral_steer_R < -600? -600 : integral_steer_R;
 
+        if (steer_error_F < 5 * steerMotorPPR / 360) integral_steer_F += steer_error_F;  // 5 is for degrees can change //
+        else integral_steer_F = 0;
+
+        if (steer_error_R < 5 * steerMotorPPR / 360) integral_steer_R += steer_error_R;
+        else integral_steer_R = 0;
+
+        if (constrain(prev_steer_error_F,-1,1) != constrain(steer_error_F,-1,1)) integral_steer_F = 0;
+        if (constrain(prev_steer_error_R,-1,1) != constrain(steer_error_R,-1,1)) integral_steer_R = 0;
+
         prev_steer_error_F = steer_error_F;
         prev_steer_error_R = steer_error_R;
 
-        // Serial.print(EncTarget_F * 90 / steerMotorPPR); Serial.print(" ");
+        double acc = 1600;
+        if (frontSteerInput > acc) frontSteerInput = acc;
+        if (frontSteerInput < -acc) frontSteerInput = -acc;
+        if (rearSteerInput > acc) rearSteerInput = acc;
+        if (rearSteerInput < -acc) rearSteerInput = -acc;
+
+        if (abs(steer_error_F * 90 / steerMotorPPR) < 2) frontSteerInput = 0;
+        if (abs(steer_error_R  * 90 / steerMotorPPR) < 1) rearSteerInput = 0;
+
+        // Serial.print(EncTarget_F); Serial.print(" ");
         // Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
-        // Serial.print(steer_error_R * 90/steerMotorPPR); Serial.print(" ");
-        // Serial.print(frontSteerInput); Serial.print(" ");
-        // Serial.println(rearSteerInput); Serial.print(" ");
+        // Serial.print(steer_error_R * 90/steerMotorPPR); 
+        // Serial.print(steer_error_F * 90/steerMotorPPR); Serial.print(" ");
+        // Serial.print(steer_error_R * 90/steerMotorPPR); 
+
+        // Serial.print(frontSteerEnc.read()); Serial.println("");
 }
 
 /****************************************************************************************************************************************************************************************************/
